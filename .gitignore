@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Vite build output
+dist/
+
+# Tauri / Cargo build output
+src-tauri/target/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+*.log
+
+# Editor / IDE
+.vscode/
+.idea/
+
+# OS junk
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Rust generated files
+**/*.rs.bk
+
+# Debug artifacts
+*.pdb
