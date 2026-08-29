@@ -78,6 +78,7 @@ export function LeftPane({
       >
         <button
           onClick={() => onLeftPaneTabChange("workspace")}
+          className="stv-tab"
           style={{
             flex: 1,
             background: leftPaneTab === "workspace" ? "#1e1e1e" : "transparent",
@@ -95,6 +96,7 @@ export function LeftPane({
             if (canUseSearch) onLeftPaneTabChange("search");
           }}
           disabled={!canUseSearch}
+          className="stv-tab"
           style={{
             flex: 1,
             background: leftPaneTab === "search" ? "#1e1e1e" : "transparent",
@@ -143,6 +145,7 @@ export function LeftPane({
                 <button
                   onClick={onCreateFile}
                   title="New File"
+                  className="stv-icon-btn"
                   style={{
                     border: "none",
                     background: "transparent",
@@ -155,6 +158,7 @@ export function LeftPane({
                 <button
                   onClick={onCreateFolder}
                   title="New Folder"
+                  className="stv-icon-btn"
                   style={{
                     border: "none",
                     background: "transparent",
@@ -198,6 +202,7 @@ export function LeftPane({
               <span>No workspace open</span>
               <button
                 onClick={onOpenWorkspace}
+                className="stv-btn"
                 style={{
                   padding: "6px 10px",
                   border: "1px solid #555",
@@ -258,6 +263,7 @@ export function LeftPane({
           >
             <button
               onClick={onFind}
+              className="stv-btn"
               style={{
                 border: "1px solid #2f6feb",
                 background: "#2f6feb",
@@ -272,6 +278,7 @@ export function LeftPane({
             </button>
             <button
               onClick={onReplaceAll}
+              className="stv-btn"
               style={{
                 border: "1px solid #0f766e",
                 background: "#0f766e",

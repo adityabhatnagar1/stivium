@@ -1,12 +1,12 @@
 type NameDialogProps = {
-  isOpen: boolean
-  title: string
-  value: string
-  placeholder: string
-  onValueChange: (value: string) => void
-  onCancel: () => void
-  onConfirm: () => void
-}
+  isOpen: boolean;
+  title: string;
+  value: string;
+  placeholder: string;
+  onValueChange: (value: string) => void;
+  onCancel: () => void;
+  onConfirm: () => void;
+};
 
 export function NameDialog({
   isOpen,
@@ -15,64 +15,78 @@ export function NameDialog({
   placeholder,
   onValueChange,
   onCancel,
-  onConfirm
+  onConfirm,
 }: NameDialogProps): JSX.Element | null {
-  if (!isOpen) return null
+  if (!isOpen) return null;
   return (
     <div
+      className="stv-dialog-backdrop"
       style={{
-        position: 'fixed',
+        position: "fixed",
         inset: 0,
-        background: 'rgba(0,0,0,0.45)',
+        background: "rgba(0,0,0,0.45)",
         zIndex: 2100,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center'
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
       }}
     >
       <div
+        className="stv-dialog-panel"
         style={{
-          width: '360px',
-          background: 'var(--color-surface-elevated)',
-          border: '1px solid var(--color-border)',
-          borderRadius: '10px',
-          boxShadow: '0 16px 36px rgba(0,0,0,0.45)',
-          padding: '18px'
+          width: "360px",
+          background: "var(--color-surface-elevated)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "10px",
+          boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
+          padding: "18px",
         }}
       >
-        <div style={{ fontSize: '14px', marginBottom: '12px', fontWeight: 700 }}>{title}</div>
+        <div
+          style={{ fontSize: "14px", marginBottom: "12px", fontWeight: 700 }}
+        >
+          {title}
+        </div>
         <input
           autoFocus
           value={value}
           placeholder={placeholder}
           onChange={(e) => onValueChange(e.target.value)}
           onKeyDown={(e) => {
-            if (e.key === 'Enter') onConfirm()
+            if (e.key === "Enter") onConfirm();
           }}
           style={{
-            width: '100%',
-            boxSizing: 'border-box',
-            padding: '8px 10px',
-            background: 'var(--color-surface-2)',
-            color: 'var(--color-text)',
-            border: '1px solid var(--color-border)',
-            borderRadius: '7px',
-            outline: 'none'
+            width: "100%",
+            boxSizing: "border-box",
+            padding: "8px 10px",
+            background: "var(--color-surface-2)",
+            color: "var(--color-text)",
+            border: "1px solid var(--color-border)",
+            borderRadius: "7px",
+            outline: "none",
           }}
         />
-        <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '14px' }}>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "flex-end",
+            gap: "8px",
+            marginTop: "14px",
+          }}
+        >
           <button
             type="button"
             onClick={onCancel}
+            className="stv-btn"
             style={{
-              minWidth: '88px',
-              padding: '8px 12px',
-              borderRadius: '7px',
-              border: '1px solid var(--color-border)',
-              background: 'var(--color-surface-2)',
-              color: 'var(--color-text)',
-              cursor: 'pointer',
-              fontWeight: 600
+              minWidth: "88px",
+              padding: "8px 12px",
+              borderRadius: "7px",
+              border: "1px solid var(--color-border)",
+              background: "var(--color-surface-2)",
+              color: "var(--color-text)",
+              cursor: "pointer",
+              fontWeight: 600,
             }}
           >
             Cancel
@@ -80,15 +94,16 @@ export function NameDialog({
           <button
             type="button"
             onClick={onConfirm}
+            className="stv-btn"
             style={{
-              minWidth: '88px',
-              padding: '8px 12px',
-              borderRadius: '7px',
-              border: '1px solid #0e5ca9',
-              background: 'linear-gradient(180deg, #2382dc 0%, #0f6bc3 100%)',
-              color: '#fff',
-              cursor: 'pointer',
-              fontWeight: 700
+              minWidth: "88px",
+              padding: "8px 12px",
+              borderRadius: "7px",
+              border: "1px solid #0e5ca9",
+              background: "linear-gradient(180deg, #2382dc 0%, #0f6bc3 100%)",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: 700,
             }}
           >
             OK
@@ -96,5 +111,5 @@ export function NameDialog({
         </div>
       </div>
     </div>
-  )
+  );
 }

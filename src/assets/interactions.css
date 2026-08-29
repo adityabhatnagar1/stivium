@@ -1,0 +1,351 @@
+/* ==================================================================
+   STIVIUM INTERACTION SYSTEM
+   Central place for every button/menu/panel animation in the app.
+   Import this once in main.tsx — every class below is additive on
+   top of each component's existing inline styles, so components
+   only need a className added, nothing removed (except a couple of
+   JS-driven mouseenter/mouseleave hacks that this replaces).
+   ================================================================== */
+
+:root {
+  --ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --dur-fast: 110ms;
+  --dur-base: 180ms;
+  --dur-slow: 260ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* ------------------------------------------------------------------
+   Generic icon button — titlebar icons, left-pane new-file/new-folder,
+   toast close, terminal "+" button.
+   ------------------------------------------------------------------ */
+.stv-icon-btn {
+  transition:
+    background-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-spring);
+  border-radius: 5px;
+}
+.stv-icon-btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.stv-icon-btn:active {
+  transform: scale(0.86);
+  transition-duration: 70ms;
+}
+
+/* Titlebar window controls (minimize / maximize / close) — full-height
+   rectangles, so they get a plain background fade instead of the
+   rounded icon-button treatment, matching native OS chrome. */
+.stv-wincontrol {
+  transition: background-color var(--dur-base) var(--ease-standard);
+}
+.stv-wincontrol:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+.stv-wincontrol:active {
+  background-color: rgba(255, 255, 255, 0.16);
+}
+.stv-wincontrol--close:hover {
+  background-color: #e5484d;
+  color: #fff;
+}
+.stv-wincontrol--close:active {
+  background-color: #c5383c;
+}
+
+/* ------------------------------------------------------------------
+   Text buttons — dialog Confirm/Cancel/OK, "Open Workspace",
+   Find / Replace All.
+   ------------------------------------------------------------------ */
+.stv-btn {
+  transition:
+    transform var(--dur-fast) var(--ease-spring),
+    filter var(--dur-base) var(--ease-standard),
+    box-shadow var(--dur-base) var(--ease-standard);
+}
+.stv-btn:hover {
+  filter: brightness(1.12);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+}
+.stv-btn:active {
+  transform: scale(0.96);
+  filter: brightness(0.95);
+  box-shadow: none;
+  transition-duration: 70ms;
+}
+
+/* ------------------------------------------------------------------
+   Tabs — editor tabs + terminal tabs, and their little close glyphs
+   (previously animated by hand with onMouseEnter/onMouseLeave).
+   ------------------------------------------------------------------ */
+.stv-tab {
+  transition:
+    background-color var(--dur-base) var(--ease-standard),
+    color var(--dur-base) var(--ease-standard);
+}
+.stv-tab-close {
+  transition:
+    background-color var(--dur-fast) var(--ease-standard),
+    transform var(--dur-fast) var(--ease-spring);
+}
+.stv-tab-close:hover {
+  background-color: #4a4a4a;
+}
+.stv-tab-close:active {
+  transform: scale(0.8);
+}
+
+/* ------------------------------------------------------------------
+   Context menu — entrance pop + per-item hover.
+   ------------------------------------------------------------------ */
+@keyframes stv-context-menu-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(-4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+.stv-context-menu {
+  animation: stv-context-menu-in var(--dur-base) var(--ease-out-expo);
+  transform-origin: top left;
+}
+.stv-context-menu-item {
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.stv-context-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+/* ------------------------------------------------------------------
+   Toast + dialog entrances — currently they just snap into existence.
+   ------------------------------------------------------------------ */
+@keyframes stv-toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(14px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.stv-toast {
+  animation: stv-toast-in var(--dur-slow) var(--ease-out-expo);
+}
+
+@keyframes stv-backdrop-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes stv-dialog-in {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+.stv-dialog-backdrop {
+  animation: stv-backdrop-in var(--dur-base) var(--ease-standard);
+}
+.stv-dialog-panel {
+  animation: stv-dialog-in var(--dur-slow) var(--ease-out-expo);
+}
+
+/* ==================================================================
+   APP MENU — the hamburger reveal in the titlebar
+   ================================================================== */
+.stv-menu-icon {
+  display: inline-flex;
+  transition: transform var(--dur-base) var(--ease-standard);
+}
+.stv-menu-icon--open {
+  transform: rotate(90deg);
+}
+
+/* Collapsed to 0 width instead of unmounted, so it can transition
+   both in and out instead of snapping. pointer-events is toggled so
+   the (invisible, 0-width) buttons aren't focusable/clickable while
+   closed. */
+.stv-app-menu {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  max-width: 0;
+  opacity: 0;
+  pointer-events: none;
+  transition:
+    max-width var(--dur-slow) var(--ease-out-expo),
+    opacity var(--dur-fast) var(--ease-standard);
+}
+.stv-app-menu--open {
+  max-width: 420px;
+  opacity: 1;
+  pointer-events: auto;
+  transition:
+    max-width var(--dur-slow) var(--ease-out-expo),
+    opacity var(--dur-base) var(--ease-standard);
+}
+
+.stv-app-menu-item {
+  opacity: 0;
+  transform: translateY(-4px);
+  white-space: nowrap;
+  transition:
+    opacity var(--dur-base) var(--ease-standard),
+    transform var(--dur-base) var(--ease-standard),
+    background-color var(--dur-fast) var(--ease-standard);
+}
+.stv-app-menu--open .stv-app-menu-item {
+  opacity: 1;
+  transform: translateY(0);
+}
+.stv-app-menu--open .stv-app-menu-item:nth-child(1) {
+  transition-delay: 20ms;
+}
+.stv-app-menu--open .stv-app-menu-item:nth-child(2) {
+  transition-delay: 45ms;
+}
+.stv-app-menu--open .stv-app-menu-item:nth-child(3) {
+  transition-delay: 70ms;
+}
+.stv-app-menu--open .stv-app-menu-item:nth-child(4) {
+  transition-delay: 95ms;
+}
+.stv-app-menu--open .stv-app-menu-item:nth-child(5) {
+  transition-delay: 120ms;
+}
+.stv-app-menu-item:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* ==================================================================
+   TITLEBAR STARFIELD — decorative background, always running.
+   Ported from your own "Notate" project, re-scaled from a full
+   topbar down to Stivium's 36px titlebar and re-themed to its dark
+   palette.
+   ================================================================== */
+.stv-titlebar {
+  position: relative;
+  overflow: hidden;
+}
+.stv-titlebar-fx {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+  background:
+    radial-gradient(
+      circle at 18% 30%,
+      rgba(130, 140, 255, 0.1),
+      transparent 35%
+    ),
+    radial-gradient(
+      circle at 82% 70%,
+      rgba(255, 140, 200, 0.07),
+      transparent 40%
+    );
+}
+.stv-titlebar-content {
+  position: relative;
+  z-index: 1;
+}
+
+.stv-titlebar-stars {
+  position: absolute;
+  inset: 0;
+}
+.stv-titlebar-stars span {
+  position: absolute;
+  border-radius: 50%;
+  background: currentColor;
+  box-shadow:
+    0 0 2px currentColor,
+    0 0 5px currentColor;
+  animation-name: stv-star-twinkle;
+  animation-iteration-count: infinite;
+  /* A stepped timing function instead of a smooth ease is what gives
+     the twinkle its deliberate low-fps, "always on but never busy"
+     feel instead of reading like a modern glossy fade. */
+  animation-timing-function: steps(5, jump-end);
+}
+@keyframes stv-star-twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.stv-titlebar-shooting-star {
+  position: absolute;
+  top: 20%;
+  left: 100%;
+  width: 60px;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.9),
+    rgba(255, 255, 255, 0)
+  );
+  box-shadow:
+    0 0 4px #fff,
+    0 0 8px rgba(255, 255, 255, 0.6);
+  animation: stv-shoot 10s linear infinite;
+  animation-delay: 3s;
+}
+@keyframes stv-shoot {
+  0% {
+    transform: translate(0, 0);
+    opacity: 0;
+  }
+  4% {
+    opacity: 1;
+  }
+  32% {
+    transform: translate(-14em, 4.5em);
+    opacity: 1;
+  }
+  42% {
+    transform: translate(-17em, 5.6em);
+    opacity: 0;
+  }
+  100% {
+    transform: translate(-17em, 5.6em);
+    opacity: 0;
+  }
+}
+
+.stv-titlebar-vignette {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.08),
+    rgba(0, 0, 0, 0.28)
+  );
+}
