@@ -44,11 +44,13 @@ pub fn toggle_devtools(window: tauri::WebviewWindow) {
 
 #[tauri::command]
 pub fn show_about_dialog(app: AppHandle) {
-    app.dialog()
-        .message("shellde")
-        .title("About")
-        .kind(tauri_plugin_dialog::MessageDialogKind::Info)
-        .show(|_| {});
+app.dialog()
+    .message(
+        "Stivium is a cross-platform desktop application built with Tauri and Rust. Your all in one RTL design and simulation tool. It provides a user-friendly interface for designing, simulating, and analyzing digital circuits, making it an essential tool for engineers, students, and hobbyists alike.",
+    )
+    .title("Stivium")
+    .kind(tauri_plugin_dialog::MessageDialogKind::Info)
+    .show(|_| {});
 }
 
 #[tauri::command]
