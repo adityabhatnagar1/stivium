@@ -99,9 +99,9 @@ export function NameDialog({
               minWidth: "88px",
               padding: "8px 12px",
               borderRadius: "7px",
-              border: "1px solid #0e5ca9",
-              background: "linear-gradient(180deg, #2382dc 0%, #0f6bc3 100%)",
-              color: "#fff",
+              border: "1px solid #24b573",
+              background: "linear-gradient(180deg, #35d68c 0%, #24b573 100%)",
+              color: "#062f1d",
               cursor: "pointer",
               fontWeight: 700,
             }}

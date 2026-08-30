@@ -189,30 +189,6 @@ function App() {
     appendOutputLine,
   });
 
-  const handleBuild = () => {
-    window.api.triggerBuild();
-    setActiveTermId("output");
-  };
-
-  const actionButtons = [
-    {
-      icon: "fa-folder-open-o",
-      title: "Open Workspace",
-      apiCall: "openWorkspace",
-    },
-    { icon: "fa-gavel", title: "Build (Mock)", apiCall: "triggerBuild" },
-  ] as const;
-
-  const actionButtonHandlers: Record<
-    (typeof actionButtons)[number]["apiCall"],
-    () => void
-  > = {
-    openWorkspace: () => {
-      void handleOpenWorkspace();
-    },
-    triggerBuild: handleBuild,
-  };
-
   const startLeftPaneResize = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
     const onMouseMove = (moveEvent: globalThis.MouseEvent) => {
@@ -356,37 +332,6 @@ function App() {
             backgroundColor: "var(--color-bg)",
           }}
         >
-          <div
-            style={{
-              display: "flex",
-              padding: "4px 8px 4px 4px",
-              background: "var(--color-toolbar)",
-              borderBottom: "1px solid var(--color-border)",
-              justifyContent: "flex-end",
-              gap: "8px",
-            }}
-          >
-            {actionButtons.map((button) => (
-              <button
-                key={button.apiCall}
-                title={button.title}
-                aria-label={button.title}
-                onClick={actionButtonHandlers[button.apiCall]}
-                style={{
-                  width: "24px",
-                  height: "24px",
-                  border: "1px solid var(--color-border)",
-                  borderRadius: "4px",
-                  background: "var(--color-surface-2)",
-                  color: "var(--color-text)",
-                  cursor: "pointer",
-                }}
-              >
-                <i className={`fa ${button.icon}`} />
-              </button>
-            ))}
-          </div>
-
           <EditorTabs
             tabs={tabs}
             activeTabPath={resolvedActiveTabPath}

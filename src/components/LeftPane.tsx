@@ -1,5 +1,12 @@
 import type { MouseEvent } from "react";
 import { FileTreeNode } from "./FileTreeNode";
+import {
+  IconFolderOpen,
+  IconSearch,
+  IconFile,
+  IconFolder,
+  IconReplace,
+} from "./Icons";
 import type { SearchResult, SelectedNode, TreeNode } from "../types";
 
 type LeftPaneProps = {
@@ -72,7 +79,7 @@ export function LeftPane({
       <div
         style={{
           display: "flex",
-          borderBottom: "1px solid #333",
+          borderBottom: "1px solid var(--color-border)",
           marginBottom: "8px",
         }}
       >
@@ -81,16 +88,18 @@ export function LeftPane({
           className="stv-tab"
           style={{
             flex: 1,
-            background: leftPaneTab === "workspace" ? "#1e1e1e" : "transparent",
+            background:
+              leftPaneTab === "workspace" ? "var(--color-bg)" : "transparent",
             border: "none",
-            color: "#ccc",
+            color: "var(--color-text)",
             padding: "8px",
             cursor: "pointer",
           }}
         >
-          <i className="fa fa-folder-open-o" style={{ marginRight: "6px" }} />
+          <IconFolderOpen size={14} style={{ marginRight: "6px" }} />
           Workspace
         </button>
+
         <button
           onClick={() => {
             if (canUseSearch) onLeftPaneTabChange("search");
@@ -99,15 +108,18 @@ export function LeftPane({
           className="stv-tab"
           style={{
             flex: 1,
-            background: leftPaneTab === "search" ? "#1e1e1e" : "transparent",
+            background:
+              leftPaneTab === "search" ? "var(--color-bg)" : "transparent",
             border: "none",
-            color: canUseSearch ? "#ccc" : "#666",
+            color: canUseSearch
+              ? "var(--color-text)"
+              : "var(--color-text-muted)",
             padding: "8px",
             cursor: canUseSearch ? "pointer" : "not-allowed",
             opacity: canUseSearch ? 1 : 0.75,
           }}
         >
-          <i className="fa fa-search" style={{ marginRight: "6px" }} />
+          <IconSearch size={14} style={{ marginRight: "6px" }} />
           Search
         </button>
       </div>
@@ -118,13 +130,13 @@ export function LeftPane({
             style={{
               padding: "0 8px 8px 8px",
               fontSize: "11px",
-              color: "#888",
+              color: "var(--color-text-muted)",
               textTransform: "uppercase",
               letterSpacing: "1px",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
-              borderBottom: "1px solid #333",
+              borderBottom: "1px solid var(--color-border)",
               marginBottom: "8px",
             }}
           >
@@ -140,6 +152,7 @@ export function LeftPane({
             >
               {fileTree?.name || "Workspace"}
             </span>
+
             {fileTree && (
               <div style={{ display: "flex", gap: "6px" }}>
                 <button
@@ -149,12 +162,13 @@ export function LeftPane({
                   style={{
                     border: "none",
                     background: "transparent",
-                    color: "#ccc",
+                    color: "var(--color-text)",
                     cursor: "pointer",
                   }}
                 >
-                  <i className="fa fa-file-o" />
+                  <IconFile size={13} />
                 </button>
+
                 <button
                   onClick={onCreateFolder}
                   title="New Folder"
@@ -162,15 +176,16 @@ export function LeftPane({
                   style={{
                     border: "none",
                     background: "transparent",
-                    color: "#ccc",
+                    color: "var(--color-text)",
                     cursor: "pointer",
                   }}
                 >
-                  <i className="fa fa-folder-o" />
+                  <IconFolder size={13} />
                 </button>
               </div>
             )}
           </div>
+
           {fileTree ? (
             fileTree.children?.map((child) => (
               <FileTreeNode
@@ -188,7 +203,7 @@ export function LeftPane({
             <div
               style={{
                 padding: "20px",
-                color: "#666",
+                color: "var(--color-text-muted)",
                 fontSize: "13px",
                 textAlign: "center",
                 display: "flex",
@@ -200,15 +215,16 @@ export function LeftPane({
               }}
             >
               <span>No workspace open</span>
+
               <button
                 onClick={onOpenWorkspace}
                 className="stv-btn"
                 style={{
                   padding: "6px 10px",
-                  border: "1px solid #555",
+                  border: "1px solid var(--color-border)",
                   borderRadius: "4px",
-                  background: "#333",
-                  color: "#ddd",
+                  background: "var(--color-border)",
+                  color: "var(--color-text)",
                   cursor: "pointer",
                 }}
               >
@@ -219,9 +235,16 @@ export function LeftPane({
         </>
       ) : (
         <div style={{ padding: "10px" }}>
-          <div style={{ fontSize: "12px", marginBottom: "6px", color: "#bbb" }}>
+          <div
+            style={{
+              fontSize: "12px",
+              marginBottom: "6px",
+              color: "var(--color-text-muted)",
+            }}
+          >
             Find
           </div>
+
           <input
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
@@ -231,14 +254,22 @@ export function LeftPane({
               boxSizing: "border-box",
               marginBottom: "8px",
               padding: "6px",
-              background: "#1e1e1e",
-              color: "#ddd",
-              border: "1px solid #444",
+              background: "var(--color-bg)",
+              color: "var(--color-text)",
+              border: "1px solid var(--color-border)",
             }}
           />
-          <div style={{ fontSize: "12px", marginBottom: "6px", color: "#bbb" }}>
+
+          <div
+            style={{
+              fontSize: "12px",
+              marginBottom: "6px",
+              color: "var(--color-text-muted)",
+            }}
+          >
             Replace
           </div>
+
           <input
             value={replaceQuery}
             onChange={(e) => onReplaceQueryChange(e.target.value)}
@@ -248,11 +279,12 @@ export function LeftPane({
               boxSizing: "border-box",
               marginBottom: "8px",
               padding: "6px",
-              background: "#1e1e1e",
-              color: "#ddd",
-              border: "1px solid #444",
+              background: "var(--color-bg)",
+              color: "var(--color-text)",
+              border: "1px solid var(--color-border)",
             }}
           />
+
           <div
             style={{
               display: "flex",
@@ -265,36 +297,45 @@ export function LeftPane({
               onClick={onFind}
               className="stv-btn"
               style={{
-                border: "1px solid #2f6feb",
-                background: "#2f6feb",
-                color: "#fff",
+                border: "1px solid var(--color-accent-strong)",
+                background: "var(--color-accent)",
+                color: "#062f1d",
                 borderRadius: "4px",
                 padding: "6px 10px",
                 cursor: "pointer",
               }}
             >
-              <i className="fa fa-search" style={{ marginRight: "6px" }} />
+              <IconSearch size={14} style={{ marginRight: "6px" }} />
               Find
             </button>
+
             <button
               onClick={onReplaceAll}
               className="stv-btn"
               style={{
-                border: "1px solid #0f766e",
-                background: "#0f766e",
-                color: "#fff",
+                border: "1px solid var(--color-accent-2)",
+                background: "var(--color-accent-2)",
+                color: "#052622",
                 borderRadius: "4px",
                 padding: "6px 10px",
                 cursor: "pointer",
               }}
             >
-              <i className="fa fa-exchange" style={{ marginRight: "6px" }} />
+              <IconReplace size={14} style={{ marginRight: "6px" }} />
               Replace All
             </button>
           </div>
-          <div style={{ fontSize: "12px", color: "#aaa", marginBottom: "6px" }}>
+
+          <div
+            style={{
+              fontSize: "12px",
+              color: "var(--color-text-muted)",
+              marginBottom: "6px",
+            }}
+          >
             Results ({searchResults.length})
           </div>
+
           <div>
             {searchResults.map((result) => (
               <div
@@ -302,21 +343,31 @@ export function LeftPane({
                 onClick={() => onOpenSearchResult(result.path)}
                 style={{
                   padding: "6px",
-                  borderBottom: "1px solid #333",
+                  borderBottom: "1px solid var(--color-border)",
                   cursor: "pointer",
                   fontSize: "12px",
                 }}
               >
-                <div style={{ color: "#ddd" }}>
+                <div style={{ color: "var(--color-text)" }}>
                   {result.path.split(/[\\/]/).slice(-1)[0]}
                 </div>
-                <div style={{ color: "#888", fontSize: "11px" }}>
+
+                <div
+                  style={{
+                    color: "var(--color-text-muted)",
+                    fontSize: "11px",
+                  }}
+                >
                   {result.count} matches
                 </div>
+
                 {result.matches.slice(0, 2).map((match) => (
                   <div
                     key={`${result.path}-${match.line}`}
-                    style={{ color: "#9aa0a6", fontSize: "11px" }}
+                    style={{
+                      color: "var(--color-text-muted)",
+                      fontSize: "11px",
+                    }}
                   >
                     {match.line}: {match.preview}
                   </div>

@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { CSSProperties } from "react";
 
 const STAR_COUNT = 26; // thin 36px strip — fewer stars than a full topbar needs
-const STAR_COLORS = ["#ffffff", "#dbeafe", "#c4b5fd", "#fde68a", "#93c5fd"];
+const STAR_COLORS = ["#eafff5", "#9df5c8", "#35d68c", "#55e0c8", "#c8ffe6"];
 
 type Star = {
   size: number;

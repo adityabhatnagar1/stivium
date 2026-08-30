@@ -1,5 +1,12 @@
 import type { CSSProperties, MouseEvent } from "react";
 import { TitleBarStarfield } from "./TitleBarStarfield";
+import {
+  IconMenu,
+  IconMinimize,
+  IconMaximize,
+  IconRestore,
+  IconClose,
+} from "./Icons";
 
 type AppMenuId = "file" | "edit" | "selection" | "view" | "help";
 
@@ -80,7 +87,7 @@ export function TitleBar({
           <span
             className={`stv-menu-icon${isTopMenuExpanded ? " stv-menu-icon--open" : ""}`}
           >
-            <i className="fa fa-bars" />
+            <IconMenu size={15} />
           </span>
         </button>
         <div
@@ -131,9 +138,12 @@ export function TitleBar({
             background: "transparent",
             color: "var(--color-text)",
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          <i className="fa fa-minus" style={{ fontSize: "13px" }} />
+          <IconMinimize size={14} />
         </button>
         <button
           onClick={onToggleMaximize}
@@ -144,9 +154,16 @@ export function TitleBar({
             background: "transparent",
             color: "var(--color-text)",
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {isWindowMaximized ? "❐" : "□"}
+          {isWindowMaximized ? (
+            <IconRestore size={13} />
+          ) : (
+            <IconMaximize size={12} />
+          )}
         </button>
         <button
           onClick={onClose}
@@ -155,11 +172,14 @@ export function TitleBar({
             width: "46px",
             border: "none",
             background: "transparent",
-            color: "#ddd",
+            color: "var(--color-text)",
             cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          ✕
+          <IconClose size={14} />
         </button>
       </div>
     </div>

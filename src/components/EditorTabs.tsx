@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import type { Tab } from "../types";
+import { IconClose } from "./Icons";
 
 type EditorTabsProps = {
   tabs: Tab[];
@@ -38,7 +39,7 @@ export function EditorTabs({
                 : "var(--color-tab-inactive)",
             borderTop:
               activeTabPath === tab.path
-                ? "1px solid #007acc"
+                ? "1px solid var(--color-accent)"
                 : "1px solid transparent",
             borderRight: "1px solid var(--color-bg)",
             cursor: "pointer",
@@ -52,7 +53,7 @@ export function EditorTabs({
           {tab.content !== tab.savedContent && (
             <i
               className="fa fa-circle"
-              style={{ fontSize: "7px", color: "#d7ba7d" }}
+              style={{ fontSize: "7px", color: "var(--color-warn)" }}
             />
           )}
           {tab.name}
@@ -69,7 +70,7 @@ export function EditorTabs({
               backgroundColor: "transparent",
             }}
           >
-            ✕
+            <IconClose size={11} />
           </div>
         </div>
       ))}

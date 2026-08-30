@@ -1,10 +1,13 @@
 /* ==================================================================
    STIVIUM INTERACTION SYSTEM
    Central place for every button/menu/panel animation in the app.
-   Import this once in main.tsx — every class below is additive on
-   top of each component's existing inline styles, so components
-   only need a className added, nothing removed (except a couple of
-   JS-driven mouseenter/mouseleave hacks that this replaces).
+
+   PERFORMANCE RULE FOR THIS WHOLE FILE: every transition/animation
+   below only ever touches `transform`, `opacity`, `background-color`,
+   `color`, `filter`, or `box-shadow` — never `width`/`max-width`/
+   `height`/layout properties. Those are compositor-only properties
+   the browser can animate without a per-frame layout recalculation,
+   which is what makes hovers/toggles feel instant instead of janky.
    ================================================================== */
 
 :root {
@@ -26,10 +29,6 @@
   }
 }
 
-/* ------------------------------------------------------------------
-   Generic icon button — titlebar icons, left-pane new-file/new-folder,
-   toast close, terminal "+" button.
-   ------------------------------------------------------------------ */
 .stv-icon-btn {
   transition:
     background-color var(--dur-base) var(--ease-standard),
@@ -38,37 +37,31 @@
   border-radius: 5px;
 }
 .stv-icon-btn:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(53, 214, 140, 0.12);
+  color: var(--color-accent);
 }
 .stv-icon-btn:active {
   transform: scale(0.86);
   transition-duration: 70ms;
 }
 
-/* Titlebar window controls (minimize / maximize / close) — full-height
-   rectangles, so they get a plain background fade instead of the
-   rounded icon-button treatment, matching native OS chrome. */
 .stv-wincontrol {
   transition: background-color var(--dur-base) var(--ease-standard);
 }
 .stv-wincontrol:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(53, 214, 140, 0.14);
 }
 .stv-wincontrol:active {
-  background-color: rgba(255, 255, 255, 0.16);
+  background-color: rgba(53, 214, 140, 0.22);
 }
 .stv-wincontrol--close:hover {
-  background-color: #e5484d;
-  color: #fff;
+  background-color: var(--color-danger);
+  color: #0a120e;
 }
 .stv-wincontrol--close:active {
-  background-color: #c5383c;
+  background-color: #d43f56;
 }
 
-/* ------------------------------------------------------------------
-   Text buttons — dialog Confirm/Cancel/OK, "Open Workspace",
-   Find / Replace All.
-   ------------------------------------------------------------------ */
 .stv-btn {
   transition:
     transform var(--dur-fast) var(--ease-spring),
@@ -76,8 +69,8 @@
     box-shadow var(--dur-base) var(--ease-standard);
 }
 .stv-btn:hover {
-  filter: brightness(1.12);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.28);
+  filter: brightness(1.15);
+  box-shadow: 0 4px 14px rgba(53, 214, 140, 0.22);
 }
 .stv-btn:active {
   transform: scale(0.96);
@@ -86,10 +79,6 @@
   transition-duration: 70ms;
 }
 
-/* ------------------------------------------------------------------
-   Tabs — editor tabs + terminal tabs, and their little close glyphs
-   (previously animated by hand with onMouseEnter/onMouseLeave).
-   ------------------------------------------------------------------ */
 .stv-tab {
   transition:
     background-color var(--dur-base) var(--ease-standard),
@@ -101,15 +90,26 @@
     transform var(--dur-fast) var(--ease-spring);
 }
 .stv-tab-close:hover {
-  background-color: #4a4a4a;
+  background-color: rgba(53, 214, 140, 0.18);
 }
 .stv-tab-close:active {
   transform: scale(0.8);
 }
 
-/* ------------------------------------------------------------------
-   Context menu — entrance pop + per-item hover.
-   ------------------------------------------------------------------ */
+/* File-tree rows (FileTreeNode) — replaces the old inline
+   onMouseEnter/onMouseLeave hack (a synchronous style write on every
+   mousemove) with a real, GPU-composited transition. */
+.stv-tree-row {
+  transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.stv-tree-row:hover {
+  background-color: rgba(53, 214, 140, 0.08);
+}
+.stv-tree-row--selected,
+.stv-tree-row--selected:hover {
+  background-color: rgba(53, 214, 140, 0.2);
+}
+
 @keyframes stv-context-menu-in {
   from {
     opacity: 0;
@@ -128,12 +128,9 @@
   transition: background-color var(--dur-fast) var(--ease-standard);
 }
 .stv-context-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.08);
+  background-color: rgba(53, 214, 140, 0.1);
 }
 
-/* ------------------------------------------------------------------
-   Toast + dialog entrances — currently they just snap into existence.
-   ------------------------------------------------------------------ */
 @keyframes stv-toast-in {
   from {
     opacity: 0;
@@ -175,6 +172,8 @@
 
 /* ==================================================================
    APP MENU — the hamburger reveal in the titlebar
+   LAG FIX: width now switches instantly (not animated); only opacity
+   and the per-item transform/opacity stagger animate.
    ================================================================== */
 .stv-menu-icon {
   display: inline-flex;
@@ -182,30 +181,23 @@
 }
 .stv-menu-icon--open {
   transform: rotate(90deg);
+  color: var(--color-accent);
 }
 
-/* Collapsed to 0 width instead of unmounted, so it can transition
-   both in and out instead of snapping. pointer-events is toggled so
-   the (invisible, 0-width) buttons aren't focusable/clickable while
-   closed. */
 .stv-app-menu {
   display: flex;
   align-items: center;
   overflow: hidden;
-  max-width: 0;
+  width: 0;
   opacity: 0;
   pointer-events: none;
-  transition:
-    max-width var(--dur-slow) var(--ease-out-expo),
-    opacity var(--dur-fast) var(--ease-standard);
+  transition: opacity var(--dur-fast) var(--ease-standard);
 }
 .stv-app-menu--open {
-  max-width: 420px;
+  width: auto;
   opacity: 1;
   pointer-events: auto;
-  transition:
-    max-width var(--dur-slow) var(--ease-out-expo),
-    opacity var(--dur-base) var(--ease-standard);
+  transition: opacity var(--dur-base) var(--ease-standard);
 }
 
 .stv-app-menu-item {
@@ -237,14 +229,12 @@
   transition-delay: 120ms;
 }
 .stv-app-menu-item:hover {
-  background-color: rgba(255, 255, 255, 0.1);
+  background-color: rgba(53, 214, 140, 0.14);
+  color: var(--color-accent);
 }
 
 /* ==================================================================
-   TITLEBAR STARFIELD — decorative background, always running.
-   Ported from your own "Notate" project, re-scaled from a full
-   topbar down to Stivium's 36px titlebar and re-themed to its dark
-   palette.
+   TITLEBAR STARFIELD — re-themed green, twinkle now smooth (60fps)
    ================================================================== */
 .stv-titlebar {
   position: relative;
@@ -259,12 +249,12 @@
   background:
     radial-gradient(
       circle at 18% 30%,
-      rgba(130, 140, 255, 0.1),
+      rgba(53, 214, 140, 0.13),
       transparent 35%
     ),
     radial-gradient(
       circle at 82% 70%,
-      rgba(255, 140, 200, 0.07),
+      rgba(85, 224, 200, 0.09),
       transparent 40%
     );
 }
@@ -286,10 +276,8 @@
     0 0 5px currentColor;
   animation-name: stv-star-twinkle;
   animation-iteration-count: infinite;
-  /* A stepped timing function instead of a smooth ease is what gives
-     the twinkle its deliberate low-fps, "always on but never busy"
-     feel instead of reading like a modern glossy fade. */
-  animation-timing-function: steps(5, jump-end);
+  animation-timing-function: ease-in-out;
+  will-change: opacity;
 }
 @keyframes stv-star-twinkle {
   0%,
@@ -309,12 +297,12 @@
   height: 1px;
   background: linear-gradient(
     90deg,
-    rgba(255, 255, 255, 0.9),
-    rgba(255, 255, 255, 0)
+    rgba(210, 255, 235, 0.95),
+    rgba(210, 255, 235, 0)
   );
   box-shadow:
-    0 0 4px #fff,
-    0 0 8px rgba(255, 255, 255, 0.6);
+    0 0 4px #d2ffeb,
+    0 0 8px rgba(85, 224, 200, 0.6);
   animation: stv-shoot 10s linear infinite;
   animation-delay: 3s;
 }
@@ -345,7 +333,7 @@
   inset: 0;
   background: linear-gradient(
     to bottom,
-    rgba(0, 0, 0, 0.08),
-    rgba(0, 0, 0, 0.28)
+    rgba(6, 11, 8, 0.1),
+    rgba(6, 11, 8, 0.32)
   );
 }

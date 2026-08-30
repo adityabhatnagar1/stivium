@@ -1,3 +1,5 @@
+import { IconClose } from "./Icons";
+
 type ErrorToastProps = {
   message: string | null;
   onClose: () => void;
@@ -20,6 +22,8 @@ export function ErrorToast({
         padding: "10px 12px",
         borderRadius: "6px",
         zIndex: 2200,
+        display: "flex",
+        alignItems: "center",
       }}
     >
       {message}
@@ -32,9 +36,11 @@ export function ErrorToast({
           background: "transparent",
           color: "#fff",
           cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
         }}
       >
-        ✕
+        <IconClose size={13} />
       </button>
     </div>
   );

@@ -1,18 +1,30 @@
 @import "./base.css";
 
 :root {
-  --color-bg: #1e1e1e;
-  --color-titlebar: #202124;
-  --color-surface: #202124;
-  --color-surface-2: #252526;
-  --color-surface-elevated: #1f1f1f;
-  --color-toolbar: #333333;
-  --color-tab-inactive: #2d2d2d;
-  --color-border: #3a3a3a;
-  --color-text: #dddddd;
-  --color-text-muted: #888888;
-  --color-accent: #0e639c;
-  --color-error: #8b2a2a;
+  /* ---- Green deep-space nebula palette ---- */
+  --color-bg: #0a120e;
+  --color-titlebar: #060b08;
+  --color-surface: #0d1712;
+  --color-surface-2: #11201a;
+  --color-surface-elevated: #101d17;
+  --color-toolbar: #14251d;
+  --color-tab-inactive: #101c16;
+  --color-border: #1f4433;
+  --color-text: #d9f5e6;
+  --color-text-muted: #7fa896;
+
+  /* Primary accent: muted jade/alien green */
+  --color-accent: #35d68c;
+  --color-accent-strong: #24b573;
+  /* Secondary accent: teal-cyan — sits next to green without competing */
+  --color-accent-2: #55e0c8;
+  /* Warm accent — unsaved-dot, warnings. Keeps the palette from reading
+     as monochrome-green. */
+  --color-warn: #e3b869;
+  /* Danger — delete/close-hover/errors. Rose-red instead of pure red so
+     it doesn't clash with the green base. */
+  --color-danger: #ff5c72;
+  --color-error: #6e2036;
 }
 
 body,
@@ -38,17 +50,14 @@ textarea,
   width: 5px;
 }
 
-/* Track */
 ::-webkit-scrollbar-track {
-  background: #888888d0;
+  background: #0d1712;
 }
 
-/* Handle */
 ::-webkit-scrollbar-thumb {
-  background: #a1a1a1;
+  background: #244a3a;
 }
 
-/* Handle on hover */
 ::-webkit-scrollbar-thumb:hover {
-  background: #f1f1f1;
+  background: var(--color-accent);
 }
