@@ -1,6 +1,7 @@
 mod fs_commands;
 mod lsp;
 mod misc;
+mod rtl;
 mod state;
 mod terminal;
 
@@ -27,6 +28,7 @@ pub fn run() {
             fs_commands::paste_path,
             fs_commands::find_in_files,
             fs_commands::replace_in_files,
+            rtl::run_rtl,
             terminal::spawn_terminal,
             terminal::write_terminal,
             terminal::resize_terminal,

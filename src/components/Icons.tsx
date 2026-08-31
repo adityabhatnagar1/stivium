@@ -56,6 +56,14 @@ export function IconClose({ size, ...rest }: IconProps): JSX.Element {
   );
 }
 
+export function IconPlay({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} fill="currentColor" stroke="none" {...rest}>
+      <path d="M7 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 7 5.5Z" />
+    </svg>
+  );
+}
+
 export function IconFolder({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>

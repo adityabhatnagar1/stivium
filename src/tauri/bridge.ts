@@ -16,6 +16,7 @@ import type {
   LspExitInfo,
   LspSpawnOptions,
   LspSpawnResult,
+  RunRtlResult,
 } from "./types";
 
 let _appWindow: ReturnType<typeof getCurrentWindow> | null = null;
@@ -218,6 +219,8 @@ const api = {
       (unlisten) => replaceListener(channel, unlisten),
     );
   },
+  runRtl: (filePath: string, source: string): Promise<RunRtlResult> =>
+    invoke("run_rtl", { filePath, source }),
   minimizeWindow: (): void => {
     void appWindow().minimize();
   },

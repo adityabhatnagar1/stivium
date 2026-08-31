@@ -15,6 +15,7 @@ import { FooterBar } from "./components/FooterBar";
 import { TitleBar } from "./components/TitleBar";
 import { EditorTabs } from "./components/EditorTabs";
 import { EditorPane } from "./components/EditorPane";
+import { IconPlay } from "./components/Icons";
 import { LanguageClientsManager } from "./lsp/client";
 import {
   getBuiltInLspClientConfigs,
@@ -22,6 +23,7 @@ import {
 } from "./lsp/registry";
 import { getLanguage, resolveActiveTabPath } from "./utils/editor";
 import { useTerminalManager } from "./hooks/useTerminalManager";
+import { useRtlRunner } from "./hooks/useRtlRunner";
 import { useWorkspaceActions } from "./hooks/useWorkspaceActions";
 import { useAppShortcuts } from "./hooks/useAppShortcuts";
 import { useEditorTabs } from "./hooks/useEditorTabs";
@@ -91,6 +93,7 @@ function App() {
     createTerminal,
     closeTerminal,
     appendOutputLine,
+    clearOutput,
   } = useTerminalManager({
     workspacePath: fileTree?.path,
     terminalHeight,
@@ -230,6 +233,11 @@ function App() {
   const activeTab = tabs.find((t) => t.path === resolvedActiveTabPath);
   const hasContextNode = Boolean(contextMenu?.node);
 
+  const { isRunning, canRun, runCurrentFile } = useRtlRunner({
+    activeTab,
+    onRun: () => setActiveTermId("output"),
+  });
+
   return (
     <div
       style={{
@@ -332,12 +340,43 @@ function App() {
             backgroundColor: "var(--color-bg)",
           }}
         >
-          <EditorTabs
-            tabs={tabs}
-            activeTabPath={resolvedActiveTabPath}
-            onSelectTab={setActiveTabPath}
-            onCloseTab={handleCloseTab}
-          />
+          <div style={{ display: "flex", alignItems: "stretch" }}>
+            <div style={{ flex: 1, minWidth: 0, overflow: "hidden" }}>
+              <EditorTabs
+                tabs={tabs}
+                activeTabPath={resolvedActiveTabPath}
+                onSelectTab={setActiveTabPath}
+                onCloseTab={handleCloseTab}
+              />
+            </div>
+            {activeTab && getLanguage(activeTab.name) === "verilog" && (
+              <button
+                onClick={() => void runCurrentFile()}
+                disabled={!canRun}
+                title="Run with Icarus Verilog"
+                aria-label="Run"
+                className="stv-icon-btn"
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  padding: "0 14px",
+                  border: "none",
+                  borderLeft: "1px solid var(--color-bg)",
+                  background: "var(--color-surface-2)",
+                  color: isRunning
+                    ? "var(--color-text-muted)"
+                    : "var(--color-accent)",
+                  cursor: canRun ? "pointer" : "default",
+                  fontSize: "13px",
+                  flexShrink: 0,
+                }}
+              >
+                <IconPlay size={13} />
+                {isRunning ? "Running..." : "Run"}
+              </button>
+            )}
+          </div>
 
           <EditorPane
             activeTab={activeTab}
@@ -367,6 +406,7 @@ function App() {
             onSelectTab={setActiveTermId}
             onCloseTab={closeTerminal}
             onCreateTerminal={(cwd) => void createTerminal(cwd)}
+            onClearOutput={clearOutput}
           />
         </div>
       </div>

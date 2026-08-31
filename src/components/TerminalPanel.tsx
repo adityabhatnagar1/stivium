@@ -1,5 +1,6 @@
 import type { MouseEvent } from "react";
 import type { TermTab } from "../types";
+
 import { IconTerminal, IconClose, IconPlus } from "./Icons";
 
 type TerminalPanelProps = {
@@ -10,6 +11,7 @@ type TerminalPanelProps = {
   onSelectTab: (id: string) => void;
   onCloseTab: (event: MouseEvent, id: string) => void;
   onCreateTerminal: (cwd?: string) => void;
+  onClearOutput: () => void;
 };
 
 export function TerminalPanel({
@@ -20,6 +22,7 @@ export function TerminalPanel({
   onSelectTab,
   onCloseTab,
   onCreateTerminal,
+  onClearOutput,
 }: TerminalPanelProps): JSX.Element {
   return (
     <div
@@ -69,8 +72,10 @@ export function TerminalPanel({
               <IconTerminal size={13} />
             ) : (
               <span>&gt;_</span>
-            )}{" "}
+            )}
+
             {tab.title}
+
             {tab.closable && (
               <div
                 onClick={(e) => onCloseTab(e, tab.id)}
@@ -88,22 +93,52 @@ export function TerminalPanel({
             )}
           </div>
         ))}
-        <button
-          onClick={() => onCreateTerminal(fileTreePath)}
-          className="stv-icon-btn"
+
+        <div
           style={{
             marginLeft: "auto",
-            background: "transparent",
-            color: "var(--color-text)",
-            border: "none",
-            cursor: "pointer",
-            padding: "0 16px",
             display: "flex",
             alignItems: "center",
           }}
         >
-          <IconPlus size={14} />
-        </button>
+          {activeTermId === "output" && (
+            <button
+              onClick={onClearOutput}
+              className="stv-icon-btn"
+              title="Clear output"
+              aria-label="Clear output"
+              style={{
+                background: "transparent",
+                color: "var(--color-text-muted)",
+                border: "none",
+                cursor: "pointer",
+                padding: "6px 12px",
+                fontSize: "12px",
+                fontFamily: "var(--font-ui)",
+              }}
+            >
+              Clear
+            </button>
+          )}
+
+          <button
+            onClick={() => onCreateTerminal(fileTreePath)}
+            className="stv-icon-btn"
+            title="New terminal"
+            aria-label="New terminal"
+            style={{
+              background: "transparent",
+              color: "var(--color-text)",
+              border: "none",
+              cursor: "pointer",
+              padding: "0 16px",
+              display: "flex",
+              alignItems: "center",
+            }}
+          >
+            <IconPlus size={14} />
+          </button>
+        </div>
       </div>
 
       <div
@@ -126,6 +161,7 @@ export function TerminalPanel({
             }}
           />
         ))}
+
         {termTabs.filter((tab) => tab.id !== "output").length === 0 &&
           activeTermId !== "output" && (
             <div
