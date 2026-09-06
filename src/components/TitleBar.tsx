@@ -108,7 +108,7 @@ export function TitleBar({
                   fontSize: "13px",
                   cursor: "pointer",
                   padding: "4px 8px",
-                  borderRadius: "4px",
+                  borderRadius: "var(--radius-xs)",
                   textTransform: "capitalize",
                   WebkitAppRegion: "no-drag",
                 } as CSSProperties

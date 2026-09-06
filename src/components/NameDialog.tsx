@@ -37,7 +37,7 @@ export function NameDialog({
           width: "360px",
           background: "var(--color-surface-elevated)",
           border: "1px solid var(--color-border)",
-          borderRadius: "10px",
+          borderRadius: "var(--radius-lg)",
           boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
           padding: "18px",
         }}
@@ -55,15 +55,11 @@ export function NameDialog({
           onKeyDown={(e) => {
             if (e.key === "Enter") onConfirm();
           }}
+          className="stv-input"
           style={{
             width: "100%",
             boxSizing: "border-box",
             padding: "8px 10px",
-            background: "var(--color-surface-2)",
-            color: "var(--color-text)",
-            border: "1px solid var(--color-border)",
-            borderRadius: "7px",
-            outline: "none",
           }}
         />
         <div
@@ -81,7 +77,7 @@ export function NameDialog({
             style={{
               minWidth: "88px",
               padding: "8px 12px",
-              borderRadius: "7px",
+              borderRadius: "var(--radius-md)",
               border: "1px solid var(--color-border)",
               background: "var(--color-surface-2)",
               color: "var(--color-text)",
@@ -98,7 +94,7 @@ export function NameDialog({
             style={{
               minWidth: "88px",
               padding: "8px 12px",
-              borderRadius: "7px",
+              borderRadius: "var(--radius-md)",
               border: "1px solid #24b573",
               background: "linear-gradient(180deg, #35d68c 0%, #24b573 100%)",
               color: "#062f1d",

@@ -32,7 +32,7 @@ export function ContextMenu({
         left: x,
         background: "var(--color-surface-elevated)",
         border: "1px solid var(--color-border)",
-        borderRadius: "6px",
+        borderRadius: "var(--radius-sm)",
         boxShadow: "0 10px 20px rgba(0, 0, 0, 0.35)",
         zIndex: 2000,
         minWidth: "170px",

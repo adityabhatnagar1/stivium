@@ -20,7 +20,7 @@ export function ErrorToast({
         background: "var(--color-error)",
         color: "#fff",
         padding: "10px 12px",
-        borderRadius: "6px",
+        borderRadius: "var(--radius-sm)",
         zIndex: 2200,
         display: "flex",
         alignItems: "center",

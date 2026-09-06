@@ -1,6 +1,5 @@
 import "./assets/main.css";
 import "./assets/interactions.css";
-import "font-awesome/css/font-awesome.min.css";
 import "@fontsource/montserrat/600.css";
 import "@fontsource/montserrat/700.css";
 import "@fontsource/inter/400.css";

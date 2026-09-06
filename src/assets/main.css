@@ -25,6 +25,14 @@
      it doesn't clash with the green base. */
   --color-danger: #ff5c72;
   --color-error: #6e2036;
+
+  /* ---- Shape scale (kept to the values already in use; this only
+     gives them names so every surface pulls from one hierarchy
+     instead of re-declaring the same numbers ad hoc) ---- */
+  --radius-xs: 4px; /* icon buttons, tab-close, menu-item chips */
+  --radius-sm: 6px; /* context menu, toast */
+  --radius-md: 7px; /* buttons, inputs, controls inside dialogs */
+  --radius-lg: 10px; /* dialog / modal panels */
 }
 
 body,

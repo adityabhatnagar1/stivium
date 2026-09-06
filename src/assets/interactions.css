@@ -34,7 +34,7 @@
     background-color var(--dur-base) var(--ease-standard),
     color var(--dur-base) var(--ease-standard),
     transform var(--dur-fast) var(--ease-spring);
-  border-radius: 5px;
+  border-radius: var(--radius-xs);
 }
 .stv-icon-btn:hover {
   background-color: rgba(53, 214, 140, 0.12);
@@ -108,6 +108,27 @@
 .stv-tree-row--selected,
 .stv-tree-row--selected:hover {
   background-color: rgba(53, 214, 140, 0.2);
+}
+
+/* Shared text-input treatment: used by NameDialog and the left-pane
+   Find/Replace fields, which previously each hand-rolled their own
+   border/radius (one of them had no radius or focus state at all). */
+.stv-input {
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+.stv-input::placeholder {
+  color: var(--color-text-muted);
+}
+.stv-input:focus {
+  outline: none;
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(53, 214, 140, 0.18);
 }
 
 @keyframes stv-context-menu-in {

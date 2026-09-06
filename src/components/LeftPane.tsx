@@ -164,6 +164,7 @@ export function LeftPane({
                     background: "transparent",
                     color: "var(--color-text)",
                     cursor: "pointer",
+                    padding: "4px",
                   }}
                 >
                   <IconFile size={13} />
@@ -178,6 +179,7 @@ export function LeftPane({
                     background: "transparent",
                     color: "var(--color-text)",
                     cursor: "pointer",
+                    padding: "4px",
                   }}
                 >
                   <IconFolder size={13} />
@@ -222,7 +224,7 @@ export function LeftPane({
                 style={{
                   padding: "6px 10px",
                   border: "1px solid var(--color-border)",
-                  borderRadius: "4px",
+                  borderRadius: "var(--radius-md)",
                   background: "var(--color-border)",
                   color: "var(--color-text)",
                   cursor: "pointer",
@@ -249,14 +251,13 @@ export function LeftPane({
             value={searchQuery}
             onChange={(e) => onSearchQueryChange(e.target.value)}
             placeholder="Search text"
+            className="stv-input"
             style={{
               width: "100%",
               boxSizing: "border-box",
               marginBottom: "8px",
               padding: "6px",
               background: "var(--color-bg)",
-              color: "var(--color-text)",
-              border: "1px solid var(--color-border)",
             }}
           />
 
@@ -274,14 +275,13 @@ export function LeftPane({
             value={replaceQuery}
             onChange={(e) => onReplaceQueryChange(e.target.value)}
             placeholder="Replace text"
+            className="stv-input"
             style={{
               width: "100%",
               boxSizing: "border-box",
               marginBottom: "8px",
               padding: "6px",
               background: "var(--color-bg)",
-              color: "var(--color-text)",
-              border: "1px solid var(--color-border)",
             }}
           />
 
@@ -300,7 +300,7 @@ export function LeftPane({
                 border: "1px solid var(--color-accent-strong)",
                 background: "var(--color-accent)",
                 color: "#062f1d",
-                borderRadius: "4px",
+                borderRadius: "var(--radius-md)",
                 padding: "6px 10px",
                 cursor: "pointer",
               }}
@@ -316,7 +316,7 @@ export function LeftPane({
                 border: "1px solid var(--color-accent-2)",
                 background: "var(--color-accent-2)",
                 color: "#052622",
-                borderRadius: "4px",
+                borderRadius: "var(--radius-md)",
                 padding: "6px 10px",
                 cursor: "pointer",
               }}

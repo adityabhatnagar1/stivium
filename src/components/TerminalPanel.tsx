@@ -82,7 +82,7 @@ export function TerminalPanel({
                 className="stv-tab-close"
                 style={{
                   cursor: "pointer",
-                  borderRadius: "4px",
+                  borderRadius: "var(--radius-xs)",
                   padding: "3px",
                   display: "flex",
                   alignItems: "center",

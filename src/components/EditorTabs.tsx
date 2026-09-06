@@ -51,9 +51,15 @@ export function EditorTabs({
           }}
         >
           {tab.content !== tab.savedContent && (
-            <i
-              className="fa fa-circle"
-              style={{ fontSize: "7px", color: "var(--color-warn)" }}
+            <span
+              aria-hidden="true"
+              style={{
+                width: "6px",
+                height: "6px",
+                borderRadius: "50%",
+                background: "var(--color-warn)",
+                flexShrink: 0,
+              }}
             />
           )}
           {tab.name}
@@ -61,7 +67,7 @@ export function EditorTabs({
             onClick={(event) => onCloseTab(event, tab.path)}
             className="stv-tab-close"
             style={{
-              borderRadius: "4px",
+              borderRadius: "var(--radius-xs)",
               width: "18px",
               height: "18px",
               display: "flex",

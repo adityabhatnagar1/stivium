@@ -53,7 +53,7 @@ export function ConfirmDialog({
           width: "360px",
           background: "var(--color-surface-elevated)",
           border: "1px solid var(--color-border)",
-          borderRadius: "10px",
+          borderRadius: "var(--radius-lg)",
           boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
           padding: "18px",
         }}
@@ -81,7 +81,7 @@ export function ConfirmDialog({
             style={{
               minWidth: "88px",
               padding: "8px 12px",
-              borderRadius: "7px",
+              borderRadius: "var(--radius-md)",
               border: "1px solid var(--color-border)",
               background: "var(--color-surface-2)",
               color: "var(--color-text)",
@@ -99,7 +99,7 @@ export function ConfirmDialog({
             style={{
               minWidth: "88px",
               padding: "8px 12px",
-              borderRadius: "7px",
+              borderRadius: "var(--radius-md)",
               border: "1px solid #d43f56",
               background: "linear-gradient(180deg, #ff5c72 0%, #d43f56 100%)",
               color: "#fff",
