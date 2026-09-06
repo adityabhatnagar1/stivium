@@ -60,6 +60,30 @@ export function useTerminalManager({
     });
   };
 
+  const removeDeadTerminal = (deadId: string) => {
+    if (deadId === "output") return;
+
+    delete xtermInstances.current[deadId];
+
+    setTermTabs((prev) => {
+      if (!prev.some((tab) => tab.id === deadId)) {
+        return prev;
+      }
+
+      const newTabs = prev.filter((tab) => tab.id !== deadId);
+
+      setActiveTermId((current) =>
+        current === deadId
+          ? newTabs.length > 0
+            ? newTabs[newTabs.length - 1].id
+            : null
+          : current,
+      );
+
+      return newTabs;
+    });
+  };
+
   const appendOutputLine = (message: string) => {
     setOutputLines((prev) => [...prev.slice(-500), `${message}\n`]);
   };
@@ -75,6 +99,12 @@ export function useTerminalManager({
       if (xtermInstances.current.output) {
         xtermInstances.current.output.term.write(data);
       }
+    });
+  }, []);
+
+  useEffect(() => {
+    return window.api.onTerminalExit(({ id }) => {
+      removeDeadTerminal(id);
     });
   }, []);
 

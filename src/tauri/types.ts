@@ -29,3 +29,5 @@ export type LspSpawnResult =
 export type LspExitInfo = { code: number | null; signal: string | null };
 
 export type RunRtlResult = { success: boolean };
+
+export type TerminalExitInfo = { id: string; exitCode: number | null };

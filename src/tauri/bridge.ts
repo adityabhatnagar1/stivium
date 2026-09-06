@@ -17,6 +17,7 @@ import type {
   LspSpawnOptions,
   LspSpawnResult,
   RunRtlResult,
+  TerminalExitInfo,
 } from "./types";
 
 let _appWindow: ReturnType<typeof getCurrentWindow> | null = null;
@@ -218,6 +219,28 @@ const api = {
     void listen<string>(channel, (event) => callback(event.payload)).then(
       (unlisten) => replaceListener(channel, unlisten),
     );
+  },
+  onTerminalExit: (
+    callback: (info: TerminalExitInfo) => void,
+  ): (() => void) => {
+    let cancelled = false;
+    let unlisten: UnlistenFn | null = null;
+
+    void listen<TerminalExitInfo>("terminal-exit", (event) =>
+      callback(event.payload),
+    ).then((fn) => {
+      if (cancelled) {
+        fn();
+        return;
+      }
+
+      unlisten = fn;
+    });
+
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
   },
   runRtl: (filePath: string, source: string): Promise<RunRtlResult> =>
     invoke("run_rtl", { filePath, source }),

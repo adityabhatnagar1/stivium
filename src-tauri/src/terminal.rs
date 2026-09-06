@@ -1,8 +1,17 @@
 use std::io::Read;
 use std::io::Write;
+use tauri::{AppHandle, Emitter, Manager, State};
+use serde::Serialize;
+
+#[derive(Debug, Clone, Serialize)]
+#[serde(rename_all = "camelCase")]
+struct TerminalExitPayload {
+    id: String,
+    exit_code: Option<i32>,
+}
 
 use portable_pty::{native_pty_system, CommandBuilder, PtySize};
-use tauri::{AppHandle, Emitter, State};
+
 
 use crate::state::{AppState, TerminalSession};
 
@@ -65,21 +74,49 @@ pub fn spawn_terminal(
     let event_id = id.clone();
     let app_handle = app.clone();
     std::thread::spawn(move || {
-        let channel = format!("terminal-data-{event_id}");
-        let mut buf = [0u8; 8192];
-        loop {
-            match reader.read(&mut buf) {
-                Ok(0) => break,
-                Ok(n) => {
-                    let text = String::from_utf8_lossy(&buf[..n]).to_string();
-                    if app_handle.emit(&channel, text).is_err() {
-                        break;
-                    }
+    let channel = format!("terminal-data-{event_id}");
+    let mut buf = [0u8; 8192];
+
+    loop {
+        match reader.read(&mut buf) {
+            Ok(0) => break,
+            Ok(n) => {
+                let text = String::from_utf8_lossy(&buf[..n]).to_string();
+
+                if app_handle.emit(&channel, text).is_err() {
+                    break;
                 }
-                Err(_) => break,
             }
+            Err(_) => break,
         }
-    });
+    }
+
+    let state = app_handle.state::<AppState>();
+
+    let exit_code = {
+        let mut terminals = match state.terminals.lock() {
+            Ok(g) => g,
+            Err(_) => return,
+        };
+
+        match terminals.remove(&event_id) {
+            Some(mut session) => session
+                .child
+                .wait()
+                .ok()
+                .map(|s| s.exit_code() as i32),
+            None => None,
+        }
+    };
+
+    let _ = app_handle.emit(
+        "terminal-exit",
+        TerminalExitPayload {
+            id: event_id,
+            exit_code,
+        },
+    );
+});
 
     Ok(shell)
 }

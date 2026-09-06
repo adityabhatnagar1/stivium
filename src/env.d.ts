@@ -8,6 +8,7 @@ import type {
   LspSpawnOptions,
   LspSpawnResult,
   RunRtlResult,
+  TerminalExitInfo,
 } from "./tauri/types";
 
 declare global {
@@ -48,6 +49,9 @@ declare global {
       resizeTerminal: (id: string, cols: number, rows: number) => void;
       killTerminal: (id: string) => void;
       onTerminalData: (id: string, callback: (data: string) => void) => void;
+      onTerminalExit: (
+        callback: (info: TerminalExitInfo) => void,
+      ) => () => void;
       runRtl: (filePath: string, source: string) => Promise<RunRtlResult>;
       minimizeWindow: () => void;
       toggleMaximizeWindow: () => void;
