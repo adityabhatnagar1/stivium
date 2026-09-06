@@ -573,3 +573,307 @@ pub fn replace_in_files(
 
     files_changed
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::fs;
+    use tempfile::TempDir;
+
+    fn setup() -> TempDir {
+        tempfile::tempdir().unwrap()
+    }
+
+    #[test]
+    fn create_file_valid_name() {
+        let dir = setup();
+        assert!(create_file(
+            dir.path().to_string_lossy().into_owned(),
+            "test.v".into()
+        ).unwrap());
+        assert!(dir.path().join("test.v").is_file());
+    }
+
+    #[test]
+    fn create_folder_valid_name() {
+        let dir = setup();
+        assert!(create_folder(
+            dir.path().to_string_lossy().into_owned(),
+            "rtl".into()
+        ).unwrap());
+        assert!(dir.path().join("rtl").is_dir());
+    }
+
+    #[test]
+    fn create_rejects_invalid_names() {
+        let dir = setup();
+
+        for name in [".", "..", "", "foo/bar", "foo\\bar"] {
+            assert!(create_file(
+                dir.path().to_string_lossy().into_owned(),
+                name.into()
+            ).is_err());
+        }
+    }
+
+    #[test]
+    fn create_allows_legitimate_names() {
+        let dir = setup();
+
+        for name in ["cpu.v", "my-module", "_private", "foo.bar", "foo bar"] {
+            assert!(create_file(
+                dir.path().to_string_lossy().into_owned(),
+                name.into()
+            ).is_ok());
+        }
+    }
+
+    #[test]
+    fn rename_file() {
+        let dir = setup();
+        fs::write(dir.path().join("a.v"), "module a;").unwrap();
+
+        assert!(rename_path(
+            dir.path().join("a.v").to_string_lossy().into_owned(),
+            "b.v".into()
+        ).unwrap());
+
+        assert!(!dir.path().join("a.v").exists());
+        assert!(dir.path().join("b.v").exists());
+    }
+
+    #[test]
+    fn rename_directory() {
+        let dir = setup();
+        fs::create_dir(dir.path().join("rtl")).unwrap();
+
+        assert!(rename_path(
+            dir.path().join("rtl").to_string_lossy().into_owned(),
+            "hardware".into()
+        ).unwrap());
+
+        assert!(dir.path().join("hardware").is_dir());
+    }
+
+    #[test]
+    fn rename_nested_directory() {
+        let dir = setup();
+        fs::create_dir_all(dir.path().join("rtl/core")).unwrap();
+
+        assert!(rename_path(
+            dir.path().join("rtl").to_string_lossy().into_owned(),
+            "hardware".into()
+        ).unwrap());
+
+        assert!(dir.path().join("hardware/core").is_dir());
+    }
+
+    #[test]
+    fn rename_rejects_invalid_name() {
+        let dir = setup();
+        fs::write(dir.path().join("a.v"), "").unwrap();
+
+        assert!(rename_path(
+            dir.path().join("a.v").to_string_lossy().into_owned(),
+            "../evil".into()
+        ).is_err());
+    }
+
+    #[test]
+    fn delete_file() {
+        let dir = setup();
+        fs::write(dir.path().join("a.v"), "").unwrap();
+
+        assert!(delete_path(
+            dir.path().join("a.v").to_string_lossy().into_owned()
+        ).unwrap());
+
+        assert!(!dir.path().join("a.v").exists());
+    }
+
+    #[test]
+    fn delete_directory_recursive() {
+        let dir = setup();
+        fs::create_dir_all(dir.path().join("rtl/core")).unwrap();
+        fs::write(dir.path().join("rtl/core/cpu.v"), "").unwrap();
+
+        assert!(delete_path(
+            dir.path().join("rtl").to_string_lossy().into_owned()
+        ).unwrap());
+
+        assert!(!dir.path().join("rtl").exists());
+    }
+
+    #[test]
+    fn copy_file() {
+        let dir = setup();
+        let source = dir.path().join("a.v");
+        fs::write(&source, "hello").unwrap();
+
+        let dest = dir.path().join("dest");
+        fs::create_dir(&dest).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            dest.to_string_lossy().into_owned(),
+            false
+        ).unwrap());
+
+        assert_eq!(fs::read(dest.join("a.v")).unwrap(), b"hello");
+    }
+
+    #[test]
+    fn copy_directory_nested() {
+        let dir = setup();
+        let source = dir.path().join("rtl");
+        fs::create_dir_all(source.join("core")).unwrap();
+        fs::write(source.join("core/cpu.v"), "cpu").unwrap();
+
+        let dest = dir.path().join("dest");
+        fs::create_dir(&dest).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            dest.to_string_lossy().into_owned(),
+            false
+        ).unwrap());
+
+        assert!(dest.join("rtl/core/cpu.v").exists());
+    }
+
+    #[test]
+    fn copy_uses_duplicate_name() {
+        let dir = setup();
+        let source = dir.path().join("a.v");
+        fs::write(&source, "one").unwrap();
+
+        let dest = dir.path().join("dest");
+        fs::create_dir(&dest).unwrap();
+        fs::write(dest.join("a.v"), "existing").unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            dest.to_string_lossy().into_owned(),
+            false
+        ).unwrap());
+
+        assert!(dest.join("a-copy-1.v").exists());
+    }
+
+    #[test]
+    fn cut_file() {
+        let dir = setup();
+        let source = dir.path().join("a.v");
+        fs::write(&source, "hello").unwrap();
+
+        let dest = dir.path().join("dest");
+        fs::create_dir(&dest).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            dest.to_string_lossy().into_owned(),
+            true
+        ).unwrap());
+
+        assert!(!source.exists());
+        assert!(dest.join("a.v").exists());
+    }
+
+    #[test]
+    fn cut_directory() {
+        let dir = setup();
+        let source = dir.path().join("rtl");
+        fs::create_dir_all(source.join("core")).unwrap();
+
+        let dest = dir.path().join("dest");
+        fs::create_dir(&dest).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            dest.to_string_lossy().into_owned(),
+            true
+        ).unwrap());
+
+        assert!(!source.exists());
+        assert!(dest.join("rtl/core").exists());
+    }
+
+    #[test]
+    fn copy_folder_into_itself_rejected() {
+        let dir = setup();
+        let source = dir.path().join("foo");
+        fs::create_dir_all(source.join("bar")).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            source.to_string_lossy().into_owned(),
+            false
+        ).is_err());
+    }
+
+    #[test]
+    fn copy_folder_into_child_rejected() {
+        let dir = setup();
+        let source = dir.path().join("foo");
+        let child = source.join("bar");
+        fs::create_dir_all(&child).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            child.to_string_lossy().into_owned(),
+            false
+        ).is_err());
+    }
+
+    #[test]
+    fn copy_folder_into_deep_child_rejected() {
+        let dir = setup();
+        let source = dir.path().join("foo");
+        let child = source.join("bar/baz");
+        fs::create_dir_all(&child).unwrap();
+
+        assert!(paste_path(
+            source.to_string_lossy().into_owned(),
+            child.to_string_lossy().into_owned(),
+            false
+        ).is_err());
+    }
+
+    #[test]
+    fn prefix_names_are_not_rejected() {
+        let dir = setup();
+
+        let foo = dir.path().join("foo");
+        let foobar = dir.path().join("foobar");
+        let foo_copy = dir.path().join("foo-copy");
+
+        fs::create_dir_all(&foo).unwrap();
+        fs::create_dir_all(&foobar).unwrap();
+        fs::create_dir_all(&foo_copy).unwrap();
+
+        assert!(!is_same_or_descendant(&foobar, &foo));
+        assert!(!is_same_or_descendant(&foo_copy, &foo));
+    }
+
+    #[test]
+    fn normalize_lexical_handles_dot_segments() {
+        let dir = setup();
+        let path = dir.path().join("foo/../bar");
+
+        assert_eq!(
+            normalize_lexical(&path),
+            dir.path().join("bar")
+        );
+    }
+
+    #[test]
+    fn descendant_detection_handles_nested_paths() {
+        let dir = setup();
+        let foo = dir.path().join("foo");
+        let child = foo.join("bar/baz");
+
+        assert!(is_same_or_descendant(&foo, &child));
+        assert!(is_same_or_descendant(&foo, &foo));
+    }
+}

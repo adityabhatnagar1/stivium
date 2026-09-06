@@ -28,6 +28,22 @@ export type LspSpawnResult =
 
 export type LspExitInfo = { code: number | null; signal: string | null };
 
-export type RunRtlResult = { success: boolean };
+export type RtlRunStatus =
+  | "Success"
+  | "CompileFailure"
+  | "SimulationFailure"
+  | "Timeout"
+  | "ToolchainMissing"
+  | "ToolchainError";
+
+export type RunRtlResult = {
+  success: boolean;
+  status: RtlRunStatus;
+  exitCode: number | null;
+  stdout: string;
+  stderr: string;
+  durationMs: number;
+  message: string | null;
+};
 
 export type TerminalExitInfo = { id: string; exitCode: number | null };

@@ -36,7 +36,7 @@ pub fn run() {
             lsp::lsp_spawn,
             lsp::lsp_write,
             lsp::lsp_stop,
-            misc::trigger_build,
+            // misc::trigger_build,
             misc::quit_app,
             misc::toggle_devtools,
             misc::show_about_dialog,

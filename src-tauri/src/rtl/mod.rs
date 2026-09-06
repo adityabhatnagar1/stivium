@@ -207,8 +207,25 @@ mod win_run {
 
 #[derive(Debug, Serialize)]
 #[serde(rename_all = "camelCase")]
+pub enum RtlRunStatus {
+    Success,
+    CompileFailure,
+    SimulationFailure,
+    Timeout,
+    ToolchainMissing,
+    ToolchainError,
+}
+
+#[derive(Debug, Serialize)]
+#[serde(rename_all = "camelCase")]
 pub struct RunResult {
     pub success: bool,
+    pub status: RtlRunStatus,
+    pub exit_code: Option<i32>,
+    pub stdout: String,
+    pub stderr: String,
+    pub duration_ms: u128,
+    pub message: Option<String>,
 }
 
 /// Emits simulator/compiler text to Stivium's existing "Output" console via
@@ -238,6 +255,102 @@ fn create_staging_dir() -> Result<PathBuf, String> {
     Ok(dir)
 }
 
+#[cfg(not(windows))]
+fn run_vvp_with_timeout(
+    program: &Path,
+    args: &[String],
+    cwd: &Path,
+    timeout: std::time::Duration,
+) -> Result<(String, Option<u32>, bool), String> {
+    use std::io::Read;
+    use std::thread;
+    use std::time::{Duration, Instant};
+
+    let mut cmd = Command::new(program);
+
+    cmd.args(args)
+        .current_dir(cwd)
+        .stdout(Stdio::piped())
+        .stderr(Stdio::piped());
+
+    let mut child = cmd
+        .spawn()
+        .map_err(|e| format!("Failed to launch vvp: {e}"))?;
+
+    let mut stdout = child
+        .stdout
+        .take()
+        .ok_or_else(|| "Failed to capture vvp stdout".to_string())?;
+
+    let mut stderr = child
+        .stderr
+        .take()
+        .ok_or_else(|| "Failed to capture vvp stderr".to_string())?;
+
+    let stdout_thread = thread::spawn(move || {
+        let mut text = String::new();
+        let _ = stdout.read_to_string(&mut text);
+        text
+    });
+
+    let stderr_thread = thread::spawn(move || {
+        let mut text = String::new();
+        let _ = stderr.read_to_string(&mut text);
+        text
+    });
+
+    let deadline = Instant::now() + timeout;
+
+    loop {
+        match child.try_wait() {
+            Ok(Some(status)) => {
+                let stdout = stdout_thread
+                    .join()
+                    .map_err(|_| "stdout reader thread panicked".to_string())?;
+
+                let stderr = stderr_thread
+                    .join()
+                    .map_err(|_| "stderr reader thread panicked".to_string())?;
+
+                return Ok((
+                    format!("{stdout}{stderr}"),
+                    status.code().map(|c| c as u32),
+                    false,
+                ));
+            }
+
+            Ok(None) => {
+                if Instant::now() >= deadline {
+                    let _ = child.kill();
+                    let _ = child.wait();
+
+                    let stdout = stdout_thread
+                        .join()
+                        .map_err(|_| "stdout reader thread panicked".to_string())?;
+
+                    let stderr = stderr_thread
+                        .join()
+                        .map_err(|_| "stderr reader thread panicked".to_string())?;
+
+                    return Ok((
+                        format!("{stdout}{stderr}"),
+                        None,
+                        true,
+                    ));
+                }
+
+                thread::sleep(Duration::from_millis(25));
+            }
+
+            Err(e) => {
+                let _ = child.kill();
+                let _ = child.wait();
+                return Err(format!("Failed waiting for vvp: {e}"));
+            }
+        }
+    }
+}
+
 /// Run the current Verilog/SystemVerilog source through Icarus Verilog.
 ///
 /// `file_path` is the on-disk path of the active tab (used only to recover
@@ -246,12 +359,21 @@ fn create_staging_dir() -> Result<PathBuf, String> {
 /// unsaved - which is what actually gets compiled.
 #[tauri::command]
 pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunResult, String> {
+    let start = std::time::Instant::now();
     let toolchain = match icarus::resolve_toolchain() {
         Ok(toolchain) => toolchain,
         Err(message) => {
-            emit_status(&app, &format!("\x1b[31m{message}\x1b[0m"));
-            return Ok(RunResult { success: false });
-        }
+        emit_status(&app, &format!("\x1b[31m{message}\x1b[0m"));
+        return Ok(RunResult {
+            success: false,
+            status: RtlRunStatus::ToolchainMissing,
+            exit_code: None,
+            stdout: String::new(),
+            stderr: String::new(),
+            duration_ms: start.elapsed().as_millis(),
+            message: Some(message),
+        });
+    }
     };
 
     let file_name = Path::new(&file_path)
@@ -311,7 +433,15 @@ pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunR
                 &app,
                 &format!("\x1b[31mFailed to launch iverilog: {e}\x1b[0m"),
             );
-            return Ok(RunResult { success: false });
+            return Ok(RunResult {
+                success: false,
+                status: RtlRunStatus::ToolchainError,
+                exit_code: None,
+                stdout: String::new(),
+                stderr: e.to_string(),
+                duration_ms: start.elapsed().as_millis(),
+                message: Some(format!("Failed to launch iverilog: {e}")),
+            });
         }
     };
 
@@ -327,7 +457,15 @@ pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunR
     if !compile_output.status.success() {
         cleanup(&staging_dir);
         emit_status(&app, "\x1b[31m> Compilation failed.\x1b[0m");
-        return Ok(RunResult { success: false });
+        return Ok(RunResult {
+            success: false,
+            status: RtlRunStatus::CompileFailure,
+            exit_code: compile_output.status.code().map(|c| c as i32),
+            stdout: String::from_utf8_lossy(&compile_output.stdout).to_string(),
+            stderr: String::from_utf8_lossy(&compile_output.stderr).to_string(),
+            duration_ms: start.elapsed().as_millis(),
+            message: Some("Compilation failed.".to_string()),
+        });
     }
 
     emit_status(&app, "\x1b[36m> Running simulation...\x1b[0m");
@@ -337,41 +475,52 @@ pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunR
     // empty out.txt). No redirection scheme captures anything. Give it its
     // own hidden console and scrape the screen buffer instead.
     #[cfg(windows)]
-    let run_result = win_run::run_captured(
-        &toolchain.vvp,
-        "stivium_sim.out",
-        &staging_dir,
-        &child_path,
-        std::time::Duration::from_secs(15),
-        |line| emit_output(&app, line),
-    );
+        let run_result = win_run::run_captured(
+            &toolchain.vvp,
+            "stivium_sim.out",
+            &staging_dir,
+            &child_path,
+            std::time::Duration::from_secs(15),
+            |line| emit_output(&app, line),
+        );
 
     #[cfg(not(windows))]
-    let run_result: Result<(String, Option<u32>), String> = {
-        let mut cmd = Command::new(&toolchain.vvp);
-        cmd.arg("stivium_sim.out")
-            .current_dir(&staging_dir)
-            .env("PATH", &child_path);
-        match cmd.output() {
-            Ok(out) => {
-                let text = format!(
-                    "{}{}",
-                    String::from_utf8_lossy(&out.stdout),
-                    String::from_utf8_lossy(&out.stderr)
-                );
-                emit_output(&app, &text);
-                Ok((text, out.status.code().map(|c| c as u32)))
+        let run_result: Result<(String, Option<u32>), String> = {
+            let args = vec!["stivium_sim.out".to_string()];
+
+            match run_vvp_with_timeout(
+                &toolchain.vvp,
+                &args,
+                &staging_dir,
+                std::time::Duration::from_secs(15),
+            ) {
+                Ok((text, exit_code, timed_out)) => {
+                    emit_output(&app, &text);
+
+                    if timed_out {
+                        Ok((text, None))
+                    } else {
+                        Ok((text, exit_code))
+                    }
+                }
+                Err(e) => Err(e),
             }
-            Err(e) => Err(format!("Failed to launch vvp: {e}")),
-        }
-    };
+        };
 
     let (captured, exit_code) = match run_result {
         Ok(r) => r,
         Err(e) => {
             cleanup(&staging_dir);
             emit_status(&app, &format!("\x1b[31m{e}\x1b[0m"));
-            return Ok(RunResult { success: false });
+            return Ok(RunResult {
+                success: false,
+                status: RtlRunStatus::ToolchainError,
+                exit_code: None,
+                stdout: String::new(),
+                stderr: e.clone(),
+                duration_ms: start.elapsed().as_millis(),
+                message: Some(e),
+            });
         }
     };
 
@@ -387,10 +536,26 @@ pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunR
 
     if exit_success || benign_crash_on_exit {
         emit_status(&app, "\x1b[32m> Simulation finished.\x1b[0m");
-        Ok(RunResult { success: true })
+        Ok(RunResult {
+            success: true,
+            status: RtlRunStatus::Success,
+            exit_code: exit_code.map(|c| c as i32),
+            stdout: captured,
+            stderr: String::new(),
+            duration_ms: start.elapsed().as_millis(),
+            message: None,
+        })
     } else if exit_code.is_none() {
         emit_status(&app, "\x1b[31m> Simulation timed out and was killed.\x1b[0m");
-        Ok(RunResult { success: false })
+        Ok(RunResult {
+            success: false,
+            status: RtlRunStatus::Timeout,
+            exit_code: None,
+            stdout: String::new(),
+            stderr: String::new(),
+            duration_ms: start.elapsed().as_millis(),
+            message: Some("Simulation timed out.".to_string()),
+        })
     } else {
         emit_status(
             &app,
@@ -399,6 +564,247 @@ pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunR
                 exit_code
             ),
         );
-        Ok(RunResult { success: false })
+        Ok(RunResult {
+            success: false,
+            status: RtlRunStatus::SimulationFailure,
+            exit_code: exit_code.map(|c| c as i32),
+            stdout: captured,
+            stderr: String::new(),
+            duration_ms: start.elapsed().as_millis(),
+            message: Some(format!(
+                "Simulation exited with an error. Exit code: {:?}",
+                exit_code
+            )),
+        })
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use std::path::PathBuf;
+    use std::process::Command;
+    use std::time::Duration;
+
+    fn fixture(name: &str) -> PathBuf {
+        Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("tests")
+            .join("fixtures")
+            .join(name)
+    }
+
+    fn toolchain_or_skip() -> Option<icarus::IcarusToolchain> {
+        match icarus::resolve_toolchain() {
+            Ok(toolchain) => Some(toolchain),
+            Err(err) => {
+                println!("NOT VERIFIED: {err}");
+                None
+            }
+        }
+    }
+
+    #[cfg(windows)]
+        fn test_path_env(toolchain: &icarus::IcarusToolchain) -> std::ffi::OsString {
+            let bin = toolchain.vvp.parent().unwrap();
+
+            let mut entries = vec![bin.to_path_buf()];
+            entries.extend(std::env::split_paths(
+                &std::env::var_os("PATH").unwrap_or_default(),
+            ));
+
+            std::env::join_paths(entries).unwrap()
+        }
+
+    fn compile_fixture(
+        toolchain: &icarus::IcarusToolchain,
+        name: &str,
+        output: &Path,
+    ) -> std::process::Output {
+        Command::new(&toolchain.iverilog)
+            .arg("-o")
+            .arg(output)
+            .arg(fixture(name))
+            .output()
+            .expect("failed to launch iverilog")
+    }
+
+    #[test]
+    fn valid_fixture_compiles() {
+        let Some(toolchain) = toolchain_or_skip() else {
+            return;
+        };
+
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("valid.out");
+
+        let result = compile_fixture(&toolchain, "valid.v", &output);
+
+        assert!(
+            result.status.success(),
+            "valid.v failed to compile:\n{}",
+            String::from_utf8_lossy(&result.stderr)
+        );
+    }
+
+    #[test]
+    fn syntax_error_fails_to_compile() {
+        let Some(toolchain) = toolchain_or_skip() else {
+            return;
+        };
+
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("syntax_error.out");
+
+        let result = compile_fixture(&toolchain, "syntax_error.v", &output);
+
+        assert!(
+            !result.status.success(),
+            "syntax_error.v unexpectedly compiled successfully"
+        );
+    }
+
+    #[test]
+    fn runtime_error_is_not_success() {
+        let Some(toolchain) = toolchain_or_skip() else {
+            return;
+        };
+
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("runtime_error.out");
+
+        let compile = compile_fixture(&toolchain, "runtime_error.v", &output);
+
+        assert!(
+            compile.status.success(),
+            "runtime_error.v failed to compile:\n{}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+
+        #[cfg(windows)]
+        let (_, exit_code) = win_run::run_captured(
+            &toolchain.vvp,
+            "runtime_error.out",
+            temp.path(),
+            test_path_env(&toolchain),
+            Duration::from_secs(15),
+            |_| {},
+        )
+        .expect("failed to run vvp");
+
+        #[cfg(not(windows))]
+        let run = Command::new(&toolchain.vvp)
+            .arg(&output)
+            .current_dir(temp.path())
+            .output()
+            .expect("failed to run vvp");
+
+        #[cfg(windows)]
+        assert_ne!(exit_code, Some(0));
+
+        #[cfg(not(windows))]
+        assert!(
+            !run.status.success(),
+            "runtime_error.v unexpectedly exited successfully"
+        );
+    }
+
+    #[test]
+    fn display_output_is_preserved() {
+        let Some(toolchain) = toolchain_or_skip() else {
+            return;
+        };
+
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("display.out");
+
+        let compile = compile_fixture(&toolchain, "display.v", &output);
+
+        assert!(
+            compile.status.success(),
+            "display.v failed to compile:\n{}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+
+        #[cfg(windows)]
+        let (captured, _) = win_run::run_captured(
+            &toolchain.vvp,
+            "display.out",
+            temp.path(),
+            test_path_env(&toolchain),
+            Duration::from_secs(15),
+            |_| {},
+        )
+        .expect("failed to run vvp");
+
+        #[cfg(not(windows))]
+        let captured = {
+            let run = Command::new(&toolchain.vvp)
+                .arg(&output)
+                .current_dir(temp.path())
+                .output()
+                .expect("failed to run vvp");
+
+            format!(
+                "{}{}",
+                String::from_utf8_lossy(&run.stdout),
+                String::from_utf8_lossy(&run.stderr)
+            )
+        };
+
+        assert!(
+            captured.contains("STIVIUM_TEST_DISPLAY"),
+            "display output missing:\n{captured}"
+        );
+    }
+
+    #[test]
+    fn timeout_fixture_does_not_hang() {
+        let Some(toolchain) = toolchain_or_skip() else {
+            return;
+        };
+
+        let temp = tempfile::tempdir().unwrap();
+        let output = temp.path().join("timeout.out");
+
+        let compile = compile_fixture(&toolchain, "timeout.v", &output);
+
+        assert!(
+            compile.status.success(),
+            "timeout.v failed to compile:\n{}",
+            String::from_utf8_lossy(&compile.stderr)
+        );
+
+        #[cfg(windows)]
+        let (_, exit_code) = win_run::run_captured(
+            &toolchain.vvp,
+            "timeout.out",
+            temp.path(),
+            test_path_env(&toolchain),
+            Duration::from_secs(1),
+            |_| {},
+        )
+        .expect("failed to run vvp");
+
+        #[cfg(windows)]
+        assert!(
+            exit_code.is_none(),
+            "timeout.v should have been killed after timeout"
+        );
+
+        #[cfg(not(windows))]
+        {
+            let (_, exit_code, timed_out) = run_vvp_with_timeout(
+                &toolchain.vvp,
+                &[output.to_string_lossy().to_string()],
+                temp.path(),
+                Duration::from_secs(1),
+            )
+            .expect("failed to run vvp with timeout");
+
+            assert!(
+                timed_out,
+                "timeout.v did not time out; exit code: {exit_code:?}"
+            );
+        }
     }
 }

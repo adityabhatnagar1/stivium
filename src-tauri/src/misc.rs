@@ -1,25 +1,28 @@
-use tauri::{AppHandle, Emitter};
+use tauri::AppHandle;
 use tauri_plugin_dialog::DialogExt;
 
-#[tauri::command]
-pub fn trigger_build(app: AppHandle) {
-    let _ = app.emit("terminal-output", "\r\n\x1b[33m> Starting Build...\x1b[0m\r\n");
+// #[tauri::command]
+// pub fn trigger_build(app: AppHandle) {
+//     let _ = app.emit("terminal-output", "\r\n\x1b[33m> Starting Build...\x1b[0m\r\n");
 
-    std::thread::spawn(move || {
-        for count in 0..5 {
-            std::thread::sleep(std::time::Duration::from_millis(600));
-            let _ = app.emit(
-                "terminal-output",
-                format!("[INFO] Compiling module source_{count}...\r\n"),
-            );
-        }
-        std::thread::sleep(std::time::Duration::from_millis(600));
-        let _ = app.emit(
-            "terminal-output",
-            "\x1b[32m> Build completed successfully.\x1b[0m\r\n",
-        );
-    });
-}
+//     std::thread::spawn(move || {
+//         for count in 0..5 {
+//             std::thread::sleep(std::time::Duration::from_millis(600));
+//             let _ = app.emit(
+//                 "terminal-output",
+//                 format!("[INFO] Compiling module source_{count}...\r\n"),
+//             );
+//         }
+//         std::thread::sleep(std::time::Duration::from_millis(600));
+//         let _ = app.emit(
+//             "terminal-output",
+//             "\x1b[32m> Build completed successfully.\x1b[0m\r\n",
+//         );
+//     });
+// }
+
+// Build command intentionally removed. Stivium's real build/simulation pipeline lives in rtl::run_rtl.
+
 
 #[tauri::command]
 pub fn quit_app(app: AppHandle) {

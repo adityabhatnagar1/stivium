@@ -18,7 +18,6 @@ declare global {
 
   interface Window {
     api: {
-      triggerBuild: () => void;
       onTerminalOutput: (callback: (data: string) => void) => void;
       openFolder: () => Promise<DirTreeNode | null>;
       getLastWorkspace: () => Promise<string | null>;

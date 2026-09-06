@@ -162,9 +162,6 @@ async function buildAppMenu(menuId: AppMenuId): Promise<Menu> {
 }
 
 const api = {
-  triggerBuild: (): void => {
-    void invoke("trigger_build");
-  },
   onTerminalOutput: (callback: (data: string) => void): void => {
     void listen<string>("terminal-output", (event) =>
       callback(event.payload),
