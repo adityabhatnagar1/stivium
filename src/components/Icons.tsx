@@ -142,3 +142,11 @@ export function IconPlus({ size, ...rest }: IconProps): JSX.Element {
     </svg>
   );
 }
+
+export function IconSparkle({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" />
+    </svg>
+  );
+}

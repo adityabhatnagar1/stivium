@@ -35,6 +35,12 @@ struct Preferences {
         skip_serializing_if = "Option::is_none"
     )]
     last_workspace_path: Option<String>,
+
+    #[serde(rename = "petPosition", skip_serializing_if = "Option::is_none")]
+    pet_position: Option<crate::ai::types::PetPosition>,
+
+    #[serde(rename = "aiSettings", skip_serializing_if = "Option::is_none")]
+    ai_settings: Option<crate::ai::types::AiSettings>,
 }
 
 fn should_skip_name(name: &str) -> bool {
@@ -326,6 +332,30 @@ pub fn set_last_workspace(
             write_preferences(&app, &prefs).is_ok()
         }
     }
+}
+
+#[tauri::command]
+pub fn get_pet_position(app: AppHandle) -> Option<crate::ai::types::PetPosition> {
+    read_preferences(&app).pet_position
+}
+
+#[tauri::command]
+pub fn set_pet_position(app: AppHandle, position: crate::ai::types::PetPosition) -> bool {
+    let mut prefs = read_preferences(&app);
+    prefs.pet_position = Some(position);
+    write_preferences(&app, &prefs).is_ok()
+}
+
+#[tauri::command]
+pub fn get_ai_settings(app: AppHandle) -> crate::ai::types::AiSettings {
+    read_preferences(&app).ai_settings.unwrap_or_default()
+}
+
+#[tauri::command]
+pub fn set_ai_settings(app: AppHandle, settings: crate::ai::types::AiSettings) -> bool {
+    let mut prefs = read_preferences(&app);
+    prefs.ai_settings = Some(settings);
+    write_preferences(&app, &prefs).is_ok()
 }
 
 #[tauri::command]

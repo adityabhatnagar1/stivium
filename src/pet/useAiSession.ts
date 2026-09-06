@@ -1,0 +1,114 @@
+import { useCallback, useRef, useState } from "react";
+import type { ChatMessage } from "../tauri/aiTypes";
+
+export type AiSessionStatus =
+  | "idle"
+  | "thinking"
+  | "streaming"
+  | "done"
+  | "error"
+  | "cancelled";
+
+type UseAiSessionParams = {
+  onStatusChange: (status: AiSessionStatus) => void;
+};
+
+type UseAiSessionResult = {
+  status: AiSessionStatus;
+  responseText: string;
+  errorMessage: string | null;
+  send: (params: {
+    provider: string;
+    model: string;
+    baseUrl: string | undefined;
+    messages: ChatMessage[];
+  }) => Promise<void>;
+  cancel: () => void;
+};
+
+/**
+ * Owns exactly one AI request at a time. Never fakes progress with a
+ * timer: `status` only ever changes in response to a real
+ * `window.api.onAiEvent` callback, which only ever fires from a real
+ * `ai-event-{id}` emit coming out of the Rust side.
+ */
+export function useAiSession({
+  onStatusChange,
+}: UseAiSessionParams): UseAiSessionResult {
+  const [status, setStatusRaw] = useState<AiSessionStatus>("idle");
+  const [responseText, setResponseText] = useState("");
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const requestIdRef = useRef<string | null>(null);
+  const unlistenRef = useRef<(() => void) | null>(null);
+
+  const setStatus = useCallback(
+    (next: AiSessionStatus) => {
+      setStatusRaw(next);
+      onStatusChange(next);
+    },
+    [onStatusChange],
+  );
+
+  const send = useCallback(
+    async ({
+      provider,
+      model,
+      baseUrl,
+      messages,
+    }: {
+      provider: string;
+      model: string;
+      baseUrl: string | undefined;
+      messages: ChatMessage[];
+    }) => {
+      unlistenRef.current?.();
+
+      const requestId = crypto.randomUUID();
+      requestIdRef.current = requestId;
+      setResponseText("");
+      setErrorMessage(null);
+      setStatus("thinking");
+
+      unlistenRef.current = window.api.onAiEvent(requestId, (event) => {
+        if (requestIdRef.current !== requestId) return; // stale listener from a superseded request
+        switch (event.type) {
+          case "chunk":
+            setStatus("streaming");
+            setResponseText((prev) => prev + event.token);
+            break;
+          case "done":
+            setStatus("done");
+            break;
+          case "error":
+            setErrorMessage(event.message);
+            setStatus("error");
+            break;
+          case "cancelled":
+            setStatus("cancelled");
+            break;
+        }
+      });
+
+      try {
+        await window.api.runAi(
+          requestId,
+          provider as never,
+          model,
+          baseUrl,
+          messages,
+        );
+      } catch (err) {
+        setErrorMessage(err instanceof Error ? err.message : String(err));
+        setStatus("error");
+      }
+    },
+    [setStatus],
+  );
+
+  const cancel = useCallback(() => {
+    if (!requestIdRef.current) return;
+    void window.api.cancelAi(requestIdRef.current);
+  }, []);
+
+  return { status, responseText, errorMessage, send, cancel };
+}

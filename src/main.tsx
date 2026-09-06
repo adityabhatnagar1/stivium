@@ -1,4 +1,5 @@
 import "./assets/main.css";
+import "./assets/pet.css";
 import "./assets/interactions.css";
 import "@fontsource/montserrat/600.css";
 import "@fontsource/montserrat/700.css";

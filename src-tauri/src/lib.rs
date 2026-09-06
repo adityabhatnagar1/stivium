@@ -1,3 +1,4 @@
+mod ai;
 mod fs_commands;
 mod lsp;
 mod misc;
@@ -14,7 +15,7 @@ pub fn run() {
         .plugin(tauri_plugin_opener::init())
         .plugin(tauri_plugin_dialog::init())
         .manage(AppState::default())
-        .invoke_handler(tauri::generate_handler![
+                .invoke_handler(tauri::generate_handler![
             fs_commands::open_folder,
             fs_commands::get_last_workspace,
             fs_commands::set_last_workspace,
@@ -28,6 +29,10 @@ pub fn run() {
             fs_commands::paste_path,
             fs_commands::find_in_files,
             fs_commands::replace_in_files,
+            fs_commands::get_pet_position,
+            fs_commands::set_pet_position,
+            fs_commands::get_ai_settings,
+            fs_commands::set_ai_settings,
             rtl::run_rtl,
             terminal::spawn_terminal,
             terminal::write_terminal,
@@ -36,6 +41,11 @@ pub fn run() {
             lsp::lsp_spawn,
             lsp::lsp_write,
             lsp::lsp_stop,
+            ai::commands::run_ai,
+            ai::commands::cancel_ai,
+            ai::commands::save_provider_key,
+            ai::commands::delete_provider_key,
+            ai::commands::has_provider_key,
             // misc::trigger_build,
             misc::quit_app,
             misc::toggle_devtools,

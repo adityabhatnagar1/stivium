@@ -10,6 +10,13 @@ import type {
   RunRtlResult,
   TerminalExitInfo,
 } from "./tauri/types";
+import type {
+  AiEvent,
+  AiSettings,
+  ChatMessage,
+  PetPosition,
+  ProviderId,
+} from "./tauri/aiTypes";
 
 declare global {
   namespace JSX {
@@ -62,6 +69,25 @@ declare global {
       onMenuSaveCurrent: (callback: () => void) => void;
       onMenuSaveAll: (callback: () => void) => void;
       onMenuOpenSearch: (callback: (replaceMode: boolean) => void) => void;
+      getPetPosition: () => Promise<PetPosition | null>;
+      setPetPosition: (position: PetPosition) => Promise<boolean>;
+      getAiSettings: () => Promise<AiSettings>;
+      setAiSettings: (settings: AiSettings) => Promise<boolean>;
+      saveProviderKey: (provider: ProviderId, apiKey: string) => Promise<void>;
+      deleteProviderKey: (provider: ProviderId) => Promise<void>;
+      hasProviderKey: (provider: ProviderId) => Promise<boolean>;
+      runAi: (
+        requestId: string,
+        provider: ProviderId,
+        model: string,
+        baseUrl: string | undefined,
+        messages: ChatMessage[],
+      ) => Promise<void>;
+      cancelAi: (requestId: string) => Promise<void>;
+      onAiEvent: (
+        requestId: string,
+        callback: (event: AiEvent) => void,
+      ) => () => void;
     };
     lsp: {
       spawn: (options: LspSpawnOptions) => Promise<LspSpawnResult>;

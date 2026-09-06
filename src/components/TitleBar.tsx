@@ -6,6 +6,7 @@ import {
   IconMaximize,
   IconRestore,
   IconClose,
+  IconSparkle,
 } from "./Icons";
 
 type AppMenuId = "file" | "edit" | "selection" | "view" | "help";
@@ -15,8 +16,10 @@ type TitleBarProps = {
   isTopMenuExpanded: boolean;
   isWindowMaximized: boolean;
   isWindowFocused: boolean;
+  isAiActive: boolean;
   onToggleMenu: () => void;
   onOpenMenu: (menuId: AppMenuId, event: MouseEvent<HTMLButtonElement>) => void;
+  onToggleAi: () => void;
   onMinimize: () => void;
   onToggleMaximize: () => void;
   onClose: () => void;
@@ -30,8 +33,10 @@ export function TitleBar({
   isTopMenuExpanded,
   isWindowMaximized,
   isWindowFocused,
+  isAiActive,
   onToggleMenu,
   onOpenMenu,
+  onToggleAi,
   onMinimize,
   onToggleMaximize,
   onClose,
@@ -132,6 +137,25 @@ export function TitleBar({
           } as CSSProperties
         }
       >
+        <button
+          onClick={onToggleAi}
+          title="AI assistant"
+          aria-label="AI assistant"
+          aria-pressed={isAiActive}
+          className="stv-wincontrol"
+          style={{
+            width: "40px",
+            border: "none",
+            background: "transparent",
+            color: isAiActive ? "var(--color-accent)" : "var(--color-text)",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <IconSparkle size={ICON_SIZE_DEFAULT} />
+        </button>
         <button
           onClick={onMinimize}
           title="Minimize"

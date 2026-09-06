@@ -1,6 +1,7 @@
 use std::collections::HashMap;
 use std::io::Write;
-use std::sync::Mutex;
+use std::sync::atomic::AtomicBool;
+use std::sync::{Arc, Mutex};
 
 use portable_pty::{Child, MasterPty};
 
@@ -19,4 +20,8 @@ pub struct LspSession {
 pub struct AppState {
     pub terminals: Mutex<HashMap<String, TerminalSession>>,
     pub lsp_sessions: Mutex<HashMap<String, LspSession>>,
+    /// One flag per in-flight AI request, keyed by request id. Set to
+    /// `true` by `ai::commands::cancel_ai`; the streaming task polls it
+    /// between chunks and stops emitting once it flips.
+    pub ai_cancel_flags: Mutex<HashMap<String, Arc<AtomicBool>>>,
 }

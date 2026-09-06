@@ -19,6 +19,13 @@ import type {
   RunRtlResult,
   TerminalExitInfo,
 } from "./types";
+import type {
+  AiEvent,
+  AiSettings,
+  ChatMessage,
+  PetPosition,
+  ProviderId,
+} from "./aiTypes";
 
 let _appWindow: ReturnType<typeof getCurrentWindow> | null = null;
 function appWindow(): ReturnType<typeof getCurrentWindow> {
@@ -273,6 +280,54 @@ const api = {
     busReplace("menu-save-all", callback),
   onMenuOpenSearch: (callback: (replaceMode: boolean) => void): void =>
     busReplace("menu-open-search", callback),
+
+  // ---- AI pet: position + settings persistence (preferences.json) ----
+  getPetPosition: (): Promise<PetPosition | null> => invoke("get_pet_position"),
+  setPetPosition: (position: PetPosition): Promise<boolean> =>
+    invoke("set_pet_position", { position }),
+  getAiSettings: (): Promise<AiSettings> => invoke("get_ai_settings"),
+  setAiSettings: (settings: AiSettings): Promise<boolean> =>
+    invoke("set_ai_settings", { settings }),
+
+  // ---- AI pet: credentials (OS credential store, never persisted here) ----
+  saveProviderKey: (provider: ProviderId, apiKey: string): Promise<void> =>
+    invoke("save_provider_key", { provider, apiKey }),
+  deleteProviderKey: (provider: ProviderId): Promise<void> =>
+    invoke("delete_provider_key", { provider }),
+  hasProviderKey: (provider: ProviderId): Promise<boolean> =>
+    invoke("has_provider_key", { provider }),
+
+  // ---- AI pet: streaming ----
+  runAi: (
+    requestId: string,
+    provider: ProviderId,
+    model: string,
+    baseUrl: string | undefined,
+    messages: ChatMessage[],
+  ): Promise<void> =>
+    invoke("run_ai", { requestId, provider, model, baseUrl, messages }),
+  cancelAi: (requestId: string): Promise<void> =>
+    invoke("cancel_ai", { requestId }),
+  onAiEvent: (
+    requestId: string,
+    callback: (event: AiEvent) => void,
+  ): (() => void) => {
+    let cancelled = false;
+    let unlisten: UnlistenFn | null = null;
+    void listen<AiEvent>(`ai-event-${requestId}`, (event) =>
+      callback(event.payload),
+    ).then((fn) => {
+      if (cancelled) {
+        fn();
+        return;
+      }
+      unlisten = fn;
+    });
+    return () => {
+      cancelled = true;
+      unlisten?.();
+    };
+  },
 };
 
 const lsp = {

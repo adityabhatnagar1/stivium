@@ -15,8 +15,14 @@ import { FooterBar } from "./components/FooterBar";
 import { TitleBar } from "./components/TitleBar";
 import { EditorTabs } from "./components/EditorTabs";
 import { EditorPane } from "./components/EditorPane";
-import { IconPlay } from "./components/Icons";
+import { IconPlay, IconSparkle } from "./components/Icons";
 import { LanguageClientsManager } from "./lsp/client";
+import { StiviumPet } from "./pet/StiviumPet";
+import { PetChatPanel } from "./pet/PetChatPanel";
+import { PetSettingsDialog } from "./pet/PetSettingsDialog";
+import { PetReviewDialog } from "./pet/PetReviewDialog";
+import { usePetState } from "./pet/usePetState";
+import type { AiSettings } from "./tauri/aiTypes";
 import {
   getBuiltInLspClientConfigs,
   registerBuiltInLanguages,
@@ -48,6 +54,20 @@ function App() {
   const [cursorColumn, setCursorColumn] = useState(1);
   const [leftPaneWidth, setLeftPaneWidth] = useState(280);
   const [terminalHeight, setTerminalHeight] = useState(260);
+  const [isPetVisible, setIsPetVisible] = useState(false);
+  const [isChatOpen, setIsChatOpen] = useState(false);
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false);
+  const [aiSettings, setAiSettings] = useState<AiSettings>({});
+  const [reviewContent, setReviewContent] = useState<string | null>(null);
+
+  const {
+    petState,
+    setAiState,
+    setHovering,
+    setClicking,
+    setDragging,
+    setForcedState,
+  } = usePetState();
 
   const centerPaneRef = useRef<HTMLDivElement | null>(null);
   const lspManagerRef = useRef<LanguageClientsManager | null>(null);
@@ -143,6 +163,48 @@ function App() {
   }, []);
 
   useEffect(() => {
+    void window.api.getAiSettings().then(setAiSettings);
+  }, []);
+
+  useEffect(() => {
+    if (!import.meta.env.DEV) return;
+    const PET_STATES: Array<
+      | "idle"
+      | "hover"
+      | "click"
+      | "dragging"
+      | "thinking"
+      | "working"
+      | "ready"
+      | "error"
+      | "needsInput"
+      | "review"
+    > = [
+      "idle",
+      "hover",
+      "click",
+      "dragging",
+      "thinking",
+      "working",
+      "ready",
+      "error",
+      "needsInput",
+      "review",
+    ];
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (!event.altKey || !event.shiftKey) return;
+      const index = Number(event.key) - 1;
+      if (Number.isNaN(index) || index < 0 || index >= PET_STATES.length)
+        return;
+      setForcedState((current) =>
+        current === PET_STATES[index] ? null : PET_STATES[index],
+      );
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [setForcedState]);
+
+  useEffect(() => {
     const closeContextMenu = () => setContextMenu(null);
     const onEscape = (event: KeyboardEvent) => {
       if (event.key === "Escape") {
@@ -231,6 +293,14 @@ function App() {
   };
 
   const resolvedActiveTabPath = resolveActiveTabPath(tabs, activeTabPath);
+  const getSelectedCode = (): string | null => {
+    const editorInstance = monacoEditorRef.current;
+    if (!editorInstance) return null;
+    const selection = editorInstance.getSelection();
+    const model = editorInstance.getModel();
+    if (!selection || !model || selection.isEmpty()) return null;
+    return model.getValueInRange(selection);
+  };
   const activeTab = tabs.find((t) => t.path === resolvedActiveTabPath);
   const hasContextNode = Boolean(contextMenu?.node);
 
@@ -255,8 +325,10 @@ function App() {
         isTopMenuExpanded={isTopMenuExpanded}
         isWindowMaximized={isWindowMaximized}
         isWindowFocused={isWindowFocused}
+        isAiActive={isPetVisible}
         onToggleMenu={() => setIsTopMenuExpanded((prev) => !prev)}
         onOpenMenu={handleTopMenu}
+        onToggleAi={() => setIsPetVisible((prev) => !prev)}
         onMinimize={handleMinimize}
         onToggleMaximize={() => void handleToggleMaximize()}
         onClose={handleClose}
@@ -341,6 +413,7 @@ function App() {
             minHeight: 0,
             overflow: "hidden",
             backgroundColor: "var(--color-bg)",
+            position: "relative",
           }}
         >
           <div style={{ display: "flex", alignItems: "stretch" }}>
@@ -383,6 +456,30 @@ function App() {
                 {isRunning ? "Running…" : "Run"}
               </button>
             )}
+            <button
+              onClick={() => setIsPetVisible((prev) => !prev)}
+              title={isPetVisible ? "Hide AI assistant" : "Show AI assistant"}
+              aria-label={
+                isPetVisible ? "Hide AI assistant" : "Show AI assistant"
+              }
+              aria-pressed={isPetVisible}
+              className="stv-icon-btn"
+              style={{
+                display: "flex",
+                alignItems: "center",
+                padding: "0 var(--space-3)",
+                border: "none",
+                borderLeft: "var(--border-hairline)",
+                background: "var(--color-surface-2)",
+                color: isPetVisible
+                  ? "var(--color-accent)"
+                  : "var(--color-text-muted)",
+                cursor: "pointer",
+                flexShrink: 0,
+              }}
+            >
+              <IconSparkle size={15} />
+            </button>
           </div>
 
           <EditorPane
@@ -416,6 +513,41 @@ function App() {
             onCreateTerminal={(cwd) => void createTerminal(cwd)}
             onClearOutput={clearOutput}
           />
+
+          <StiviumPet
+            containerRef={centerPaneRef}
+            petState={petState}
+            visible={isPetVisible}
+            onHoverChange={setHovering}
+            onDragStateChange={setDragging}
+            onClick={() => {
+              setClicking(true);
+              window.setTimeout(() => setClicking(false), 180);
+              setIsChatOpen((prev) => !prev);
+            }}
+          />
+
+          {isChatOpen && (
+            <PetChatPanel
+              anchor={{ x: 24, y: 84 }}
+              activeTab={activeTab}
+              selectedCode={getSelectedCode()}
+              aiSettings={aiSettings}
+              onClose={() => setIsChatOpen(false)}
+              onOpenSettings={() => setIsSettingsOpen(true)}
+              onStatusChange={(status) => {
+                if (status === "thinking") setAiState("thinking");
+                else if (status === "streaming") setAiState("working");
+                else if (status === "done") setAiState("ready");
+                else if (status === "error") setAiState("error");
+                else setAiState(null);
+              }}
+              onProposeEdit={(proposedContent) => {
+                setAiState("review");
+                setReviewContent(proposedContent);
+              }}
+            />
+          )}
         </div>
       </div>
 
@@ -468,6 +600,35 @@ function App() {
         message={errorMessage}
         onClose={() => setErrorMessage(null)}
       />
+
+      <PetSettingsDialog
+        isOpen={isSettingsOpen}
+        settings={aiSettings}
+        onSave={(next) => {
+          setAiSettings(next);
+          setIsSettingsOpen(false);
+        }}
+        onClose={() => setIsSettingsOpen(false)}
+      />
+
+      <PetReviewDialog
+        isOpen={reviewContent !== null}
+        fileName={activeTab?.name ?? "untitled"}
+        currentContent={activeTab?.content ?? ""}
+        proposedContent={reviewContent ?? ""}
+        onDiscard={() => {
+          setReviewContent(null);
+          setAiState(null);
+        }}
+        onApply={() => {
+          if (reviewContent !== null) {
+            handleEditorChange(reviewContent);
+          }
+          setReviewContent(null);
+          setAiState("ready");
+        }}
+      />
+
       <FooterBar
         workspaceName={fileTree?.name || "No workspace open"}
         line={cursorLine}
