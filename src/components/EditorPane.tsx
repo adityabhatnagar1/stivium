@@ -28,7 +28,12 @@ export function EditorPane({
   const themeRegistered = useRef(false);
   const registerTheme = (instance: typeof monaco) => {
     if (themeRegistered.current) return;
+
     themeRegistered.current = true;
+
+    // Monaco's defineTheme() colors require literal hex values.
+    // They cannot use CSS custom properties like var(--color-bg).
+    // Keep these values synchronized with main.css.
     instance.editor.defineTheme("stivium-dark", {
       base: "vs-dark",
       inherit: true,
@@ -91,7 +96,7 @@ export function EditorPane({
             justifyContent: "center",
             height: "100%",
             color: "var(--color-text-muted)",
-            fontSize: "24px",
+            fontSize: "var(--text-heading)",
           }}
         >
           Open a file to start editing

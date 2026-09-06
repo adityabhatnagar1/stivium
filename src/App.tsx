@@ -101,6 +101,7 @@ function App() {
 
   const {
     isWindowMaximized,
+    isWindowFocused,
     isTopMenuExpanded,
     setIsTopMenuExpanded,
     handleTopMenu,
@@ -253,6 +254,7 @@ function App() {
         appIcon={appIcon}
         isTopMenuExpanded={isTopMenuExpanded}
         isWindowMaximized={isWindowMaximized}
+        isWindowFocused={isWindowFocused}
         onToggleMenu={() => setIsTopMenuExpanded((prev) => !prev)}
         onOpenMenu={handleTopMenu}
         onMinimize={handleMinimize}
@@ -321,6 +323,7 @@ function App() {
         </div>
         <div
           onMouseDown={startLeftPaneResize}
+          className="stv-resize-handle stv-resize-handle--vertical"
           style={{
             width: "6px",
             cursor: "col-resize",
@@ -349,31 +352,35 @@ function App() {
                 onCloseTab={handleCloseTab}
               />
             </div>
+
             {activeTab && getLanguage(activeTab.name) === "verilog" && (
               <button
                 onClick={() => void runCurrentFile()}
                 disabled={!canRun}
                 title="Run with Icarus Verilog"
-                aria-label="Run"
+                aria-label="Run with Icarus Verilog"
                 className="stv-icon-btn"
                 style={{
                   display: "flex",
                   alignItems: "center",
-                  gap: "6px",
-                  padding: "0 14px",
+                  gap: "var(--space-2)",
+                  padding: "0 var(--space-4)",
                   border: "none",
-                  borderLeft: "1px solid var(--color-bg)",
+                  borderLeft: "var(--border-hairline)",
                   background: "var(--color-surface-2)",
                   color: isRunning
                     ? "var(--color-text-muted)"
                     : "var(--color-accent)",
                   cursor: canRun ? "pointer" : "default",
-                  fontSize: "13px",
+                  fontSize: "var(--text-body)",
                   flexShrink: 0,
                 }}
               >
-                <IconPlay size={13} />
-                {isRunning ? "Running..." : "Run"}
+                <IconPlay
+                  size={15}
+                  className={isRunning ? "stv-icon-pulse" : undefined}
+                />
+                {isRunning ? "Running…" : "Run"}
               </button>
             )}
           </div>
@@ -390,6 +397,7 @@ function App() {
 
           <div
             onMouseDown={startTerminalResize}
+            className="stv-resize-handle stv-resize-handle--horizontal"
             style={{
               height: "6px",
               cursor: "row-resize",

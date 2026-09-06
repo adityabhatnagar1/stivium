@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 import type { CSSProperties } from "react";
 
-const STAR_COUNT = 26; // thin 36px strip — fewer stars than a full topbar needs
+const STAR_COUNT = 26;
 const STAR_COLORS = ["#eafff5", "#9df5c8", "#35d68c", "#55e0c8", "#c8ffe6"];
 
 type Star = {
@@ -22,7 +22,7 @@ function makeStars(): Star[] {
       size,
       top: Math.random() * 100,
       left: Math.random() * 100,
-      duration: Math.random() * 3 + 2, // 2s-5s per star, deliberately slow
+      duration: Math.random() * 3 + 2,
       delay: Math.random() * 4,
       color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
     });
@@ -30,21 +30,23 @@ function makeStars(): Star[] {
   return stars;
 }
 
-/**
- * Decorative, always-on background for the titlebar: a faint nebula
- * gradient, a handful of twinkling stars (low-fps via steps() easing
- * in interactions.css), a shooting star every ~10s, and a vignette
- * to keep titlebar text readable on top. Purely visual — sits behind
- * the real titlebar content via z-index, pointer-events: none.
- *
- * Ported from the user's own "Notate" project background and rescaled
- * from a full-width topbar down to Stivium's 36px titlebar.
- */
-export function TitleBarStarfield(): JSX.Element {
+type TitleBarStarfieldProps = {
+  /** True when the OS window has lost focus — freezes the decorative
+   * animation instead of burning compositor cycles on a strip nobody
+   * is looking at. */
+  isPaused?: boolean;
+};
+
+export function TitleBarStarfield({
+  isPaused = false,
+}: TitleBarStarfieldProps): JSX.Element {
   const stars = useMemo(makeStars, []);
 
   return (
-    <div className="stv-titlebar-fx" aria-hidden="true">
+    <div
+      className={`stv-titlebar-fx${isPaused ? " stv-titlebar-fx--paused" : ""}`}
+      aria-hidden="true"
+    >
       <div className="stv-titlebar-stars">
         {stars.map((star, i) => (
           <span

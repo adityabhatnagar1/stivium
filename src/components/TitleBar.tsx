@@ -14,6 +14,7 @@ type TitleBarProps = {
   appIcon: string;
   isTopMenuExpanded: boolean;
   isWindowMaximized: boolean;
+  isWindowFocused: boolean;
   onToggleMenu: () => void;
   onOpenMenu: (menuId: AppMenuId, event: MouseEvent<HTMLButtonElement>) => void;
   onMinimize: () => void;
@@ -22,11 +23,13 @@ type TitleBarProps = {
 };
 
 const menuItems: AppMenuId[] = ["file", "edit", "selection", "view", "help"];
+const ICON_SIZE_DEFAULT = 15;
 
 export function TitleBar({
   appIcon,
   isTopMenuExpanded,
   isWindowMaximized,
+  isWindowFocused,
   onToggleMenu,
   onOpenMenu,
   onMinimize,
@@ -44,13 +47,12 @@ export function TitleBar({
           justifyContent: "space-between",
           height: "36px",
           background: "var(--color-titlebar)",
-          borderBottom: "1px solid var(--color-border)",
+          borderBottom: "var(--border-hairline)",
           WebkitAppRegion: "drag",
         } as CSSProperties
       }
     >
-      {/* Decorative starfield, always running behind the real content. */}
-      <TitleBarStarfield />
+      <TitleBarStarfield isPaused={!isWindowFocused} />
 
       <div
         className="stv-titlebar-content"
@@ -61,11 +63,7 @@ export function TitleBar({
           paddingLeft: "10px",
         }}
       >
-        <img
-          src={appIcon}
-          alt="App Icon"
-          style={{ width: "16px", height: "16px" }}
-        />
+        <img src={appIcon} alt="" style={{ width: "16px", height: "16px" }} />
         <button
           onClick={onToggleMenu}
           title="Menu"
@@ -77,9 +75,13 @@ export function TitleBar({
               background: "transparent",
               border: "none",
               color: "var(--color-text)",
-              fontSize: "14px",
+              fontSize: "var(--text-body)",
               cursor: "pointer",
-              padding: "4px 8px",
+              width: "var(--control-size-default)",
+              height: "var(--control-size-default)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
               WebkitAppRegion: "no-drag",
             } as CSSProperties
           }
@@ -87,7 +89,7 @@ export function TitleBar({
           <span
             className={`stv-menu-icon${isTopMenuExpanded ? " stv-menu-icon--open" : ""}`}
           >
-            <IconMenu size={15} />
+            <IconMenu size={ICON_SIZE_DEFAULT} />
           </span>
         </button>
         <div
@@ -105,9 +107,10 @@ export function TitleBar({
                   background: "transparent",
                   border: "none",
                   color: "var(--color-text)",
-                  fontSize: "13px",
+                  fontSize: "var(--text-body)",
                   cursor: "pointer",
-                  padding: "4px 8px",
+                  height: "var(--control-size-default)",
+                  padding: "0 var(--space-2)",
                   borderRadius: "var(--radius-xs)",
                   textTransform: "capitalize",
                   WebkitAppRegion: "no-drag",
@@ -131,6 +134,8 @@ export function TitleBar({
       >
         <button
           onClick={onMinimize}
+          title="Minimize"
+          aria-label="Minimize"
           className="stv-wincontrol"
           style={{
             width: "46px",
@@ -143,10 +148,12 @@ export function TitleBar({
             justifyContent: "center",
           }}
         >
-          <IconMinimize size={14} />
+          <IconMinimize size={ICON_SIZE_DEFAULT} />
         </button>
         <button
           onClick={onToggleMaximize}
+          title={isWindowMaximized ? "Restore" : "Maximize"}
+          aria-label={isWindowMaximized ? "Restore" : "Maximize"}
           className="stv-wincontrol"
           style={{
             width: "46px",
@@ -160,13 +167,15 @@ export function TitleBar({
           }}
         >
           {isWindowMaximized ? (
-            <IconRestore size={13} />
+            <IconRestore size={ICON_SIZE_DEFAULT - 1} />
           ) : (
-            <IconMaximize size={12} />
+            <IconMaximize size={ICON_SIZE_DEFAULT - 2} />
           )}
         </button>
         <button
           onClick={onClose}
+          title="Close"
+          aria-label="Close"
           className="stv-wincontrol stv-wincontrol--close"
           style={{
             width: "46px",
@@ -179,7 +188,7 @@ export function TitleBar({
             justifyContent: "center",
           }}
         >
-          <IconClose size={14} />
+          <IconClose size={ICON_SIZE_DEFAULT} />
         </button>
       </div>
     </div>
