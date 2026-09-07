@@ -224,6 +224,14 @@ const api = {
       (unlisten) => replaceListener(channel, unlisten),
     );
   },
+  offTerminalData: (id: string): void => {
+    const channel = `terminal-data-${id}`;
+    const unlisten = activeUnlisten.get(channel);
+    if (unlisten) {
+      unlisten();
+      activeUnlisten.delete(channel);
+    }
+  },
   onTerminalExit: (
     callback: (info: TerminalExitInfo) => void,
   ): (() => void) => {

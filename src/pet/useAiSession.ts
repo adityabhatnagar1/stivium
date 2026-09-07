@@ -40,9 +40,14 @@ export function useAiSession({
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const requestIdRef = useRef<string | null>(null);
   const unlistenRef = useRef<(() => void) | null>(null);
+  const pendingChunkRef = useRef("");
+  const flushHandleRef = useRef<number | null>(null);
+
+  const statusRef = useRef<AiSessionStatus>("idle");
 
   const setStatus = useCallback(
     (next: AiSessionStatus) => {
+      statusRef.current = next;
       setStatusRaw(next);
       onStatusChange(next);
     },
@@ -62,6 +67,11 @@ export function useAiSession({
       messages: ChatMessage[];
     }) => {
       unlistenRef.current?.();
+      if (flushHandleRef.current !== null) {
+        cancelAnimationFrame(flushHandleRef.current);
+        flushHandleRef.current = null;
+      }
+      pendingChunkRef.current = "";
 
       const requestId = crypto.randomUUID();
       requestIdRef.current = requestId;
@@ -69,21 +79,52 @@ export function useAiSession({
       setErrorMessage(null);
       setStatus("thinking");
 
+      const flushPending = () => {
+        if (flushHandleRef.current !== null) {
+          cancelAnimationFrame(flushHandleRef.current);
+          flushHandleRef.current = null;
+        }
+        if (pendingChunkRef.current) {
+          const chunk = pendingChunkRef.current;
+          pendingChunkRef.current = "";
+          setResponseText((prev) => prev + chunk);
+        }
+      };
+
       unlistenRef.current = window.api.onAiEvent(requestId, (event) => {
         if (requestIdRef.current !== requestId) return; // stale listener from a superseded request
         switch (event.type) {
           case "chunk":
-            setStatus("streaming");
-            setResponseText((prev) => prev + event.token);
+            // Only dispatch a status transition once, not on every token
+            // (fixes Issue F — this is what was reaching App-level
+            // setAiState() on every chunk).
+            if (statusRef.current !== "streaming") setStatus("streaming");
+            // Accumulate tokens in a ref and flush at most once per
+            // animation frame instead of re-rendering on every token
+            // (fixes Issue D).
+            pendingChunkRef.current += event.token;
+            if (flushHandleRef.current === null) {
+              flushHandleRef.current = requestAnimationFrame(() => {
+                flushHandleRef.current = null;
+                if (pendingChunkRef.current) {
+                  const chunk = pendingChunkRef.current;
+                  pendingChunkRef.current = "";
+                  setResponseText((prev) => prev + chunk);
+                }
+              });
+            }
             break;
           case "done":
+            flushPending();
             setStatus("done");
             break;
           case "error":
+            flushPending();
             setErrorMessage(event.message);
             setStatus("error");
             break;
           case "cancelled":
+            flushPending();
             setStatus("cancelled");
             break;
         }

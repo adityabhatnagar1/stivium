@@ -75,19 +75,15 @@ export function usePetPosition({
     return () => window.removeEventListener("resize", onResize);
   }, [containerRef]);
 
-  // Persist on every change, but only after the initial load has resolved
-  // — otherwise the very first render's default position would overwrite
-  // a real saved position in a race.
-  useEffect(() => {
-    if (!loadedOnce.current) return;
-    void window.api.setPetPosition(position);
-  }, [position]);
-
   const startDrag = useCallback(
     (event: React.PointerEvent) => {
       event.preventDefault();
       const bounds = containerRef.current?.getBoundingClientRect();
       if (!bounds) return;
+
+      // Cache bounds once at drag-start (fixes Issue B: no more
+      // getBoundingClientRect() on every pointermove).
+      const cachedBounds = { width: bounds.width, height: bounds.height };
 
       dragOffset.current = {
         x: event.clientX - bounds.left - position.x,
@@ -95,21 +91,23 @@ export function usePetPosition({
       };
       setIsDragging(true);
 
+      let latestPosition = position;
+
       const onPointerMove = (moveEvent: PointerEvent) => {
-        const innerBounds = containerRef.current?.getBoundingClientRect();
-        if (!innerBounds) return;
         const next = {
-          x: moveEvent.clientX - innerBounds.left - dragOffset.current.x,
-          y: moveEvent.clientY - innerBounds.top - dragOffset.current.y,
+          x: moveEvent.clientX - bounds.left - dragOffset.current.x,
+          y: moveEvent.clientY - bounds.top - dragOffset.current.y,
         };
-        setPosition(
-          clamp(next, { width: innerBounds.width, height: innerBounds.height }),
-        );
+        latestPosition = clamp(next, cachedBounds);
+        setPosition(latestPosition);
       };
       const onPointerUp = () => {
         setIsDragging(false);
         window.removeEventListener("pointermove", onPointerMove);
         window.removeEventListener("pointerup", onPointerUp);
+        // Persist exactly once, with the final dragged position, instead
+        // of on every pointermove (fixes Issue A).
+        void window.api.setPetPosition(latestPosition);
       };
 
       window.addEventListener("pointermove", onPointerMove);

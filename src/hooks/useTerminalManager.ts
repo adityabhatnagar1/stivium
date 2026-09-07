@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { useEffect, useRef, useState, type MouseEvent } from "react";
+import {
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+  type MouseEvent,
+} from "react";
 import { Terminal } from "@xterm/xterm";
 import { FitAddon } from "@xterm/addon-fit";
 import type { TermTab } from "../types";
@@ -27,7 +33,13 @@ export function useTerminalManager({
     { id: "output", title: "Output", closable: false },
   ]);
   const [activeTermId, setActiveTermId] = useState<string | null>("output");
-  const [outputLines, setOutputLines] = useState<string[]>([]);
+  // outputLines is replay-only data for when the Output terminal DOM node
+  // is (re)created — xterm itself is the live, on-screen source of truth
+  // for terminal content. Keeping this as a ref instead of React state
+  // means high-frequency terminal chunks no longer re-render `App`
+  // (fixes Issues G, H — `useTerminalManager` is called directly inside
+  // `App()`, so state here lived on App's fiber).
+  const outputLinesRef = useRef<string[]>([]);
   const xtermInstances = useRef<
     Record<string, { term: Terminal; fit: FitAddon }>
   >({});
@@ -44,25 +56,34 @@ export function useTerminalManager({
     setActiveTermId(id);
   };
 
-  const closeTerminal = (event: MouseEvent, idToClose: string) => {
-    event.stopPropagation();
-    window.api.killTerminal(idToClose);
-    delete xtermInstances.current[idToClose];
+  const closeTerminal = useCallback(
+    (event: MouseEvent, idToClose: string) => {
+      event.stopPropagation();
+      window.api.killTerminal(idToClose);
+      xtermInstances.current[idToClose]?.term.dispose();
+      window.api.offTerminalData(idToClose);
+      delete xtermInstances.current[idToClose];
 
-    setTermTabs((prev) => {
-      const newTabs = prev.filter((tab) => tab.id !== idToClose);
-      if (activeTermId === idToClose) {
-        setActiveTermId(
-          newTabs.length > 0 ? newTabs[newTabs.length - 1].id : null,
-        );
-      }
-      return newTabs;
-    });
-  };
+      setTermTabs((prev) => {
+        const newTabs = prev.filter((tab) => tab.id !== idToClose);
+
+        if (activeTermId === idToClose) {
+          setActiveTermId(
+            newTabs.length > 0 ? newTabs[newTabs.length - 1].id : null,
+          );
+        }
+
+        return newTabs;
+      });
+    },
+    [activeTermId],
+  );
 
   const removeDeadTerminal = (deadId: string) => {
     if (deadId === "output") return;
 
+    xtermInstances.current[deadId]?.term.dispose();
+    window.api.offTerminalData(deadId);
     delete xtermInstances.current[deadId];
 
     setTermTabs((prev) => {
@@ -84,18 +105,21 @@ export function useTerminalManager({
     });
   };
 
-  const appendOutputLine = (message: string) => {
-    setOutputLines((prev) => [...prev.slice(-500), `${message}\n`]);
-  };
+  const appendOutputLine = useCallback((message: string) => {
+    outputLinesRef.current = [
+      ...outputLinesRef.current.slice(-500),
+      `${message}\n`,
+    ];
+  }, []);
 
-  const clearOutput = () => {
-    setOutputLines([]);
+  const clearOutput = useCallback(() => {
+    outputLinesRef.current = [];
     xtermInstances.current.output?.term.clear();
-  };
+  }, []);
 
   useEffect(() => {
     window.api.onTerminalOutput((data: string) => {
-      setOutputLines((prev) => [...prev.slice(-500), data]);
+      outputLinesRef.current = [...outputLinesRef.current.slice(-500), data];
       if (xtermInstances.current.output) {
         xtermInstances.current.output.term.write(data);
       }
@@ -133,7 +157,9 @@ export function useTerminalManager({
           fitAddon.fit();
 
           if (tab.id === "output") {
-            term.write(outputLines.join("") || "Output panel ready.\r\n");
+            term.write(
+              outputLinesRef.current.join("") || "Output panel ready.\r\n",
+            );
           } else {
             term.onData((data) => {
               window.api.writeTerminal(tab.id, data);
@@ -152,7 +178,7 @@ export function useTerminalManager({
         }
       }
     });
-  }, [termTabs, outputLines]);
+  }, [termTabs]);
 
   useEffect(() => {
     if (!workspacePath) return;

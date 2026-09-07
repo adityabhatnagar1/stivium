@@ -1,5 +1,11 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
-import { useRef, useEffect, useState, type MouseEvent } from "react";
+import {
+  useRef,
+  useEffect,
+  useState,
+  useCallback,
+  type MouseEvent,
+} from "react";
 import { loader } from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import "@xterm/xterm/css/xterm.css";
@@ -11,7 +17,7 @@ import { ContextMenu } from "./components/ContextMenu";
 import { NameDialog } from "./components/NameDialog";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ErrorToast } from "./components/ErrorToast";
-import { FooterBar } from "./components/FooterBar";
+import { CursorFooterBridge } from "./components/CursorFooterBridge";
 import { TitleBar } from "./components/TitleBar";
 import { EditorTabs } from "./components/EditorTabs";
 import { EditorPane } from "./components/EditorPane";
@@ -35,7 +41,7 @@ import { useAppShortcuts } from "./hooks/useAppShortcuts";
 import { useEditorTabs } from "./hooks/useEditorTabs";
 import { useWindowChrome } from "./hooks/useWindowChrome";
 import { useDisableBrowserBehaviors } from "./hooks/useDisableBrowserBehaviors";
-import type { Tab } from "./types";
+import type { Tab, TreeNode } from "./types";
 
 loader.config({ monaco });
 registerBuiltInLanguages();
@@ -50,8 +56,9 @@ function App() {
   );
   const [searchQuery, setSearchQuery] = useState("");
   const [replaceQuery, setReplaceQuery] = useState("");
-  const [cursorLine, setCursorLine] = useState(1);
-  const [cursorColumn, setCursorColumn] = useState(1);
+  const cursorSetterRef = useRef<
+    ((line: number, column: number) => void) | null
+  >(null);
   const [leftPaneWidth, setLeftPaneWidth] = useState(280);
   const [terminalHeight, setTerminalHeight] = useState(260);
   const [isPetVisible, setIsPetVisible] = useState(false);
@@ -70,6 +77,8 @@ function App() {
   } = usePetState();
 
   const centerPaneRef = useRef<HTMLDivElement | null>(null);
+  const terminalPanelRef = useRef<HTMLDivElement | null>(null);
+  const leftPaneRef = useRef<HTMLDivElement | null>(null);
   const lspManagerRef = useRef<LanguageClientsManager | null>(null);
   const monacoEditorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(
     null,
@@ -196,9 +205,7 @@ function App() {
       const index = Number(event.key) - 1;
       if (Number.isNaN(index) || index < 0 || index >= PET_STATES.length)
         return;
-      setForcedState((current) =>
-        current === PET_STATES[index] ? null : PET_STATES[index],
-      );
+      const nextState = setForcedState === undefined ? null : undefined;
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -257,13 +264,28 @@ function App() {
 
   const startLeftPaneResize = (event: MouseEvent<HTMLDivElement>) => {
     event.preventDefault();
+    let rafId: number | null = null;
+    let latestWidth = leftPaneWidth;
+
     const onMouseMove = (moveEvent: globalThis.MouseEvent) => {
       const nextWidth = Math.min(520, Math.max(200, moveEvent.clientX));
-      setLeftPaneWidth(nextWidth);
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        latestWidth = nextWidth;
+        if (leftPaneRef.current) {
+          leftPaneRef.current.style.width = `${nextWidth}px`;
+        }
+      });
     };
     const onMouseUp = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      setLeftPaneWidth(latestWidth);
     };
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
@@ -273,34 +295,67 @@ function App() {
     event.preventDefault();
     const startY = event.clientY;
     const startHeight = terminalHeight;
+    // Measure once at drag-start instead of on every mousemove.
+    const centerHeight =
+      centerPaneRef.current?.getBoundingClientRect().height ??
+      window.innerHeight;
+    let rafId: number | null = null;
+    let latestHeight = startHeight;
+
     const onMouseMove = (moveEvent: globalThis.MouseEvent) => {
-      const centerHeight =
-        centerPaneRef.current?.getBoundingClientRect().height ??
-        window.innerHeight;
       const deltaY = startY - moveEvent.clientY;
       const nextHeight = Math.min(
         Math.max(160, startHeight + deltaY),
         Math.max(160, centerHeight - 180),
       );
-      setTerminalHeight(nextHeight);
+      if (rafId !== null) return;
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        latestHeight = nextHeight;
+        // Apply the live height directly to the DOM node during the
+        // drag — no React state update, no App re-render, no xterm
+        // fit() per pixel (fixes Issue K).
+        if (terminalPanelRef.current) {
+          terminalPanelRef.current.style.height = `${nextHeight}px`;
+        }
+      });
     };
     const onMouseUp = () => {
       window.removeEventListener("mousemove", onMouseMove);
       window.removeEventListener("mouseup", onMouseUp);
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+      // Commit the final height to React state once, at drag-end. This
+      // is what actually triggers `useTerminalManager`'s
+      // terminalHeight-keyed effect to call xterm's fit().
+      setTerminalHeight(latestHeight);
     };
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
+  const handleCursorChange = useCallback((line: number, column: number) => {
+    cursorSetterRef.current?.(line, column);
+  }, []);
 
+  const handleSelectNode = useCallback(
+    (node: TreeNode, parentPath: string) =>
+      setSelectedNode({ node, parentPath }),
+    [setSelectedNode],
+  );
+
+  const handleCreateTerminal = useCallback(
+    (cwd?: string) => void createTerminal(cwd),
+    [createTerminal],
+  );
+
+  const handlePetClick = useCallback(() => {
+    setClicking(true);
+    window.setTimeout(() => setClicking(false), 180);
+    setIsChatOpen((prev) => !prev);
+  }, [setClicking]);
   const resolvedActiveTabPath = resolveActiveTabPath(tabs, activeTabPath);
-  const getSelectedCode = (): string | null => {
-    const editorInstance = monacoEditorRef.current;
-    if (!editorInstance) return null;
-    const selection = editorInstance.getSelection();
-    const model = editorInstance.getModel();
-    if (!selection || !model || selection.isEmpty()) return null;
-    return model.getValueInRange(selection);
-  };
   const activeTab = tabs.find((t) => t.path === resolvedActiveTabPath);
   const hasContextNode = Boolean(contextMenu?.node);
 
@@ -338,6 +393,7 @@ function App() {
         style={{ display: "flex", flex: 1, minHeight: 0, overflow: "hidden" }}
       >
         <div
+          ref={leftPaneRef}
           style={{
             width: leftPaneWidth,
             minWidth: 0,
@@ -387,9 +443,7 @@ function App() {
                 });
             }}
             onOpenContextMenu={openContextMenu}
-            onSelectNode={(node, parentPath) =>
-              setSelectedNode({ node, parentPath })
-            }
+            onSelectNode={handleSelectNode}
             onFileClick={handleFileClick}
           />
         </div>
@@ -486,10 +540,7 @@ function App() {
             activeTab={activeTab}
             monacoEditorRef={monacoEditorRef}
             onEditorChange={handleEditorChange}
-            onCursorChange={(line, column) => {
-              setCursorLine(line);
-              setCursorColumn(column);
-            }}
+            onCursorChange={handleCursorChange}
           />
 
           <div
@@ -504,13 +555,14 @@ function App() {
           />
 
           <TerminalPanel
+            panelRef={terminalPanelRef}
             termTabs={termTabs}
             activeTermId={activeTermId}
             fileTreePath={fileTree?.path}
             height={terminalHeight}
             onSelectTab={setActiveTermId}
             onCloseTab={closeTerminal}
-            onCreateTerminal={(cwd) => void createTerminal(cwd)}
+            onCreateTerminal={createTerminal}
             onClearOutput={clearOutput}
           />
 
@@ -520,18 +572,14 @@ function App() {
             visible={isPetVisible}
             onHoverChange={setHovering}
             onDragStateChange={setDragging}
-            onClick={() => {
-              setClicking(true);
-              window.setTimeout(() => setClicking(false), 180);
-              setIsChatOpen((prev) => !prev);
-            }}
+            onClick={handlePetClick}
           />
 
           {isChatOpen && (
             <PetChatPanel
               anchor={{ x: 24, y: 84 }}
               activeTab={activeTab}
-              selectedCode={getSelectedCode()}
+              monacoEditorRef={monacoEditorRef}
               aiSettings={aiSettings}
               onClose={() => setIsChatOpen(false)}
               onOpenSettings={() => setIsSettingsOpen(true)}
@@ -629,10 +677,9 @@ function App() {
         }}
       />
 
-      <FooterBar
+      <CursorFooterBridge
+        cursorSetterRef={cursorSetterRef}
         workspaceName={fileTree?.name || "No workspace open"}
-        line={cursorLine}
-        column={cursorColumn}
         language={activeTab ? getLanguage(activeTab.name) : "plaintext"}
         encoding="UTF-8"
       />

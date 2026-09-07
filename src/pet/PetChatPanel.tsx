@@ -1,14 +1,15 @@
 import { useState } from "react";
-import type { CSSProperties } from "react";
+import type { CSSProperties, MutableRefObject } from "react";
+import type { editor as MonacoEditor } from "monaco-editor";
 import type { Tab } from "../types";
 import type { AiSettings, ChatMessage } from "../tauri/aiTypes";
-import { getLanguage } from "../utils/editor";
+import { getLanguage, getSelectedCodeFromEditor } from "../utils/editor";
 import { useAiSession, type AiSessionStatus } from "./useAiSession";
 
 type PetChatPanelProps = {
   anchor: { x: number; y: number };
   activeTab: Tab | undefined;
-  selectedCode: string | null;
+  monacoEditorRef: MutableRefObject<MonacoEditor.IStandaloneCodeEditor | null>;
   aiSettings: AiSettings;
   onClose: () => void;
   onStatusChange: (status: AiSessionStatus) => void;
@@ -56,7 +57,7 @@ function buildSystemContext(
 export function PetChatPanel({
   anchor,
   activeTab,
-  selectedCode,
+  monacoEditorRef,
   aiSettings,
   onClose,
   onStatusChange,
@@ -72,6 +73,12 @@ export function PetChatPanel({
 
   const runPrompt = (userText: string) => {
     if (!isConfigured || !aiSettings.provider || !aiSettings.model) return;
+    // Capture the selection at the moment the prompt is actually sent,
+    // instead of the parent querying Monaco on every render (fixes
+    // Issue T). This is also more correct: the selection used is
+    // whatever is selected right now, not whatever was selected on
+    // App's last unrelated render.
+    const selectedCode = getSelectedCodeFromEditor(monacoEditorRef.current);
     const messages: ChatMessage[] = [
       { role: "system", content: buildSystemContext(activeTab, selectedCode) },
       { role: "user", content: userText },

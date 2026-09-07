@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/explicit-function-return-type */
 import {
+  useCallback,
   useEffect,
   useState,
   type Dispatch,
@@ -146,26 +147,29 @@ export function useWorkspaceActions({
     await window.api.setLastWorkspace(null);
   };
 
-  const handleFileClick = async (filePath: string, fileName: string) => {
-    if (tabs.find((tab) => tab.path === filePath)) {
+  const handleFileClick = useCallback(
+    async (filePath: string, fileName: string) => {
+      if (tabs.find((tab) => tab.path === filePath)) {
+        setActiveTabPath(filePath);
+        return;
+      }
+
+      const content = await window.api.readFile(filePath);
+
+      setTabs((prev) => [
+        ...prev,
+        {
+          path: filePath,
+          name: fileName,
+          content,
+          savedContent: content,
+        },
+      ]);
+
       setActiveTabPath(filePath);
-      return;
-    }
-
-    const content = await window.api.readFile(filePath);
-
-    setTabs((prev) => [
-      ...prev,
-      {
-        path: filePath,
-        name: fileName,
-        content,
-        savedContent: content,
-      },
-    ]);
-
-    setActiveTabPath(filePath);
-  };
+    },
+    [tabs, setTabs, setActiveTabPath],
+  );
 
   const getTargetDirectory = () => {
     if (!fileTree) return null;
@@ -339,18 +343,21 @@ export function useWorkspaceActions({
     });
   };
 
-  const openContextMenu = (
-    event: MouseEvent<HTMLDivElement>,
-    node: TreeNode | null,
-    parentPath: string | null,
-  ) => {
-    setContextMenu({
-      x: event.clientX,
-      y: event.clientY,
-      node,
-      parentPath,
-    });
-  };
+  const openContextMenu = useCallback(
+    (
+      event: MouseEvent<HTMLDivElement>,
+      node: TreeNode | null,
+      parentPath: string | null,
+    ) => {
+      setContextMenu({
+        x: event.clientX,
+        y: event.clientY,
+        node,
+        parentPath,
+      });
+    },
+    [setContextMenu],
+  );
 
   const runContextAction = async (
     action:

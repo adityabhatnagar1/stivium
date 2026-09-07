@@ -1,4 +1,4 @@
-import { useState, type CSSProperties, type MouseEvent } from "react";
+import { memo, useState, type CSSProperties, type MouseEvent } from "react";
 import type { TreeNode } from "../types";
 import { IconFile, IconFolder, IconFolderOpen, IconCaretRight } from "./Icons";
 
@@ -18,7 +18,7 @@ type FileTreeNodeProps = {
 
 const INDENT_STEP = 12; // px per depth level — kept as a named constant, not a magic number re-typed at each call site
 
-export function FileTreeNode({
+function FileTreeNodeImpl({
   node,
   parentPath,
   selectedPath,
@@ -149,3 +149,5 @@ export function FileTreeNode({
     </div>
   );
 }
+
+export const FileTreeNode = memo(FileTreeNodeImpl);

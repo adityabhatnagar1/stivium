@@ -1,10 +1,21 @@
-import { useRef } from "react";
+import { memo, useRef } from "react";
 import Editor from "@monaco-editor/react";
 import * as monaco from "monaco-editor";
 import type { editor as MonacoEditor } from "monaco-editor";
 import type { MutableRefObject } from "react";
 import type { Tab } from "../types";
 import { getLanguage } from "../utils/editor";
+
+// Hoisted to module scope so this object has a single stable identity
+// for the lifetime of the app, instead of a fresh object (and therefore
+// a "changed" props diff for Monaco) on every EditorPane render.
+const EDITOR_OPTIONS = {
+  minimap: { enabled: false },
+  fontSize: 14,
+  fontFamily:
+    "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
+  fontLigatures: true,
+} as const;
 
 type EditorPaneProps = {
   activeTab: Tab | undefined;
@@ -13,7 +24,7 @@ type EditorPaneProps = {
   onCursorChange: (line: number, column: number) => void;
 };
 
-export function EditorPane({
+function EditorPaneImpl({
   activeTab,
   monacoEditorRef,
   onEditorChange,
@@ -80,13 +91,7 @@ export function EditorPane({
               onCursorChange(event.position.lineNumber, event.position.column);
             });
           }}
-          options={{
-            minimap: { enabled: false },
-            fontSize: 14,
-            fontFamily:
-              "JetBrains Mono, ui-monospace, SFMono-Regular, Menlo, Consolas, monospace",
-            fontLigatures: true,
-          }}
+          options={EDITOR_OPTIONS}
         />
       ) : (
         <div
@@ -105,3 +110,5 @@ export function EditorPane({
     </div>
   );
 }
+
+export const EditorPane = memo(EditorPaneImpl);

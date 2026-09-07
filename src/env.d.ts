@@ -55,6 +55,7 @@ declare global {
       resizeTerminal: (id: string, cols: number, rows: number) => void;
       killTerminal: (id: string) => void;
       onTerminalData: (id: string, callback: (data: string) => void) => void;
+      offTerminalData: (id: string) => void;
       onTerminalExit: (
         callback: (info: TerminalExitInfo) => void,
       ) => () => void;

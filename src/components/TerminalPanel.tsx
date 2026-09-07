@@ -1,9 +1,11 @@
-import type { MouseEvent } from "react";
+import { memo } from "react";
+import type { MouseEvent, RefObject } from "react";
 import type { TermTab } from "../types";
 
 import { IconTerminal, IconClose, IconPlus } from "./Icons";
 
 type TerminalPanelProps = {
+  panelRef: React.RefObject<HTMLDivElement>;
   termTabs: TermTab[];
   activeTermId: string | null;
   fileTreePath?: string;
@@ -14,7 +16,8 @@ type TerminalPanelProps = {
   onClearOutput: () => void;
 };
 
-export function TerminalPanel({
+function TerminalPanelImpl({
+  panelRef,
   termTabs,
   activeTermId,
   fileTreePath,
@@ -26,6 +29,7 @@ export function TerminalPanel({
 }: TerminalPanelProps): JSX.Element {
   return (
     <div
+      ref={panelRef}
       style={{
         display: "flex",
         flexDirection: "column",
@@ -180,3 +184,5 @@ export function TerminalPanel({
     </div>
   );
 }
+
+export const TerminalPanel = memo(TerminalPanelImpl);

@@ -1,4 +1,15 @@
 import type { Tab } from "../types";
+import type { editor as MonacoEditor } from "monaco-editor";
+
+export function getSelectedCodeFromEditor(
+  editorInstance: MonacoEditor.IStandaloneCodeEditor | null,
+): string | null {
+  if (!editorInstance) return null;
+  const selection = editorInstance.getSelection();
+  const model = editorInstance.getModel();
+  if (!selection || !model || selection.isEmpty()) return null;
+  return model.getValueInRange(selection);
+}
 
 export function getLanguage(fileName: string): string {
   if (fileName.endsWith(".v") || fileName.endsWith(".sv")) return "verilog";

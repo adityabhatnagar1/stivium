@@ -5,6 +5,8 @@
 
 .stv-pet-hitbox {
   position: absolute;
+  left: 0;
+  top: 0;
   width: var(--pet-hitbox-size);
   height: var(--pet-hitbox-size);
   /* Center the hitbox over the sprite's top-left anchor point. */

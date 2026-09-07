@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import type { PetState } from "./types";
 import { usePetPosition } from "./usePetPosition";
 
@@ -19,7 +19,7 @@ type StiviumPetProps = {
   onDragStateChange: (dragging: boolean) => void;
 };
 
-export function StiviumPet({
+function StiviumPetImpl({
   containerRef,
   petState,
   visible,
@@ -59,7 +59,7 @@ export function StiviumPet({
   return (
     <div
       className={`stv-pet-hitbox${isDragging ? " stv-pet-hitbox--dragging" : ""}`}
-      style={{ left: position.x, top: position.y }}
+      style={{ transform: `translate3d(${position.x}px, ${position.y}px, 0)` }}
       onPointerDown={handlePointerDown}
       onPointerMove={handlePointerMove}
       onPointerUp={handlePointerUp}
@@ -99,3 +99,5 @@ export function StiviumPet({
     </div>
   );
 }
+
+export const StiviumPet = memo(StiviumPetImpl);
