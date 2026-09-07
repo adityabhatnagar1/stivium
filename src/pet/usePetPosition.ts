@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
+import { PET_FRAME_WIDTH, PET_FRAME_HEIGHT } from "./petAnimations";
 
-const PET_SIZE = 48; // sprite box, px — keep in sync with pet.css's --pet-size
 const EDGE_MARGIN = 8;
 
 type Bounds = { width: number; height: number };
@@ -9,17 +9,17 @@ function clamp(position: { x: number; y: number }, bounds: Bounds) {
   return {
     x: Math.min(
       Math.max(position.x, EDGE_MARGIN),
-      bounds.width - PET_SIZE - EDGE_MARGIN,
+      bounds.width - PET_FRAME_WIDTH - EDGE_MARGIN,
     ),
     y: Math.min(
       Math.max(position.y, EDGE_MARGIN),
-      bounds.height - PET_SIZE - EDGE_MARGIN,
+      bounds.height - PET_FRAME_HEIGHT - EDGE_MARGIN,
     ),
   };
 }
 
 type UsePetPositionParams = {
-  containerRef: React.RefObject<HTMLElement>;
+  containerRef: React.RefObject<HTMLElement | null>;
 };
 
 type UsePetPositionResult = {

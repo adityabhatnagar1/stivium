@@ -28,6 +28,7 @@ import { PetChatPanel } from "./pet/PetChatPanel";
 import { PetSettingsDialog } from "./pet/PetSettingsDialog";
 import { PetReviewDialog } from "./pet/PetReviewDialog";
 import { usePetState } from "./pet/usePetState";
+import type { PetState } from "./pet/types";
 import type { AiSettings } from "./tauri/aiTypes";
 import {
   getBuiltInLspClientConfigs,
@@ -73,6 +74,7 @@ function App() {
     setHovering,
     setClicking,
     setDragging,
+    forcedState,
     setForcedState,
   } = usePetState();
 
@@ -177,18 +179,7 @@ function App() {
 
   useEffect(() => {
     if (!import.meta.env.DEV) return;
-    const PET_STATES: Array<
-      | "idle"
-      | "hover"
-      | "click"
-      | "dragging"
-      | "thinking"
-      | "working"
-      | "ready"
-      | "error"
-      | "needsInput"
-      | "review"
-    > = [
+    const PET_STATES: PetState[] = [
       "idle",
       "hover",
       "click",
@@ -202,14 +193,19 @@ function App() {
     ];
     const onKeyDown = (event: KeyboardEvent) => {
       if (!event.altKey || !event.shiftKey) return;
-      const index = Number(event.key) - 1;
+      // "1".."9" then "0" maps to PET_STATES[0..9] (10 states total).
+      const index = event.key === "0" ? 9 : Number(event.key) - 1;
       if (Number.isNaN(index) || index < 0 || index >= PET_STATES.length)
         return;
-      const nextState = setForcedState === undefined ? null : undefined;
+      event.preventDefault();
+      const requested = PET_STATES[index];
+      // Pressing the same state's key again releases the forced state
+      // back to real (AI/pointer-driven) state instead of getting stuck.
+      setForcedState(forcedState === requested ? null : requested);
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
-  }, [setForcedState]);
+  }, [forcedState, setForcedState]);
 
   useEffect(() => {
     const closeContextMenu = () => setContextMenu(null);

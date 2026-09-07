@@ -2,16 +2,16 @@ import { memo, useEffect, useRef, useState } from "react";
 import type { PetState } from "./types";
 import { usePetPosition } from "./usePetPosition";
 
-// Placeholder sprite: swap `src` for the real 32x32 Jungle-Babbler pixel-art
-// asset from the Phase 1 art pass once it's exported. Referencing a single
-// static image here (rather than a spritesheet-stepping <canvas>) keeps
-// this component decoupled from however that asset ends up packaged; if
-// the final art is a spritesheet, only this <img>/background-image needs
-// to change, not the state machine or drag/clamp logic around it.
-import petSprite from "../assets/pet-sprite.png";
+// The pet's art is the supplied Atiyah Codex Pet spritesheet
+// (`src/assets/pet-atiyah-spritesheet.webp`). It's rendered as a plain CSS
+// background-position sprite (see `.stv-pet-sprite--<state>` in
+// `pet.css`), not an <img src>, since a single element needs to step
+// through different frames per `petState` — the state-to-row/frame mapping
+// lives in `petAnimations.ts`. This div only ever needs its class name to
+// change; it never touches raw frame numbers.
 
 type StiviumPetProps = {
-  containerRef: React.RefObject<HTMLElement>;
+  containerRef: React.RefObject<HTMLElement | null>;
   petState: PetState;
   visible: boolean;
   onHoverChange: (hovering: boolean) => void;
@@ -82,10 +82,8 @@ function StiviumPetImpl({
         }
       }}
     >
-      <img
-        src={petSprite}
-        alt=""
-        draggable={false}
+      <div
+        aria-hidden="true"
         className={`stv-pet-sprite stv-pet-sprite--${petState}`}
       />
       {(petState === "thinking" ||
