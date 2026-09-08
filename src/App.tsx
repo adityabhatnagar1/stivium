@@ -24,7 +24,7 @@ import { EditorPane } from "./components/EditorPane";
 import { IconPlay, IconSparkle } from "./components/Icons";
 import { LanguageClientsManager } from "./lsp/client";
 import { StiviumPet } from "./pet/StiviumPet";
-import { PetChatPanel } from "./pet/PetChatPanel";
+import { AiWorkspacePanel } from "./ai/AiWorkspacePanel";
 import { PetSettingsDialog } from "./pet/PetSettingsDialog";
 import { PetReviewDialog } from "./pet/PetReviewDialog";
 import { usePetState } from "./pet/usePetState";
@@ -61,6 +61,7 @@ function App() {
     ((line: number, column: number) => void) | null
   >(null);
   const [leftPaneWidth, setLeftPaneWidth] = useState(280);
+  const [aiPanelWidth, setAiPanelWidth] = useState(360);
   const [terminalHeight, setTerminalHeight] = useState(260);
   const [isPetVisible, setIsPetVisible] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -79,8 +80,9 @@ function App() {
   } = usePetState();
 
   const centerPaneRef = useRef<HTMLDivElement | null>(null);
-  const terminalPanelRef = useRef<HTMLDivElement | null>(null);
   const leftPaneRef = useRef<HTMLDivElement | null>(null);
+  const aiPanelRef = useRef<HTMLDivElement | null>(null);
+  const terminalPanelRef = useRef<HTMLDivElement | null>(null);
   const lspManagerRef = useRef<LanguageClientsManager | null>(null);
   const monacoEditorRef = useRef<MonacoEditor.IStandaloneCodeEditor | null>(
     null,
@@ -283,6 +285,45 @@ function App() {
       }
       setLeftPaneWidth(latestWidth);
     };
+    window.addEventListener("mousemove", onMouseMove);
+    window.addEventListener("mouseup", onMouseUp);
+  };
+
+  const startAiPanelResize = (event: MouseEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    let rafId: number | null = null;
+    let latestWidth = aiPanelWidth;
+
+    const onMouseMove = (moveEvent: globalThis.MouseEvent) => {
+      const nextWidth = Math.min(
+        640,
+        Math.max(320, window.innerWidth - moveEvent.clientX),
+      );
+
+      if (rafId !== null) return;
+
+      rafId = requestAnimationFrame(() => {
+        rafId = null;
+        latestWidth = nextWidth;
+
+        if (aiPanelRef.current) {
+          aiPanelRef.current.style.width = `${nextWidth}px`;
+        }
+      });
+    };
+
+    const onMouseUp = () => {
+      window.removeEventListener("mousemove", onMouseMove);
+      window.removeEventListener("mouseup", onMouseUp);
+
+      if (rafId !== null) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+
+      setAiPanelWidth(latestWidth);
+    };
+
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
   };
@@ -570,13 +611,26 @@ function App() {
             onDragStateChange={setDragging}
             onClick={handlePetClick}
           />
+        </div>
 
+        {isChatOpen && (
+          <div
+            className="stv-ai-panel-resize"
+            onMouseDown={startAiPanelResize}
+          />
+        )}
+
+        <div
+          ref={aiPanelRef}
+          className="stv-ai-panel-wrapper"
+          style={{ width: isChatOpen ? aiPanelWidth : 0 }}
+        >
           {isChatOpen && (
-            <PetChatPanel
-              anchor={{ x: 24, y: 84 }}
+            <AiWorkspacePanel
               activeTab={activeTab}
               monacoEditorRef={monacoEditorRef}
               aiSettings={aiSettings}
+              onAiSettingsChange={setAiSettings}
               onClose={() => setIsChatOpen(false)}
               onOpenSettings={() => setIsSettingsOpen(true)}
               onStatusChange={(status) => {

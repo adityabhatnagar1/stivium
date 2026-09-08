@@ -14,6 +14,7 @@ import type {
   AiEvent,
   AiSettings,
   ChatMessage,
+  Conversation,
   PetPosition,
   ProviderId,
 } from "./tauri/aiTypes";
@@ -89,6 +90,9 @@ declare global {
         requestId: string,
         callback: (event: AiEvent) => void,
       ) => () => void;
+      listConversations: () => Promise<Conversation[]>;
+      saveConversation: (conversation: Conversation) => Promise<void>;
+      deleteConversation: (conversationId: string) => Promise<void>;
     };
     lsp: {
       spawn: (options: LspSpawnOptions) => Promise<LspSpawnResult>;

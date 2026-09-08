@@ -16,6 +16,7 @@ const DEFAULT_MODELS: Record<ProviderId, string> = {
   deepseek: "deepseek-chat",
   groq: "llama-3.3-70b-versatile",
   ollama: "llama3",
+  gemini: "gemini-2.5-flash",
 };
 
 export function PetSettingsDialog({

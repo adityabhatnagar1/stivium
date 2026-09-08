@@ -23,6 +23,7 @@ import type {
   AiEvent,
   AiSettings,
   ChatMessage,
+  Conversation,
   PetPosition,
   ProviderId,
 } from "./aiTypes";
@@ -300,6 +301,13 @@ const api = {
   // ---- AI pet: credentials (OS credential store, never persisted here) ----
   saveProviderKey: (provider: ProviderId, apiKey: string): Promise<void> =>
     invoke("save_provider_key", { provider, apiKey }),
+  // ---- AI workspace: conversation history (conversations.json) ----
+  listConversations: (): Promise<Conversation[]> =>
+    invoke("list_conversations"),
+  saveConversation: (conversation: Conversation): Promise<void> =>
+    invoke("save_conversation", { conversation }),
+  deleteConversation: (conversationId: string): Promise<void> =>
+    invoke("delete_conversation", { conversationId }),
   deleteProviderKey: (provider: ProviderId): Promise<void> =>
     invoke("delete_provider_key", { provider }),
   hasProviderKey: (provider: ProviderId): Promise<boolean> =>

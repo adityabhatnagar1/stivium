@@ -1,5 +1,7 @@
 pub mod commands;
 
+pub mod conversations;
+
 mod credentials;
 
 mod providers;
