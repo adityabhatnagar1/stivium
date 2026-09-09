@@ -1,9 +1,9 @@
 :root {
   /* Real (non-square) Atiyah frame box — keep in sync with
      PET_FRAME_WIDTH/PET_FRAME_HEIGHT in src/pet/petAnimations.ts. */
-  --pet-frame-w: 48px;
-  --pet-frame-h: 52px;
-  --pet-hitbox-size: 72px; /* larger invisible hitbox than the sprite, per report */
+  --pet-frame-w: 67px;
+  --pet-frame-h: 73px;
+  --pet-hitbox-size: 96px;
 }
 
 .stv-pet-hitbox {
@@ -40,7 +40,7 @@
   height: var(--pet-frame-h);
   background-image: url("./pet-atiyah-spritesheet.webp");
   background-repeat: no-repeat;
-  background-size: 384px 572px;
+  background-size: 538px 655px;
   background-color: transparent;
   image-rendering: pixelated;
   pointer-events: none;
@@ -57,223 +57,242 @@
   100% {
     transform: scaleY(1) translateY(0);
   }
+
   50% {
     transform: scaleY(1.03) translateY(-1px);
   }
 }
-/* petAnimations: idle -> row 0 "sitting, blinking", 7 frames */
+
+/* Row 0: idle, 6 frames */
 @keyframes stv-pet-row0 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -336px; /* 7 * 48px */
+    background-position-x: -402px;
   }
 }
+
 .stv-pet-sprite--idle {
   background-position-y: 0px;
   animation:
     stv-pet-idle-breathe 2.4s var(--ease-standard) infinite,
-    stv-pet-row0 3.2s steps(7) infinite;
+    stv-pet-row0 3.2s steps(6) infinite;
 }
 
+/* Hover / attention motion */
 @keyframes stv-pet-hover-perk {
   0%,
   100% {
     transform: translateY(0) rotate(0deg);
   }
+
   50% {
     transform: translateY(-2px) rotate(-2deg);
   }
 }
-/* petAnimations: hover / needsInput -> row 3 "waving", 4 frames */
+
+/* Row 3: waving, 4 frames */
 @keyframes stv-pet-row3 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -192px; /* 4 * 48px */
+    background-position-x: -268px;
   }
 }
+
 .stv-pet-sprite--hover {
-  background-position-y: -156px; /* row 3 * 52px */
+  background-position-y: -219px;
   animation:
     stv-pet-hover-perk 0.6s var(--ease-spring) infinite,
     stv-pet-row3 0.8s steps(4) infinite;
 }
 
-/* petAnimations: click -> row 10 "head-turn reveal", 8 frames, one-shot */
-@keyframes stv-pet-row10 {
+/* Click: row 8, 6 frames */
+@keyframes stv-pet-row8 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -384px; /* 8 * 48px */
+    background-position-x: -402px;
   }
 }
+
 .stv-pet-sprite--click {
-  background-position-y: -520px; /* row 10 * 52px */
+  background-position-y: -584px;
   animation:
     stv-pet-icon-squash 0.18s var(--ease-spring),
-    stv-pet-row10 0.2s steps(8) 1;
+    stv-pet-row8 0.2s steps(6) 1;
 }
+
 @keyframes stv-pet-icon-squash {
   0% {
     transform: scale(1);
   }
+
   40% {
     transform: scale(0.85, 1.12);
   }
+
   100% {
     transform: scale(1);
   }
 }
 
-/* petAnimations: dragging -> row 2 "rowing stroke B", 8 frames, looped */
-@keyframes stv-pet-row2 {
+/* Row 1: dragging, 8 frames */
+@keyframes stv-pet-row1 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -384px; /* 8 * 48px */
+    background-position-x: -536px;
   }
 }
+
 .stv-pet-sprite--dragging {
-  background-position-y: -104px; /* row 2 * 52px */
-  animation: stv-pet-row2 0.5s steps(8) infinite;
+  background-position-y: -73px;
+  animation: stv-pet-row1 0.5s steps(8) infinite;
   transform: scale(1.08) rotate(-4deg);
   filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.45));
 }
 
+/* Working bounce */
 @keyframes stv-pet-working-bounce {
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-4px);
   }
 }
-/* petAnimations: working -> row 1 "rowing stroke A", 8 frames, looped */
-@keyframes stv-pet-row1 {
+
+/* Row 2: working, 8 frames */
+@keyframes stv-pet-row2 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -384px; /* 8 * 48px */
+    background-position-x: -536px;
   }
 }
+
 .stv-pet-sprite--working {
-  background-position-y: -52px; /* row 1 * 52px */
+  background-position-y: -146px;
   animation:
     stv-pet-working-bounce 0.9s var(--ease-standard) infinite,
-    stv-pet-row1 0.55s steps(8) infinite;
+    stv-pet-row2 0.55s steps(8) infinite;
 }
 
-/* petAnimations: thinking -> row 8 "hand to chin", 6 frames, looped */
-@keyframes stv-pet-row8 {
-  from {
-    background-position-x: 0;
-  }
-  to {
-    background-position-x: -288px; /* 6 * 48px */
-  }
-}
-.stv-pet-sprite--thinking {
-  background-position-y: -416px; /* row 8 * 52px */
-  animation:
-    stv-pet-idle-breathe 3s var(--ease-standard) infinite,
-    stv-pet-row8 1.6s steps(6) infinite;
-}
-
-@keyframes stv-pet-ready-pop {
-  0% {
-    transform: scale(1);
-  }
-  35% {
-    transform: scale(1.18);
-  }
-  60% {
-    transform: scale(0.95);
-  }
-  100% {
-    transform: scale(1);
-  }
-}
-/* petAnimations: ready -> row 6 "open-palm presenting", 6 frames, one-shot */
+/* Row 6: thinking, 6 frames */
 @keyframes stv-pet-row6 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -288px; /* 6 * 48px */
+    background-position-x: -402px;
   }
 }
+
+.stv-pet-sprite--thinking {
+  background-position-y: -438px;
+  animation:
+    stv-pet-idle-breathe 3s var(--ease-standard) infinite,
+    stv-pet-row6 1.6s steps(6) infinite;
+}
+
+/* Ready pop */
+@keyframes stv-pet-ready-pop {
+  0% {
+    transform: scale(1);
+  }
+
+  35% {
+    transform: scale(1.18);
+  }
+
+  60% {
+    transform: scale(0.95);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Ready uses row 3 waving, 4 frames */
 .stv-pet-sprite--ready {
-  background-position-y: -312px; /* row 6 * 52px */
+  background-position-y: -219px;
   animation:
     stv-pet-ready-pop 0.5s var(--ease-spring),
-    stv-pet-row6 0.6s steps(6) 1;
+    stv-pet-row3 0.6s steps(4) 1;
   filter: drop-shadow(0 0 6px var(--color-accent));
 }
 
+/* Error shake */
 @keyframes stv-pet-error-shake {
   0%,
   100% {
     transform: translateX(0);
   }
+
   20% {
     transform: translateX(-3px);
   }
+
   40% {
     transform: translateX(3px);
   }
+
   60% {
     transform: translateX(-2px);
   }
+
   80% {
     transform: translateX(2px);
   }
 }
-/* petAnimations: error -> row 4 "uneasy / wavering mouth", 5 frames, one-shot */
+
+/* Row 4: uneasy/error, 5 frames */
 @keyframes stv-pet-row4 {
   from {
     background-position-x: 0;
   }
+
   to {
-    background-position-x: -240px; /* 5 * 48px */
+    background-position-x: -335px;
   }
 }
+
 .stv-pet-sprite--error {
-  background-position-y: -208px; /* row 4 * 52px */
+  background-position-y: -292px;
   animation:
     stv-pet-error-shake 0.4s var(--ease-standard),
     stv-pet-row4 0.5s steps(5) 1;
   filter: drop-shadow(0 0 6px var(--color-danger));
 }
 
-/* petAnimations: needsInput -> row 3 "waving", looped continuously
-   (same pose as hover, slower/persistent since it needs attention). */
+/* Needs input: row 3 waving */
 .stv-pet-sprite--needsInput {
-  background-position-y: -156px; /* row 3 * 52px */
+  background-position-y: -219px;
   animation:
     stv-pet-hover-perk 1.2s var(--ease-standard) infinite,
     stv-pet-row3 1s steps(4) infinite;
   filter: drop-shadow(0 0 6px var(--color-warn));
 }
 
-/* petAnimations: review -> row 9 "head-turn look/consider", 8 frames, looped */
-@keyframes stv-pet-row9 {
-  from {
-    background-position-x: 0;
-  }
-  to {
-    background-position-x: -384px; /* 8 * 48px */
-  }
-}
+/* Review: row 8, 6 frames */
 .stv-pet-sprite--review {
-  background-position-y: -468px; /* row 9 * 52px */
-  animation: stv-pet-row9 1.8s steps(8) infinite;
+  background-position-y: -584px;
+  animation: stv-pet-row8 1.8s steps(6) infinite;
   filter: drop-shadow(0 0 6px var(--color-accent-2));
 }
 

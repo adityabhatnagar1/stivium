@@ -44,7 +44,7 @@ import type { PetState } from "./types";
 
 /** Native spritesheet grid (before any display-time scaling). */
 export const ATIYAH_SHEET_COLUMNS = 8;
-export const ATIYAH_SHEET_ROWS = 11;
+export const ATIYAH_SHEET_ROWS = 9;
 export const ATIYAH_NATIVE_FRAME_WIDTH = 192;
 export const ATIYAH_NATIVE_FRAME_HEIGHT = 208;
 
@@ -54,7 +54,7 @@ export const ATIYAH_NATIVE_FRAME_HEIGHT = 208;
  * while preserving Atiyah's real (non-square) aspect ratio instead of
  * stretching it to a square.
  */
-export const ATIYAH_DISPLAY_SCALE = 0.25;
+export const ATIYAH_DISPLAY_SCALE = 0.35;
 export const PET_FRAME_WIDTH = Math.round(
   ATIYAH_NATIVE_FRAME_WIDTH * ATIYAH_DISPLAY_SCALE,
 ); // 48px
@@ -75,20 +75,16 @@ export type PetAnimationDef = {
 
 /** Every `PetState` mapped to the closest real Atiyah pose. */
 export const PET_ANIMATIONS: Record<PetState, PetAnimationDef> = {
-  idle: { row: 0, frameCount: 7, durationMs: 3200, loop: true },
+  idle: { row: 0, frameCount: 6, durationMs: 3200, loop: true },
   hover: { row: 3, frameCount: 4, durationMs: 800, loop: true },
-  // App.tsx holds the "click" state for only 180ms (setClicking(true) then
-  // a 180ms timeout) before it hands off to whatever state follows, so
-  // this stays short (~200ms, matching the spec's "click response:
-  // ~100-200ms" target) rather than the sheet's full 8-frame reveal.
-  click: { row: 10, frameCount: 8, durationMs: 200, loop: false },
-  dragging: { row: 2, frameCount: 8, durationMs: 500, loop: true },
-  thinking: { row: 8, frameCount: 6, durationMs: 1600, loop: true },
-  working: { row: 1, frameCount: 8, durationMs: 550, loop: true },
-  ready: { row: 6, frameCount: 6, durationMs: 600, loop: false },
+  click: { row: 8, frameCount: 6, durationMs: 200, loop: false },
+  dragging: { row: 1, frameCount: 8, durationMs: 500, loop: true },
+  thinking: { row: 6, frameCount: 6, durationMs: 1600, loop: true },
+  working: { row: 2, frameCount: 8, durationMs: 550, loop: true },
+  ready: { row: 3, frameCount: 4, durationMs: 600, loop: false },
   error: { row: 4, frameCount: 5, durationMs: 500, loop: false },
   needsInput: { row: 3, frameCount: 4, durationMs: 1000, loop: true },
-  review: { row: 9, frameCount: 8, durationMs: 1800, loop: true },
+  review: { row: 8, frameCount: 6, durationMs: 1800, loop: true },
 };
 
 /** Rows present on the sheet but not mapped to any V1 state yet. */
