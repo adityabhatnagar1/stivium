@@ -162,3 +162,116 @@ export function IconSparkle({ size, ...rest }: IconProps): JSX.Element {
     </svg>
   );
 }
+
+/* ---- AI workspace icon set ----
+ * Sourced from Lucide (ISC license, lucide.dev/icons) and redrawn as
+ * inline components so they inherit the same `base()` stroke/viewBox
+ * contract as the rest of this file — no separate icon runtime, no new
+ * dependency, just paths that match Lucide's actual geometry. Scoped to
+ * the AI chat panel redesign; the older hand-drawn icons above are left
+ * untouched since TitleBar / EditorTabs / TerminalPanel still use them. */
+
+export function IconPanelLeft({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <rect x="3" y="3" width="18" height="18" rx="2.5" />
+      <path d="M9 3v18" />
+    </svg>
+  );
+}
+
+export function IconMinimize2({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="m14 10 7-7" />
+      <path d="M20 10h-6V4" />
+      <path d="m3 21 7-7" />
+      <path d="M4 14h6v6" />
+    </svg>
+  );
+}
+
+export function IconMaximize2({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M15 3h6v6" />
+      <path d="m21 3-7 7" />
+      <path d="m3 21 7-7" />
+      <path d="M9 21H3v-6" />
+    </svg>
+  );
+}
+
+export function IconPaperclip({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="m16 6-8.414 8.586a2 2 0 0 0 2.829 2.829l8.414-8.586a4 4 0 1 0-5.657-5.657l-8.379 8.551a6 6 0 1 0 8.485 8.485l8.379-8.551" />
+    </svg>
+  );
+}
+
+export function IconArrowUp({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="m5 12 7-7 7 7" />
+      <path d="M12 19V5" />
+    </svg>
+  );
+}
+
+export function IconStop({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} fill="currentColor" stroke="none" {...rest}>
+      <rect x="6" y="6" width="12" height="12" rx="2" />
+    </svg>
+  );
+}
+
+export function IconChevronDown({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="m6 9 6 6 6-6" />
+    </svg>
+  );
+}
+
+export function IconGitBranch({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M15 6a9 9 0 0 0-9 9V3" />
+      <circle cx="18" cy="6" r="3" />
+      <circle cx="6" cy="18" r="3" />
+    </svg>
+  );
+}
+
+export function IconLayers({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z" />
+      <path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12" />
+      <path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17" />
+    </svg>
+  );
+}
+
+export function IconFileDiff({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z" />
+      <path d="M9 10h6" />
+      <path d="M12 13V7" />
+      <path d="M9 17h6" />
+    </svg>
+  );
+}
+
+export function IconExternalLink({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M21 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h6" />
+      <path d="m21 3-9 9" />
+      <path d="M15 3h6v6" />
+    </svg>
+  );
+}

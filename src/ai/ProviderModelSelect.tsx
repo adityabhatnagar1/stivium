@@ -1,7 +1,6 @@
-import type { CSSProperties } from "react";
 import type { AiSettings, ProviderId } from "../tauri/aiTypes";
 import { PROVIDER_LABELS } from "../tauri/aiTypes";
-import { IconSettings } from "../components/Icons";
+import { IconSettings, IconLayers, IconChevronDown } from "../components/Icons";
 
 type ProviderModelSelectProps = {
   settings: AiSettings;
@@ -18,11 +17,12 @@ const DEFAULT_MODELS: Record<ProviderId, string> = {
   ollama: "llama3",
 };
 
-/** A compact, single-row provider + model picker that lives in the
- * composer header. It reads/writes the same `AiSettings` (persisted via
- * `window.api.setAiSettings`, exactly like `PetSettingsDialog`) so the
- * two surfaces never fall out of sync — this is deliberately *not* a
- * second settings/state system. API key entry stays exclusive to
+/** A compact provider + model picker that lives in the composer
+ * toolbar, styled as a single pill trigger (à la the reference design's
+ * "Skills" control). It reads/writes the same `AiSettings` (persisted
+ * via `window.api.setAiSettings`, exactly like `PetSettingsDialog`) so
+ * the two surfaces never fall out of sync — this is deliberately *not*
+ * a second settings/state system. API key entry stays exclusive to
  * `PetSettingsDialog` (opened here via `onOpenFullSettings`), since a
  * secret-entry field doesn't belong in an always-visible toolbar. */
 export function ProviderModelSelect({
@@ -34,39 +34,40 @@ export function ProviderModelSelect({
   const model = settings.model ?? DEFAULT_MODELS[provider];
 
   return (
-    <div style={rowStyle}>
-      <select
-        className="stv-input"
-        style={selectStyle}
-        value={provider}
-        onChange={(event) => {
-          const next = event.target.value as ProviderId;
-          void window.api
-            .setAiSettings({
-              ...settings,
-              provider: next,
-              model: DEFAULT_MODELS[next],
-            })
-            .then(() =>
-              onChange({
+    <div className="stv-ai-model-picker">
+      <div className="stv-ai-model-picker__pill" title="AI provider">
+        <IconLayers size={12} />
+        <select
+          className="stv-ai-model-picker__select"
+          value={provider}
+          onChange={(event) => {
+            const next = event.target.value as ProviderId;
+            void window.api
+              .setAiSettings({
                 ...settings,
                 provider: next,
                 model: DEFAULT_MODELS[next],
-              }),
-            );
-        }}
-        title="AI provider"
-      >
-        {(Object.keys(PROVIDER_LABELS) as ProviderId[]).map((id) => (
-          <option key={id} value={id}>
-            {PROVIDER_LABELS[id]}
-          </option>
-        ))}
-      </select>
+              })
+              .then(() =>
+                onChange({
+                  ...settings,
+                  provider: next,
+                  model: DEFAULT_MODELS[next],
+                }),
+              );
+          }}
+        >
+          {(Object.keys(PROVIDER_LABELS) as ProviderId[]).map((id) => (
+            <option key={id} value={id}>
+              {PROVIDER_LABELS[id]}
+            </option>
+          ))}
+        </select>
+        <IconChevronDown size={11} className="stv-ai-model-picker__chevron" />
+      </div>
 
       <input
-        className="stv-input"
-        style={modelInputStyle}
+        className="stv-input stv-ai-model-picker__model-input"
         value={model}
         onChange={(event) => {
           const next = event.target.value;
@@ -81,46 +82,13 @@ export function ProviderModelSelect({
 
       <button
         type="button"
-        className="stv-icon-btn"
-        style={gearStyle}
+        className="stv-ai-composer__icon-btn"
         onClick={onOpenFullSettings}
         title="AI provider settings"
         aria-label="AI provider settings"
       >
-        <IconSettings size={13} />
+        <IconSettings size={14} />
       </button>
     </div>
   );
 }
-
-const rowStyle: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  gap: "6px",
-  minWidth: 0,
-};
-
-const selectStyle: CSSProperties = {
-  fontSize: "11px",
-  padding: "3px 6px",
-  height: "var(--control-size-compact)",
-  maxWidth: "112px",
-  flexShrink: 0,
-};
-
-const modelInputStyle: CSSProperties = {
-  fontSize: "11px",
-  padding: "3px 6px",
-  height: "var(--control-size-compact)",
-  minWidth: 0,
-  flex: 1,
-};
-
-const gearStyle: CSSProperties = {
-  flexShrink: 0,
-  width: "var(--control-size-compact)",
-  height: "var(--control-size-compact)",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-};

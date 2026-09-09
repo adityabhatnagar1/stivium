@@ -62,6 +62,8 @@ function App() {
   >(null);
   const [leftPaneWidth, setLeftPaneWidth] = useState(280);
   const [aiPanelWidth, setAiPanelWidth] = useState(360);
+  const [isAiPanelMaximized, setIsAiPanelMaximized] = useState(false);
+  const aiPanelWidthBeforeMaximizeRef = useRef(360);
   const [terminalHeight, setTerminalHeight] = useState(260);
   const [isPetVisible, setIsPetVisible] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
@@ -322,10 +324,27 @@ function App() {
       }
 
       setAiPanelWidth(latestWidth);
+      // A manual drag supersedes whatever the maximize toggle set, so
+      // the header button's pressed state doesn't lie about the panel
+      // no longer being at its maximize width.
+      setIsAiPanelMaximized(false);
     };
 
     window.addEventListener("mousemove", onMouseMove);
     window.addEventListener("mouseup", onMouseUp);
+  };
+
+  const handleToggleAiPanelMaximize = () => {
+    setIsAiPanelMaximized((prev) => {
+      const next = !prev;
+      if (next) {
+        aiPanelWidthBeforeMaximizeRef.current = aiPanelWidth;
+        setAiPanelWidth(640);
+      } else {
+        setAiPanelWidth(aiPanelWidthBeforeMaximizeRef.current);
+      }
+      return next;
+    });
   };
 
   const startTerminalResize = (event: MouseEvent<HTMLDivElement>) => {
@@ -592,6 +611,8 @@ function App() {
                 setAiState("review");
                 setReviewContent(proposedContent);
               }}
+              isMaximized={isAiPanelMaximized}
+              onToggleMaximize={handleToggleAiPanelMaximize}
             />
           )}
         </div>

@@ -1,55 +1,22 @@
-/* AI workspace panel — "soft precision": the glass/glow/typography
- * choices here are intentionally restrained. Every color, radius, and
- * spacing value below reads from Stivium's existing tokens (main.css)
- * rather than introducing a second palette; the only *new* custom
- * properties are the couple of glass/glow values scoped to
- * `.stv-ai-panel-wrapper` itself. */
+/* AI workspace panel — "Linear card" redesign.
+ * The panel now reads as a crisp, elevated card (solid surface, 1px
+ * border, real shadow, rounded on every corner) instead of the old
+ * blurred glass sheet — this is what the brief calls "sharp boxes".
+ * Every color/radius/spacing value still reads from Stivium's existing
+ * tokens (main.css); no second palette is introduced. */
 
 .stv-ai-panel-wrapper {
-  --ai-glass-bg: color-mix(in srgb, var(--color-surface) 78%, transparent);
-  --ai-glow-color: color-mix(in srgb, var(--color-accent) 55%, transparent);
-
   position: relative;
   height: 100%;
   overflow: hidden;
   flex-shrink: 0;
-  border-left: 1px solid var(--color-border);
-  background: var(--ai-glass-bg);
-  -webkit-backdrop-filter: blur(14px);
-  backdrop-filter: blur(14px);
+  background: transparent;
+  /* Inset gap on three sides is what makes the panel float above the
+   * editor shell rather than sit flush against every window edge —
+   * it stays docked to the right, it just no longer looks welded on. */
+  padding: 8px 8px 8px 0;
+  box-sizing: border-box;
   transition: width var(--dur-slow) var(--ease-out-expo);
-}
-
-/* The ambient glow: a single 1px inset line whose opacity breathes very
- * slowly. No blur radius, no box-shadow, no layered pseudo-elements —
- * one compositor-friendly `opacity` animation on a `::before` the size
- * of the panel border. This is deliberately the *cheapest* possible
- * "alive" signal, not a decorative centerpiece. */
-.stv-ai-panel-wrapper::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  box-shadow: inset 1px 0 0 0 var(--ai-glow-color);
-  opacity: 0.35;
-  animation: stv-ai-glow-breathe 6s ease-in-out infinite;
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .stv-ai-panel-wrapper::before {
-    animation: none;
-    opacity: 0.28;
-  }
-}
-
-@keyframes stv-ai-glow-breathe {
-  0%,
-  100% {
-    opacity: 0.2;
-  }
-  50% {
-    opacity: 0.5;
-  }
 }
 
 .stv-ai-panel-resize {
@@ -68,34 +35,99 @@
   flex-direction: column;
   height: 100%;
   min-width: 320px;
+  background: var(--color-surface-elevated);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow:
+    0 1px 0 0 rgba(255, 255, 255, 0.04) inset,
+    0 12px 32px -8px rgba(0, 0, 0, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.35);
+  overflow: hidden;
+}
+
+/* ---- Header ---- */
+/* Minimized: the card collapses to just its header instead of holding
+ * the full docked column height, mirroring a real window-minimize
+ * rather than only toggling a decorative icon. */
+.stv-ai-panel--minimized {
+  height: auto;
 }
 
 .stv-ai-panel__header {
   display: flex;
   align-items: center;
-  gap: var(--space-2, 8px);
-  padding: 8px 10px;
+  gap: 8px;
+  padding: 9px 10px;
   border-bottom: 1px solid var(--color-border);
   flex-shrink: 0;
+  background: var(--color-surface-elevated);
 }
 .stv-ai-panel__header .stv-icon-btn {
   flex-shrink: 0;
-  width: var(--control-size-compact);
-  height: var(--control-size-compact);
+  width: 26px;
+  height: 26px;
   display: flex;
   align-items: center;
   justify-content: center;
   background: transparent;
   border: none;
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
   cursor: pointer;
 }
-.stv-ai-panel__title {
-  flex: 1;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.02em;
+.stv-ai-panel__header .stv-icon-btn:hover {
+  background: var(--color-surface-2);
   color: var(--color-text);
+}
+.stv-ai-panel__badge {
+  flex-shrink: 0;
+  width: 22px;
+  height: 22px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    var(--color-accent),
+    var(--color-accent-2)
+  );
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.35);
+}
+.stv-ai-panel__titles {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-width: 0;
+  flex: 1;
+}
+.stv-ai-panel__title {
+  font-size: 12.5px;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+.stv-ai-panel__model-pill {
+  flex-shrink: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 10.5px;
+  font-weight: 500;
+  color: var(--color-text-muted);
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.stv-ai-panel__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
 }
 
 .stv-ai-panel__body {
@@ -116,7 +148,7 @@
 .stv-ai-sidebar {
   display: flex;
   flex-direction: column;
-  width: 168px;
+  width: 172px;
   flex-shrink: 0;
   border-right: 1px solid var(--color-border);
   overflow: hidden;
@@ -125,8 +157,9 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 10px;
+  padding: 9px 10px;
   font-size: 10px;
+  font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.06em;
   color: var(--color-text-muted);
@@ -134,10 +167,10 @@
 .stv-ai-sidebar__new {
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-xs);
+  border-radius: var(--radius-sm);
   color: var(--color-text-muted);
-  width: 18px;
-  height: 18px;
+  width: 22px;
+  height: 22px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -145,7 +178,8 @@
   transition: background var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-sidebar__new:hover {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
+  color: var(--color-text);
 }
 .stv-ai-sidebar__list {
   flex: 1;
@@ -161,16 +195,16 @@
   display: flex;
   align-items: center;
   gap: 4px;
-  padding: 6px 6px;
-  border-radius: 6px;
+  padding: 7px 7px;
+  border-radius: var(--radius-sm);
   cursor: pointer;
   transition: background var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-sidebar__item:hover {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
 }
 .stv-ai-sidebar__item--active {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
   box-shadow: inset 2px 0 0 0 var(--color-accent);
 }
 .stv-ai-sidebar__item-main {
@@ -214,19 +248,25 @@
 .stv-ai-sidebar__delete {
   background: transparent;
   border: none;
+  border-radius: var(--radius-xs);
   color: var(--color-text-muted);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
   opacity: 0;
-  transition: opacity var(--dur-fast) var(--ease-standard);
+  transition:
+    opacity var(--dur-fast) var(--ease-standard),
+    background var(--dur-fast) var(--ease-standard);
   flex-shrink: 0;
 }
 .stv-ai-sidebar__item:hover .stv-ai-sidebar__delete {
   opacity: 1;
 }
 .stv-ai-sidebar__delete:hover {
+  background: var(--color-surface-3);
   color: var(--color-danger, #eb5757);
 }
 .stv-ai-sidebar__delete:disabled {
@@ -256,25 +296,34 @@
 .stv-ai-messages {
   flex: 1;
   overflow-y: auto;
-  padding: 12px 14px 4px;
+  padding: 14px 14px 4px;
   display: flex;
   flex-direction: column;
-  gap: 14px;
+  gap: 16px;
 }
 
 .stv-ai-msg {
   display: flex;
   flex-direction: column;
-  gap: 4px;
+  gap: 6px;
   max-width: 100%;
 }
+
+/* User turn: a full-width, bold "prompt card" — matches the reference
+ * design's treatment of the instruction that kicked off a turn, rather
+ * than a small chat-style bubble pinned to one edge. */
 .stv-ai-msg--user .stv-ai-msg__bubble {
-  align-self: flex-end;
-  background: var(--color-surface-elevated);
-  border-radius: 10px 10px 2px 10px;
-  padding: 7px 10px;
-  max-width: 88%;
-  margin-left: auto;
+  background: var(--color-surface-2);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 11px 13px;
+  max-width: 100%;
+}
+.stv-ai-msg--user .stv-ai-msg__plain {
+  font-weight: 600;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-text);
 }
 .stv-ai-msg--assistant .stv-ai-msg__bubble {
   padding: 2px 0;
@@ -284,35 +333,116 @@
   white-space: pre-wrap;
   word-break: break-word;
 }
-.stv-ai-msg__context {
+
+/* Context chip — "<label> added to context" */
+.stv-ai-context-chip {
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 10.5px;
+  color: var(--color-text-muted);
+  padding: 1px 2px;
+}
+.stv-ai-context-chip__icon {
+  flex-shrink: 0;
+  width: 16px;
+  height: 16px;
+  border-radius: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-accent) 16%, transparent);
+  color: var(--color-accent);
+}
+.stv-ai-context-chip__label {
+  font-weight: 600;
+  color: var(--color-text);
+}
+.stv-ai-msg--user .stv-ai-context-chip {
   align-self: flex-end;
-  font-size: 10px;
+}
+
+/* Activity line — "Worked for Xs" */
+.stv-ai-msg__activity {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  align-self: flex-start;
+  font-size: 11px;
   color: var(--color-text-muted);
   padding: 0 2px;
 }
-.stv-ai-msg--assistant .stv-ai-msg__context {
-  align-self: flex-start;
+.stv-ai-msg__activity svg {
+  opacity: 0.75;
 }
+
 .stv-ai-msg__incomplete {
   margin-top: 4px;
   font-size: 10.5px;
   color: var(--color-text-muted);
   font-style: italic;
 }
+
+/* Propose-edit / diff card — mirrors the "Changed files" summary card
+ * from the reference design, reusing Stivium's real "review as file
+ * edit" affordance instead of a fabricated diff stat. */
 .stv-ai-msg__propose {
-  align-self: flex-start;
+  align-self: stretch;
   margin-top: 2px;
-  background: transparent;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-align: left;
+  background: var(--color-surface-2);
   border: 1px solid var(--color-border);
-  border-radius: 6px;
-  color: var(--color-accent);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
   font-size: 11px;
-  padding: 3px 8px;
+  padding: 9px 11px;
   cursor: pointer;
-  transition: background var(--dur-fast) var(--ease-standard);
+  transition:
+    background var(--dur-fast) var(--ease-standard),
+    border-color var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-msg__propose:hover {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-3);
+  border-color: color-mix(
+    in srgb,
+    var(--color-accent) 45%,
+    var(--color-border)
+  );
+}
+.stv-ai-msg__propose-icon {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  border-radius: var(--radius-sm);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: color-mix(in srgb, var(--color-success) 16%, transparent);
+  color: var(--color-success);
+}
+.stv-ai-msg__propose-text {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1px;
+}
+.stv-ai-msg__propose-title {
+  font-weight: 600;
+  font-size: 12px;
+  color: var(--color-text);
+}
+.stv-ai-msg__propose-subtitle {
+  font-size: 10.5px;
+  color: var(--color-text-muted);
+}
+.stv-ai-msg__propose-chevron {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
 }
 
 .stv-ai-thinking {
@@ -393,7 +523,7 @@
 .stv-md-code-inline {
   font-family: var(--font-mono);
   font-size: 0.92em;
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
   border-radius: 4px;
   padding: 1px 5px;
 }
@@ -415,7 +545,7 @@
   text-align: left;
 }
 .stv-md-table th {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
   font-weight: 600;
 }
 .stv-md-checkbox {
@@ -426,7 +556,7 @@
 .stv-code-block {
   margin: 4px 0 10px;
   border: 1px solid var(--color-border);
-  border-radius: 8px;
+  border-radius: var(--radius-md);
   overflow: hidden;
   background: var(--color-bg);
 }
@@ -435,7 +565,7 @@
   align-items: center;
   justify-content: space-between;
   padding: 4px 8px;
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
   border-bottom: 1px solid var(--color-border);
   font-size: 10.5px;
 }
@@ -447,7 +577,7 @@
 .stv-code-block__copy {
   background: transparent;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--radius-xs);
   color: var(--color-text-muted);
   font-size: 10px;
   padding: 1px 7px;
@@ -478,7 +608,7 @@
 .stv-ai-quick-actions {
   display: flex;
   gap: 6px;
-  padding: 0 14px 8px;
+  padding: 0 14px 10px;
   flex-wrap: wrap;
   flex-shrink: 0;
 }
@@ -493,7 +623,7 @@
   transition: background var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-quick-actions__btn:hover:not(:disabled) {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-2);
   color: var(--color-text);
 }
 .stv-ai-quick-actions__btn:disabled {
@@ -501,19 +631,35 @@
   cursor: not-allowed;
 }
 
-/* ---- Composer ---- */
+/* ---- Composer ----
+ * A single bordered "reply box" card containing the textarea and its
+ * toolbar, matching the reference design's composer instead of a bare
+ * textarea sitting above a disconnected control row. */
 .stv-ai-composer {
   flex-shrink: 0;
   border-top: 1px solid var(--color-border);
-  padding: 8px 10px 10px;
+  padding: 10px 10px 11px;
+}
+.stv-ai-composer__box {
   display: flex;
   flex-direction: column;
   gap: 6px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-surface-2);
+  padding: 9px 9px 7px;
+  transition:
+    border-color var(--dur-fast) var(--ease-standard),
+    box-shadow var(--dur-fast) var(--ease-standard);
+}
+.stv-ai-composer__box:focus-within {
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 3px rgba(var(--color-accent-rgb), 0.18);
 }
 .stv-ai-composer__context {
   font-size: 10px;
   color: var(--color-text-muted);
-  padding: 0 2px;
+  padding: 0 1px;
 }
 .stv-ai-composer__input {
   width: 100%;
@@ -522,36 +668,72 @@
   font-family: inherit;
   font-size: 12.5px;
   line-height: 1.45;
-  padding: 7px 9px;
-  border-radius: 8px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  padding: 1px 1px 4px;
+  border: none;
+  background: transparent;
   color: var(--color-text);
-  transition: border-color var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-composer__input:focus {
   outline: none;
-  border-color: var(--color-accent);
 }
 .stv-ai-composer__input:disabled {
   opacity: 0.5;
 }
+.stv-ai-composer__box--expanded .stv-ai-composer__input {
+  max-height: 320px;
+}
 .stv-ai-composer__toolbar {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 6px;
+}
+.stv-ai-composer__toolbar-spacer {
+  flex: 1;
+  min-width: 4px;
+}
+.stv-ai-composer__icon-btn {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--color-text-muted);
+  cursor: pointer;
+  transition:
+    background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+.stv-ai-composer__icon-btn:hover:not(:disabled) {
+  background: var(--color-surface-3);
+  color: var(--color-text);
+}
+.stv-ai-composer__icon-btn.stv-ai-composer__icon-btn--active {
+  background: var(--color-surface-3);
+  color: var(--color-accent);
+}
+.stv-ai-composer__icon-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 .stv-ai-composer__send {
   flex-shrink: 0;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
   border: none;
-  border-radius: 7px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
   background: var(--color-accent);
-  color: #f7f8f8;
-  font-size: 11.5px;
-  font-weight: 600;
-  padding: 5px 14px;
+  color: #ffffff;
   cursor: pointer;
-  transition: opacity var(--dur-fast) var(--ease-standard);
+  transition:
+    opacity var(--dur-fast) var(--ease-standard),
+    background var(--dur-fast) var(--ease-standard);
 }
 .stv-ai-composer__send:hover:not(:disabled) {
   opacity: 0.88;
@@ -561,7 +743,67 @@
   cursor: not-allowed;
 }
 .stv-ai-composer__send--stop {
-  background: var(--color-surface-elevated);
+  background: var(--color-surface-3);
   color: var(--color-text);
   border: 1px solid var(--color-border);
+}
+
+/* ---- Provider / model picker (composer "Skills" pill) ---- */
+.stv-ai-model-picker {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  flex: 1;
+}
+.stv-ai-model-picker__pill {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  flex-shrink: 0;
+  height: 24px;
+  padding: 0 8px 0 7px;
+  border-radius: 999px;
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  transition:
+    background var(--dur-fast) var(--ease-standard),
+    color var(--dur-fast) var(--ease-standard);
+}
+.stv-ai-model-picker__pill:hover {
+  background: var(--color-surface-3);
+  color: var(--color-text);
+}
+.stv-ai-model-picker__pill svg:first-child {
+  flex-shrink: 0;
+  opacity: 0.85;
+}
+.stv-ai-model-picker__select {
+  appearance: none;
+  -webkit-appearance: none;
+  background: transparent;
+  border: none;
+  color: inherit;
+  font-size: 11px;
+  font-weight: 500;
+  padding: 0;
+  max-width: 92px;
+  cursor: pointer;
+}
+.stv-ai-model-picker__select:focus {
+  outline: none;
+}
+.stv-ai-model-picker__chevron {
+  flex-shrink: 0;
+  opacity: 0.7;
+}
+.stv-ai-model-picker__model-input {
+  flex: 1;
+  min-width: 0;
+  font-size: 11px;
+  padding: 3px 7px;
+  height: 24px;
+  border-radius: 999px;
 }

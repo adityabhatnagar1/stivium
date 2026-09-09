@@ -6,6 +6,7 @@ type MessageListProps = {
   messages: ConversationMessage[];
   isThinking: boolean;
   streamingMessageId: string | null;
+  messageDurations: Record<string, number>;
   onProposeEdit: (content: string) => void;
 };
 
@@ -15,6 +16,7 @@ export function MessageList({
   messages,
   isThinking,
   streamingMessageId,
+  messageDurations,
   onProposeEdit,
 }: MessageListProps): JSX.Element {
   const scrollRef = useRef<HTMLDivElement | null>(null);
@@ -54,6 +56,7 @@ export function MessageList({
           message={message}
           isThinking={isThinking && message.id === streamingMessageId}
           isStreaming={message.id === streamingMessageId}
+          durationMs={messageDurations[message.id]}
           onProposeEdit={
             message.role === "assistant" ? onProposeEdit : undefined
           }
