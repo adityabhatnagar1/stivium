@@ -21,7 +21,7 @@ import { CursorFooterBridge } from "./components/CursorFooterBridge";
 import { TitleBar } from "./components/TitleBar";
 import { EditorTabs } from "./components/EditorTabs";
 import { EditorPane } from "./components/EditorPane";
-import { IconPlay, IconSparkle } from "./components/Icons";
+// import {} from "./components/Icons";
 import { LanguageClientsManager } from "./lsp/client";
 import { StiviumPet } from "./pet/StiviumPet";
 import { AiWorkspacePanel } from "./ai/AiWorkspacePanel";
@@ -418,6 +418,9 @@ function App() {
         isWindowMaximized={isWindowMaximized}
         isWindowFocused={isWindowFocused}
         isAiActive={isPetVisible}
+        isRunning={isRunning}
+        canRun={canRun}
+        onRun={() => void runCurrentFile()}
         onToggleMenu={() => setIsTopMenuExpanded((prev) => !prev)}
         onOpenMenu={handleTopMenu}
         onToggleAi={() => setIsPetVisible((prev) => !prev)}
@@ -516,61 +519,6 @@ function App() {
                 onCloseTab={handleCloseTab}
               />
             </div>
-
-            {activeTab && getLanguage(activeTab.name) === "verilog" && (
-              <button
-                onClick={() => void runCurrentFile()}
-                disabled={!canRun}
-                title="Run with Icarus Verilog"
-                aria-label="Run with Icarus Verilog"
-                className="stv-icon-btn"
-                style={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "var(--space-2)",
-                  padding: "0 var(--space-4)",
-                  border: "none",
-                  borderLeft: "var(--border-hairline)",
-                  background: "var(--color-surface-2)",
-                  color: isRunning
-                    ? "var(--color-text-muted)"
-                    : "var(--color-accent)",
-                  cursor: canRun ? "pointer" : "default",
-                  fontSize: "var(--text-body)",
-                  flexShrink: 0,
-                }}
-              >
-                <IconPlay
-                  size={15}
-                  className={isRunning ? "stv-icon-pulse" : undefined}
-                />
-                {isRunning ? "Running…" : "Run"}
-              </button>
-            )}
-            <button
-              onClick={() => setIsPetVisible((prev) => !prev)}
-              title={isPetVisible ? "Hide AI assistant" : "Show AI assistant"}
-              aria-label={
-                isPetVisible ? "Hide AI assistant" : "Show AI assistant"
-              }
-              aria-pressed={isPetVisible}
-              className="stv-icon-btn"
-              style={{
-                display: "flex",
-                alignItems: "center",
-                padding: "0 var(--space-3)",
-                border: "none",
-                borderLeft: "var(--border-hairline)",
-                background: "var(--color-surface-2)",
-                color: isPetVisible
-                  ? "var(--color-accent)"
-                  : "var(--color-text-muted)",
-                cursor: "pointer",
-                flexShrink: 0,
-              }}
-            >
-              <IconSparkle size={15} />
-            </button>
           </div>
 
           <EditorPane

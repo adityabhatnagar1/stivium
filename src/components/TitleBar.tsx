@@ -7,6 +7,7 @@ import {
   IconRestore,
   IconClose,
   IconSparkle,
+  IconPlay,
 } from "./Icons";
 
 type AppMenuId = "file" | "edit" | "selection" | "view" | "help";
@@ -17,6 +18,9 @@ type TitleBarProps = {
   isWindowMaximized: boolean;
   isWindowFocused: boolean;
   isAiActive: boolean;
+  isRunning: boolean;
+  canRun: boolean;
+  onRun: () => void;
   onToggleMenu: () => void;
   onOpenMenu: (menuId: AppMenuId, event: MouseEvent<HTMLButtonElement>) => void;
   onToggleAi: () => void;
@@ -34,6 +38,9 @@ export function TitleBar({
   isWindowMaximized,
   isWindowFocused,
   isAiActive,
+  isRunning,
+  canRun,
+  onRun,
   onToggleMenu,
   onOpenMenu,
   onToggleAi,
@@ -137,6 +144,43 @@ export function TitleBar({
           } as CSSProperties
         }
       >
+        <button
+          onClick={onRun}
+          disabled={!canRun}
+          title={
+            isRunning
+              ? "Running with Icarus Verilog"
+              : canRun
+                ? "Run with Icarus Verilog"
+                : "Run requires an open Verilog file"
+          }
+          aria-label={
+            isRunning
+              ? "Running with Icarus Verilog"
+              : "Run with Icarus Verilog"
+          }
+          className="stv-wincontrol"
+          style={{
+            width: "52px",
+            border: "none",
+            background: "transparent",
+            color: canRun ? "var(--color-accent)" : "var(--color-text-faint)",
+            cursor: canRun ? "pointer" : "default",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            gap: "5px",
+            opacity: isRunning ? 0.7 : 1,
+          }}
+        >
+          <IconPlay
+            size={ICON_SIZE_DEFAULT}
+            className={isRunning ? "stv-icon-pulse" : undefined}
+          />
+          <span style={{ fontSize: "12px" }}>
+            {isRunning ? "Running" : "Run"}
+          </span>
+        </button>
         <button
           onClick={onToggleAi}
           title="AI assistant"
