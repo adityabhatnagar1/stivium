@@ -146,7 +146,12 @@ export function useTerminalManager({
         const termNode = document.getElementById(`xterm-host-${tab.id}`);
         if (termNode) {
           const term = new Terminal({
-            theme: { background: "#1e1e1e" },
+            theme: {
+              background: "#08090a",
+              foreground: "#f7f8f8",
+              cursor: "#5e6ad2",
+              selectionBackground: "#2a2d5c",
+            },
             fontFamily: "monospace",
             cursorBlink: tab.id !== "output",
             disableStdin: tab.id === "output",

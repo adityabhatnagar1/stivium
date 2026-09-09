@@ -32,7 +32,7 @@ function EditorPaneImpl({
 }: EditorPaneProps): JSX.Element {
   // Monaco ships with "vs-dark" (#1e1e1e) as its only built-in dark
   // theme, which reads as a visibly different app skin against
-  // Stivium's darker green-black surfaces. This defines the editor's
+  // Stivium's darker near-black surfaces. This defines the editor's
   // palette to match, once, the first time an editor mounts. It only
   // recolors chrome (background/gutter/selection/cursor) — token
   // colors are left to Monaco's default TextMate rules.
@@ -50,22 +50,22 @@ function EditorPaneImpl({
       inherit: true,
       rules: [],
       colors: {
-        "editor.background": "#0a120e",
-        "editor.foreground": "#d9f5e6",
-        "editor.lineHighlightBackground": "#11201a",
+        "editor.background": "#08090a",
+        "editor.foreground": "#f7f8f8",
+        "editor.lineHighlightBackground": "#131417",
         "editor.lineHighlightBorder": "#00000000",
-        "editorLineNumber.foreground": "#3d6552",
-        "editorLineNumber.activeForeground": "#7fa896",
-        "editorCursor.foreground": "#35d68c",
-        "editor.selectionBackground": "#1f4433",
-        "editor.inactiveSelectionBackground": "#17301f",
-        "editorIndentGuide.background": "#1a2e24",
-        "editorIndentGuide.activeBackground": "#2a4a3a",
-        "editorWidget.background": "#101d17",
-        "editorWidget.border": "#1f4433",
-        "editorGutter.background": "#0a120e",
-        "scrollbarSlider.background": "#244a3a80",
-        "scrollbarSlider.hoverBackground": "#35d68c80",
+        "editorLineNumber.foreground": "#3f4147",
+        "editorLineNumber.activeForeground": "#8a8f98",
+        "editorCursor.foreground": "#5e6ad2",
+        "editor.selectionBackground": "#2a2d5c",
+        "editor.inactiveSelectionBackground": "#1c1e2e",
+        "editorIndentGuide.background": "#1c1d21",
+        "editorIndentGuide.activeBackground": "#33353b",
+        "editorWidget.background": "#17181c",
+        "editorWidget.border": "#23262b",
+        "editorGutter.background": "#08090a",
+        "scrollbarSlider.background": "#26282d80",
+        "scrollbarSlider.hoverBackground": "#5e6ad280",
       },
     });
   };

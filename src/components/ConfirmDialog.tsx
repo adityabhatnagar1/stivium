@@ -54,7 +54,7 @@ export function ConfirmDialog({
           background: "var(--color-surface-elevated)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-lg)",
-          boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
+          boxShadow: "0 12px 28px rgba(0,0,0,0.4)",
           padding: "18px",
         }}
       >
@@ -77,16 +77,12 @@ export function ConfirmDialog({
             ref={cancelButtonRef}
             type="button"
             onClick={onCancel}
-            className="stv-btn"
+            className="stv-btn stv-btn--secondary"
             style={{
               minWidth: "88px",
-              padding: "8px 12px",
+              padding: "var(--space-2) var(--space-4)",
               borderRadius: "var(--radius-md)",
-              border: "1px solid var(--color-border)",
-              background: "var(--color-surface-2)",
-              color: "var(--color-text)",
               cursor: "pointer",
-              fontWeight: 600,
             }}
           >
             {cancelLabel}
@@ -95,16 +91,12 @@ export function ConfirmDialog({
             ref={confirmButtonRef}
             type="button"
             onClick={onConfirm}
-            className="stv-btn"
+            className="stv-btn stv-btn--danger"
             style={{
               minWidth: "88px",
-              padding: "8px 12px",
+              padding: "var(--space-2) var(--space-4)",
               borderRadius: "var(--radius-md)",
-              border: "1px solid #d43f56",
-              background: "linear-gradient(180deg, #ff5c72 0%, #d43f56 100%)",
-              color: "#fff",
               cursor: "pointer",
-              fontWeight: 700,
             }}
           >
             {confirmLabel}

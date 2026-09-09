@@ -31,8 +31,8 @@ export function EditorTabs({
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "8px",
-            padding: "8px 16px",
+            gap: "var(--space-2)",
+            padding: "var(--space-2) var(--space-4)",
             backgroundColor:
               activeTabPath === tab.path
                 ? "var(--color-bg)"

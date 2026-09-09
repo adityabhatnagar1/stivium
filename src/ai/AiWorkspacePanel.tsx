@@ -8,6 +8,7 @@ import type {
   ConversationMessage,
 } from "../tauri/aiTypes";
 import { getLanguage, getSelectedCodeFromEditor } from "../utils/editor";
+import { IconMenu, IconClose } from "../components/Icons";
 import { useAiSession, type AiSessionStatus } from "../pet/useAiSession";
 import {
   useConversations,
@@ -263,7 +264,7 @@ export function AiWorkspacePanel({
           aria-label="Toggle conversation list"
           aria-pressed={isSidebarOpen}
         >
-          ☰
+          <IconMenu size={14} />
         </button>
         <span className="stv-ai-panel__title">Atiyah</span>
         <button
@@ -273,7 +274,7 @@ export function AiWorkspacePanel({
           title="Close AI workspace"
           aria-label="Close AI workspace"
         >
-          ✕
+          <IconClose size={14} />
         </button>
       </div>
 

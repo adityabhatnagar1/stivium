@@ -79,8 +79,12 @@ export function LeftPane({
       <div
         style={{
           display: "flex",
-          borderBottom: "1px solid var(--color-border)",
-          marginBottom: "8px",
+          gap: "2px",
+          margin: "0 var(--space-2) var(--space-3) var(--space-2)",
+          padding: "2px",
+          background: "var(--color-surface)",
+          border: "1px solid var(--color-border)",
+          borderRadius: "var(--radius-md)",
         }}
       >
         <button
@@ -89,10 +93,13 @@ export function LeftPane({
           style={{
             flex: 1,
             background:
-              leftPaneTab === "workspace" ? "var(--color-bg)" : "transparent",
+              leftPaneTab === "workspace"
+                ? "var(--color-surface-elevated)"
+                : "transparent",
             border: "none",
+            borderRadius: "var(--radius-sm)",
             color: "var(--color-text)",
-            padding: "8px",
+            padding: "6px 8px",
             cursor: "pointer",
           }}
         >
@@ -109,12 +116,15 @@ export function LeftPane({
           style={{
             flex: 1,
             background:
-              leftPaneTab === "search" ? "var(--color-bg)" : "transparent",
+              leftPaneTab === "search"
+                ? "var(--color-surface-elevated)"
+                : "transparent",
             border: "none",
+            borderRadius: "var(--radius-sm)",
             color: canUseSearch
               ? "var(--color-text)"
               : "var(--color-text-muted)",
-            padding: "8px",
+            padding: "6px 8px",
             cursor: canUseSearch ? "pointer" : "not-allowed",
             opacity: canUseSearch ? 1 : 0.75,
           }}
@@ -128,16 +138,16 @@ export function LeftPane({
         <>
           <div
             style={{
-              padding: "0 8px 8px 8px",
-              fontSize: "11px",
+              padding: "0 var(--space-2) var(--space-2) var(--space-2)",
+              fontSize: "10px",
               color: "var(--color-text-muted)",
               textTransform: "uppercase",
-              letterSpacing: "1px",
+              letterSpacing: "0.06em",
               display: "flex",
               alignItems: "center",
               justifyContent: "space-between",
               borderBottom: "1px solid var(--color-border)",
-              marginBottom: "8px",
+              marginBottom: "var(--space-2)",
             }}
           >
             <span
@@ -220,13 +230,10 @@ export function LeftPane({
 
               <button
                 onClick={onOpenWorkspace}
-                className="stv-btn"
+                className="stv-btn stv-btn--primary"
                 style={{
                   padding: "6px 10px",
-                  border: "1px solid var(--color-border)",
                   borderRadius: "var(--radius-md)",
-                  background: "var(--color-border)",
-                  color: "var(--color-text)",
                   cursor: "pointer",
                 }}
               >
@@ -236,11 +243,13 @@ export function LeftPane({
           )}
         </>
       ) : (
-        <div style={{ padding: "10px" }}>
+        <div style={{ padding: "var(--space-3)" }}>
           <div
             style={{
-              fontSize: "12px",
-              marginBottom: "6px",
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "var(--space-2)",
               color: "var(--color-text-muted)",
             }}
           >
@@ -255,16 +264,18 @@ export function LeftPane({
             style={{
               width: "100%",
               boxSizing: "border-box",
-              marginBottom: "8px",
-              padding: "6px",
+              marginBottom: "var(--space-2)",
+              padding: "var(--space-2) var(--space-3)",
               background: "var(--color-bg)",
             }}
           />
 
           <div
             style={{
-              fontSize: "12px",
-              marginBottom: "6px",
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
+              marginBottom: "var(--space-2)",
               color: "var(--color-text-muted)",
             }}
           >
@@ -279,8 +290,8 @@ export function LeftPane({
             style={{
               width: "100%",
               boxSizing: "border-box",
-              marginBottom: "8px",
-              padding: "6px",
+              marginBottom: "var(--space-2)",
+              padding: "var(--space-2) var(--space-3)",
               background: "var(--color-bg)",
             }}
           />
@@ -288,18 +299,15 @@ export function LeftPane({
           <div
             style={{
               display: "flex",
-              gap: "8px",
-              marginTop: "14px",
-              marginBottom: "12px",
+              gap: "var(--space-2)",
+              marginTop: "var(--space-4)",
+              marginBottom: "var(--space-3)",
             }}
           >
             <button
               onClick={onFind}
-              className="stv-btn"
+              className="stv-btn stv-btn--primary"
               style={{
-                border: "1px solid var(--color-accent-strong)",
-                background: "var(--color-accent)",
-                color: "#062f1d",
                 borderRadius: "var(--radius-md)",
                 padding: "6px 10px",
                 cursor: "pointer",
@@ -311,11 +319,8 @@ export function LeftPane({
 
             <button
               onClick={onReplaceAll}
-              className="stv-btn"
+              className="stv-btn stv-btn--secondary"
               style={{
-                border: "1px solid var(--color-accent-2)",
-                background: "var(--color-accent-2)",
-                color: "#052622",
                 borderRadius: "var(--radius-md)",
                 padding: "6px 10px",
                 cursor: "pointer",
@@ -328,9 +333,11 @@ export function LeftPane({
 
           <div
             style={{
-              fontSize: "12px",
+              fontSize: "10px",
+              textTransform: "uppercase",
+              letterSpacing: "0.06em",
               color: "var(--color-text-muted)",
-              marginBottom: "6px",
+              marginBottom: "var(--space-2)",
             }}
           >
             Results ({searchResults.length})
@@ -341,9 +348,10 @@ export function LeftPane({
               <div
                 key={result.path}
                 onClick={() => onOpenSearchResult(result.path)}
+                className="stv-tree-row"
                 style={{
-                  padding: "6px",
-                  borderBottom: "1px solid var(--color-border)",
+                  padding: "var(--space-2)",
+                  borderRadius: "var(--radius-xs)",
                   cursor: "pointer",
                   fontSize: "12px",
                 }}

@@ -1,5 +1,5 @@
 import type { Conversation } from "../tauri/aiTypes";
-
+import { IconClose, IconPlus } from "../components/Icons";
 type ConversationSidebarProps = {
   conversations: Conversation[];
   activeId: string | null;
@@ -40,7 +40,7 @@ export function ConversationSidebar({
           title="New conversation"
           aria-label="New conversation"
         >
-          +
+          <IconPlus size={11} />
         </button>
       </div>
 
@@ -92,7 +92,7 @@ export function ConversationSidebar({
                   onDelete(conversation.id);
                 }}
               >
-                ✕
+                <IconClose size={10} />
               </button>
             </div>
           );

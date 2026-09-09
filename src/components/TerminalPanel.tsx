@@ -5,7 +5,7 @@ import type { TermTab } from "../types";
 import { IconTerminal, IconClose, IconPlus } from "./Icons";
 
 type TerminalPanelProps = {
-  panelRef: React.RefObject<HTMLDivElement>;
+  panelRef: React.RefObject<HTMLDivElement | null>;
   termTabs: TermTab[];
   activeTermId: string | null;
   fileTreePath?: string;

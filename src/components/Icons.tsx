@@ -143,10 +143,20 @@ export function IconPlus({ size, ...rest }: IconProps): JSX.Element {
   );
 }
 
+export function IconSettings({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <circle cx="12" cy="12" r="3" />
+      <path d="M19.4 13.5c.04-.5.04-1 0-1.5l1.9-1.5-2-3.4-2.2.9a7.6 7.6 0 0 0-1.3-.75L15.5 5h-4l-.3 2.25c-.47.2-.9.45-1.3.75l-2.2-.9-2 3.4L7.6 12c-.04.5-.04 1 0 1.5l-1.9 1.5 2 3.4 2.2-.9c.4.3.83.55 1.3.75L11.5 21h4l.3-2.25c.47-.2.9-.45 1.3-.75l2.2.9 2-3.4-1.9-1.5Z" />
+    </svg>
+  );
+}
+
 export function IconSparkle({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3z" />
+      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" />
+      <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
     </svg>
   );
 }

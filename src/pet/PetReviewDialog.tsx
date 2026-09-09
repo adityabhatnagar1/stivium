@@ -42,7 +42,7 @@ export function PetReviewDialog({
           background: "var(--color-surface-elevated)",
           border: "1px solid var(--color-border)",
           borderRadius: "var(--radius-lg)",
-          boxShadow: "0 16px 36px rgba(0,0,0,0.45)",
+          boxShadow: "0 12px 28px rgba(0,0,0,0.4)",
           padding: "18px",
         }}
       >
@@ -140,7 +140,7 @@ const applyBtnStyle: CSSProperties = {
   border: "1px solid var(--color-accent-strong)",
   background:
     "linear-gradient(180deg, var(--color-accent) 0%, var(--color-accent-strong) 100%)",
-  color: "#04150d",
+  color: "#f7f8f8",
   cursor: "pointer",
   fontWeight: 700,
 };

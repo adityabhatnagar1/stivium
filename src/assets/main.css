@@ -2,46 +2,58 @@
 
 :root {
   /* ---- Fonts (moved from base.css — this file is now the single
-     source of truth for every real Stivium design token) ---- */
-  --font-heading: "Montserrat", -apple-system, BlinkMacSystemFont, sans-serif;
+     source of truth for every real Stivium design token) ----
+     One typeface family for the whole app — headings, UI chrome and
+     body text all sit on the same Inter stack, distinguished only by
+     weight/size, matching the reference product's "precision
+     engineering" system rather than a separate display face. */
+  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, sans-serif;
   --font-body:
     "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-ui: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   --font-mono:
     "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 
-  /* ---- Green deep-space nebula palette — surface hierarchy ----
+  /* ---- Near-black, purple-tinted palette — surface hierarchy ----
      Each step is one deliberate elevation increment. Every component
-     must pick a background from this list; never invent a new gray. */
-  --color-bg: #0a120e; /* base canvas: editor, deepest layer */
-  --color-surface: #0d1712; /* level 1: sidebar/panel body */
-  --color-surface-2: #11201a; /* level 2: tab strips, toolbar rows */
-  --color-surface-elevated: #101d17; /* level 3: dialogs, context menu, popovers */
-  --color-titlebar: #060b08; /* recedes below base */
-  --color-border: #1f4433;
-  --color-text: #d9f5e6;
-  --color-text-muted: #7fa896;
-  --color-text-faint: #4d7562; /* new: disabled-state text, line numbers-adjacent labels */
+     must pick a background from this list; never invent a new gray.
+     Monochromatic by design: depth comes from luminance steps and
+     hairline borders, not from color variation. */
+  --color-bg: #08090a; /* base canvas: editor, deepest layer */
+  --color-surface: #0c0d0f; /* level 1: sidebar/panel body */
+  --color-surface-2: #131417; /* level 2: tab strips, toolbar rows */
+  --color-surface-elevated: #17181c; /* level 3: dialogs, context menu, popovers */
+  --color-titlebar: #060607; /* recedes below base */
+  --color-border: #23262b;
+  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-tab-inactive: var(
+    --color-surface-2
+  ); /* inactive editor-tab background */
+  --color-text: #f7f8f8;
+  --color-text-muted: #8a8f98;
+  --color-text-faint: #55585e; /* disabled-state text, line-numbers-adjacent labels */
 
-  /* Primary accent: muted jade/alien green */
-  --color-accent: #35d68c;
-  --color-accent-strong: #24b573;
-  /* Secondary accent: teal-cyan — sits next to green without competing */
-  --color-accent-2: #55e0c8;
+  /* Primary accent: Linear-style lavender-blue */
+  --color-accent: #5e6ad2;
+  --color-accent-rgb: 94, 106, 210;
+  --color-accent-strong: #4954bf;
+  /* Secondary accent: violet — sits next to the primary without competing */
+  --color-accent-2: #8b5cf6;
 
   /* Semantic status — named, not one-off inline hex per usage site */
-  --color-success: var(--color-accent);
+  --color-success: #4cb782;
   --color-info: var(--color-accent-2);
-  --color-warn: #e3b869;
-  --color-danger: #ff5c72;
-  --color-danger-strong: #d43f56;
-  --color-error-surface: #6e2036;
+  --color-warn: #f2c94c;
+  --color-danger: #eb5757;
+  --color-danger-rgb: 235, 87, 87;
+  --color-danger-strong: #c94343;
+  --color-error-surface: #3a1f22;
 
-  /* ---- Shape scale ---- */
+  /* ---- Shape scale — tight radius system ---- */
   --radius-xs: 4px;
   --radius-sm: 6px;
-  --radius-md: 7px;
-  --radius-lg: 10px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
 
   /* ---- Spacing scale (4px base) ---- */
   --space-1: 4px;
@@ -119,7 +131,7 @@ textarea,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #244a3a;
+  background: #303236;
 }
 
 ::-webkit-scrollbar-thumb:hover {

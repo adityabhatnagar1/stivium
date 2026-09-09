@@ -1,6 +1,7 @@
 import type { CSSProperties } from "react";
 import type { AiSettings, ProviderId } from "../tauri/aiTypes";
 import { PROVIDER_LABELS } from "../tauri/aiTypes";
+import { IconSettings } from "../components/Icons";
 
 type ProviderModelSelectProps = {
   settings: AiSettings;
@@ -86,7 +87,7 @@ export function ProviderModelSelect({
         title="AI provider settings"
         aria-label="AI provider settings"
       >
-        ⚙
+        <IconSettings size={13} />
       </button>
     </div>
   );
