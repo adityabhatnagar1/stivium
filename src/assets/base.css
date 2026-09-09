@@ -1,3 +1,21 @@
+:root {
+  --color-canvas: #08090a;
+  --color-surface-1: #0f1011;
+  --color-surface-2: #141516;
+  --color-surface-3: #18191a;
+  --color-border: rgba(255, 255, 255, 0.08);
+  --color-text: #f7f8f8;
+  --color-text-secondary: #d0d6e0;
+  --color-text-muted: #8a8f98;
+  --color-accent: #5e6ad2;
+  --color-accent-hover: #828fff;
+  --color-danger: #e24a4a;
+  --color-danger-hover: #ff5c5c;
+  --font-ui: "Inter", system-ui, -apple-system, sans-serif;
+  --radius-xs: 4px;
+  --radius-md: 6px;
+}
+
 *,
 *::before,
 *::after {
@@ -13,8 +31,11 @@ ul {
 body {
   min-height: 100vh;
   color: var(--color-text);
-  background: var(--color-bg);
+  background: var(--color-canvas);
   font-family: var(--font-ui);
+  font-feature-settings: "cv01", "ss03";
+  font-weight: 510;
+  letter-spacing: -0.01em;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
@@ -26,6 +47,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: var(--font-heading);
   font-weight: 600;
+  letter-spacing: -0.03em;
+  color: var(--color-text);
 }

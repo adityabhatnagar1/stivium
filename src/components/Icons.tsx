@@ -4,12 +4,12 @@ type IconProps = SVGProps<SVGSVGElement> & { size?: number };
 
 function base(size: number | undefined): SVGProps<SVGSVGElement> {
   return {
-    width: size ?? 15,
-    height: size ?? 15,
+    width: size ?? 16,
+    height: size ?? 16,
     viewBox: "0 0 24 24",
     fill: "none",
     stroke: "currentColor",
-    strokeWidth: 1.6,
+    strokeWidth: 1.5,
     strokeLinecap: "round",
     strokeLinejoin: "round",
   };
@@ -18,7 +18,7 @@ function base(size: number | undefined): SVGProps<SVGSVGElement> {
 export function IconMenu({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M4 7h16M4 12h16M4 17h16" />
+      <path d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   );
 }
@@ -26,7 +26,7 @@ export function IconMenu({ size, ...rest }: IconProps): JSX.Element {
 export function IconMinimize({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M5 12h14" />
+      <path d="M6 12h12" />
     </svg>
   );
 }
@@ -34,7 +34,15 @@ export function IconMinimize({ size, ...rest }: IconProps): JSX.Element {
 export function IconMaximize({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <rect x="5.5" y="5.5" width="13" height="13" rx="1.5" />
+      <rect x="5" y="5" width="14" height="14" rx="1.5" />
+    </svg>
+  );
+}
+
+export function IconClose({ size, ...rest }: IconProps): JSX.Element {
+  return (
+    <svg {...base(size)} {...rest}>
+      <path d="M18 6 6 18M6 6l12 12" />
     </svg>
   );
 }
@@ -48,16 +56,9 @@ export function IconRestore({ size, ...rest }: IconProps): JSX.Element {
   );
 }
 
-export function IconClose({ size, ...rest }: IconProps): JSX.Element {
-  return (
-    <svg {...base(size)} {...rest}>
-      <path d="M6 6l12 12M18 6L6 18" />
-    </svg>
-  );
-}
-
 export function IconPlay({ size, ...rest }: IconProps): JSX.Element {
   return (
+    // Solid fill with a highly subtle 1px corner radius for optical softness
     <svg {...base(size)} fill="currentColor" stroke="none" {...rest}>
       <path d="M7 5.5v13a1 1 0 0 0 1.5.87l11-6.5a1 1 0 0 0 0-1.74l-11-6.5A1 1 0 0 0 7 5.5Z" />
     </svg>
@@ -67,7 +68,7 @@ export function IconPlay({ size, ...rest }: IconProps): JSX.Element {
 export function IconFolder({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M3.5 6.5a1 1 0 0 1 1-1H9l1.6 2H19a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4.5a1 1 0 0 1-1-1v-11Z" />
+      <path d="M4 20h16a2 2 0 0 0 2-2V8a2 2 0 0 0-2-2h-7.93a2 2 0 0 1-1.66-.9l-.82-1.2A2 2 0 0 0 8.93 3H4a2 2 0 0 0-2 2v13c0 1.1.9 2 2 2Z" />
     </svg>
   );
 }
@@ -75,8 +76,8 @@ export function IconFolder({ size, ...rest }: IconProps): JSX.Element {
 export function IconFolderOpen({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M3.5 8V6.5a1 1 0 0 1 1-1H9l1.6 2H19a1 1 0 0 1 1 1v.5" />
-      <path d="M3.5 8h16l-1.6 9.2a1 1 0 0 1-1 .8H6.1a1 1 0 0 1-1-.8L3.5 8Z" />
+      <path d="M3 6a2 2 0 0 1 2-2h4l2 3h8a2 2 0 0 1 2 2v4" />
+      <path d="M3 10h19l-2.5 9H4.5L3 10Z" />
     </svg>
   );
 }
@@ -84,17 +85,18 @@ export function IconFolderOpen({ size, ...rest }: IconProps): JSX.Element {
 export function IconFile({ size, ...rest }: IconProps): JSX.Element {
   return (
     <svg {...base(size)} {...rest}>
-      <path d="M7 3.5h7l4 4V19a1.2 1.2 0 0 1-1.2 1.2H7A1.2 1.2 0 0 1 5.8 19V4.7A1.2 1.2 0 0 1 7 3.5Z" />
-      <path d="M14 3.5V8h4.5" />
+      <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
+      <polyline points="14 2 14 8 20 8" />
     </svg>
   );
 }
 
 export function IconSearch({ size, ...rest }: IconProps): JSX.Element {
   return (
+    // Slightly offset search tail for better visual balance
     <svg {...base(size)} {...rest}>
-      <circle cx="10.5" cy="10.5" r="6" />
-      <path d="M15.2 15.2 20 20" />
+      <circle cx="10.5" cy="10.5" r="7.5" />
+      <path d="m21 21-5.2-5.2" />
     </svg>
   );
 }
@@ -154,9 +156,9 @@ export function IconSettings({ size, ...rest }: IconProps): JSX.Element {
 
 export function IconSparkle({ size, ...rest }: IconProps): JSX.Element {
   return (
-    <svg {...base(size)} {...rest}>
-      <path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8L12 3Z" />
-      <path d="M19 15l.8 2.2L22 18l-2.2.8L19 21l-.8-2.2L16 18l2.2-.8L19 15Z" />
+    // Uses bezier curves (c) for a smooth, premium fluid star shape
+    <svg {...base(size)} fill="currentColor" stroke="none" {...rest}>
+      <path d="M12 2c.2 4.8 3.8 8.4 8.6 8.6-4.8.2-8.4 3.8-8.6 8.6-.2-4.8-3.8-8.4-8.6-8.6C8.2 10.4 11.8 6.8 12 2Z" />
     </svg>
   );
 }
