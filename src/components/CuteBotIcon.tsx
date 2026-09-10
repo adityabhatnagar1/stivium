@@ -40,7 +40,11 @@ export function CuteBotIcon({
   }, []);
 
   useEffect(() => {
-    if (isRunning) botRef.current?.think(4000);
+    if (isRunning) {
+      // No revertAfter: stay in "thinking" for as long as the run actually
+      // takes. errorSignal/successSignal below snap it out on completion.
+      botRef.current?.setState("active");
+    }
   }, [isRunning]);
 
   useEffect(() => {
@@ -58,7 +62,17 @@ export function CuteBotIcon({
   return (
     <div
       ref={slotRef}
-      onClick={onClick}
+      onClick={(e) => {
+        (
+          e.currentTarget.firstElementChild as HTMLElement | null
+        )?.classList.add("cb-clicked");
+        window.setTimeout(() => {
+          (
+            e.currentTarget?.firstElementChild as HTMLElement | null
+          )?.classList.remove("cb-clicked");
+        }, 500);
+        onClick?.();
+      }}
       role="button"
       tabIndex={0}
       onKeyDown={(e) => {

@@ -12,12 +12,16 @@ export const CUTEBOT_CSS = `
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  border-radius: 28%;
-  background: var(--cb-bg);
+    border-radius: 28%;
+  background: transparent;
   cursor: pointer;
   user-select: none;
   transition: transform 0.18s ease, box-shadow 0.18s ease;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
+  box-shadow: none;
+}
+
+.cb-root.cb-clicked {
+  animation: cb-click-bounce 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .cb-wobble {
@@ -178,6 +182,14 @@ export const CUTEBOT_CSS = `
   55% { transform: translateY(0) scale(0.95); }
   75% { transform: translateY(-3px) scale(1.02); }
   100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes cb-click-bounce {
+  0% { transform: scale(1); }
+  30% { transform: scale(0.72, 1.3) translateY(6px); }
+  55% { transform: scale(1.25, 0.8) translateY(-10px); }
+  75% { transform: scale(0.92, 1.08) translateY(2px); }
+  100% { transform: scale(1); }
 }
 
 @keyframes cb-talk {

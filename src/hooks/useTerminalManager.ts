@@ -13,6 +13,7 @@ import type { TermTab } from "../types";
 type UseTerminalManagerParams = {
   workspacePath: string | undefined;
   terminalHeight: number;
+  onError: (message: string) => void;
 };
 
 type UseTerminalManagerResult = {
@@ -28,6 +29,7 @@ type UseTerminalManagerResult = {
 export function useTerminalManager({
   workspacePath,
   terminalHeight,
+  onError,
 }: UseTerminalManagerParams): UseTerminalManagerResult {
   const [termTabs, setTermTabs] = useState<TermTab[]>([
     { id: "output", title: "Output", closable: false },
@@ -51,9 +53,18 @@ export function useTerminalManager({
     )
       return;
     const id = `term-${Date.now()}`;
-    const shellName = await window.api.spawnTerminal(id, cwd);
-    setTermTabs((prev) => [...prev, { id, title: shellName, closable: true }]);
-    setActiveTermId(id);
+    try {
+      const shellName = await window.api.spawnTerminal(id, cwd);
+      setTermTabs((prev) => [
+        ...prev,
+        { id, title: shellName, closable: true },
+      ]);
+      setActiveTermId(id);
+    } catch (err) {
+      onError(
+        `Failed to start terminal: ${err instanceof Error ? err.message : String(err)}`,
+      );
+    }
   };
 
   const closeTerminal = useCallback(

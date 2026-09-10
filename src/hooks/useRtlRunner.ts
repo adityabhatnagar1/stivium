@@ -10,6 +10,8 @@ type UseRtlRunnerParams = {
 type UseRtlRunnerResult = {
   isRunning: boolean;
   canRun: boolean;
+  errorSignal: number;
+  successSignal: number;
   runCurrentFile: () => Promise<void>;
 };
 
@@ -26,6 +28,8 @@ export function useRtlRunner({
   onRun,
 }: UseRtlRunnerParams): UseRtlRunnerResult {
   const [isRunning, setIsRunning] = useState(false);
+  const [errorSignal, setErrorSignal] = useState(0);
+  const [successSignal, setSuccessSignal] = useState(0);
 
   const isVerilog =
     Boolean(activeTab) && getLanguage(activeTab?.name ?? "") === "verilog";
@@ -36,11 +40,18 @@ export function useRtlRunner({
     setIsRunning(true);
     onRun();
     try {
-      await window.api.runRtl(activeTab.path, activeTab.content);
+      const result = await window.api.runRtl(activeTab.path, activeTab.content);
+      if (result.success) {
+        setSuccessSignal((n) => n + 1);
+      } else {
+        setErrorSignal((n) => n + 1);
+      }
+    } catch {
+      setErrorSignal((n) => n + 1);
     } finally {
       setIsRunning(false);
     }
   };
 
-  return { isRunning, canRun, runCurrentFile };
+  return { isRunning, canRun, errorSignal, successSignal, runCurrentFile };
 }

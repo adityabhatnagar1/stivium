@@ -20,6 +20,8 @@ type TitleBarProps = {
   isAiActive: boolean;
   isRunning: boolean;
   canRun: boolean;
+  errorSignal: number;
+  successSignal: number;
   onRun: () => void;
   onToggleMenu: () => void;
   onOpenMenu: (menuId: AppMenuId, event: MouseEvent<HTMLButtonElement>) => void;
@@ -40,6 +42,8 @@ export function TitleBar({
   isAiActive,
   isRunning,
   canRun,
+  errorSignal,
+  successSignal,
   onRun,
   onToggleMenu,
   onOpenMenu,
@@ -170,6 +174,8 @@ export function TitleBar({
         <CuteBotIcon
           isRunning={isRunning}
           isAiActive={isAiActive}
+          errorSignal={errorSignal}
+          successSignal={successSignal}
           onClick={onToggleAi}
         />
         <button

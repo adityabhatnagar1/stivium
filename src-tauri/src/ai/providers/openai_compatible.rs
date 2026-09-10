@@ -67,7 +67,3 @@ pub async fn stream(
     })
     .await
 }
-
-pub fn emit_error(message: String) -> AiEvent {
-    AiEvent::Error { message }
-}

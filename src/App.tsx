@@ -134,6 +134,7 @@ function App() {
   } = useTerminalManager({
     workspacePath: fileTree?.path,
     terminalHeight,
+    onError: setErrorMessage,
   });
 
   const {
@@ -417,10 +418,11 @@ function App() {
   const activeTab = tabs.find((t) => t.path === resolvedActiveTabPath);
   const hasContextNode = Boolean(contextMenu?.node);
 
-  const { isRunning, canRun, runCurrentFile } = useRtlRunner({
-    activeTab,
-    onRun: () => setActiveTermId("output"),
-  });
+  const { isRunning, canRun, errorSignal, successSignal, runCurrentFile } =
+    useRtlRunner({
+      activeTab,
+      onRun: () => setActiveTermId("output"),
+    });
   if (!booted) {
     return <BootScreen onComplete={() => setBooted(true)} />;
   }
@@ -443,6 +445,8 @@ function App() {
         isAiActive={isPetVisible}
         isRunning={isRunning}
         canRun={canRun}
+        errorSignal={errorSignal}
+        successSignal={successSignal}
         onRun={() => void runCurrentFile()}
         onToggleMenu={() => setIsTopMenuExpanded((prev) => !prev)}
         onOpenMenu={handleTopMenu}
