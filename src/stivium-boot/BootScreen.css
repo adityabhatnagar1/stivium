@@ -1,0 +1,602 @@
+/*
+ * Stivium boot screen styles.
+ * Everything is scoped under .stivium-boot-root so this file can be dropped
+ * into the app without touching global styles.
+ *
+ * Color system: the neutral ladder, translucent-white borders, restrained
+ * radius/shadow logic, and Inter-first type stack below are taken from
+ * Linear's current dark-UI design system. The one thing NOT taken from
+ * Linear is the accent hue — Stivium's mark is already an established
+ * sage/olive green, so that green fills the "accent" role Linear's indigo
+ * plays in its own product, rather than introducing an unrelated purple.
+ */
+
+.stivium-boot-root {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+
+  /* ---- foundations (Linear dark ladder) ---- */
+  --canvas: #030405;
+  --panel: #050607;
+  --surface-1: #08090a;
+  --surface-2: #0b0c0d;
+  --surface-3: #0d0f10;
+  --surface-4: #151719;
+
+  --border-subtle: rgba(255, 255, 255, 0.03);
+  --border-default: rgba(255, 255, 255, 0.05);
+  --border-medium: rgba(255, 255, 255, 0.08);
+
+  --text-primary: #f7f8f8;
+  --text-secondary: #d0d6e0;
+  --text-muted: #8a8f98;
+  --text-tertiary: #62666d;
+
+  /* Stivium's brand green stands in for Linear's indigo accent. */
+  --brand-light: #c3d68e;
+  --brand-dark: #93ac5b;
+  --brand-glow: rgba(195, 214, 142, 0.55);
+
+  /* A soft panel-over-canvas vignette instead of a flat fill — the same
+     "higher layers get slightly lighter" logic as the rest of the ladder,
+     and it quietly reinforces that the center is where you should look. */
+  background: radial-gradient(
+    ellipse 65% 55% at 50% 50%,
+    #080a0b 0%,
+    #040506 45%,
+    #020304 100%
+  );
+
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  isolation: isolate;
+  font-synthesis: none;
+  -webkit-font-smoothing: antialiased;
+}
+
+.stivium-boot-root.phase-exiting {
+  animation: sb-root-exit 380ms ease forwards;
+}
+
+@keyframes sb-root-exit {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+.stivium-boot-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  display: block;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Midnight sky (Uiverse.io by kiranmayee-abbireddy)                      */
+/* ---------------------------------------------------------------------- */
+/* Wrapper only — makes the snippet below fill the boot screen as an
+ * absolute background layer instead of sitting inline at its own size.
+ * The snippet itself is untouched from the original. */
+
+.stivium-boot-sky-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+}
+
+/* From Uiverse.io by kiranmayee-abbireddy */
+.uiverse-midnight-sky {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  width: 100%;
+  height: 100%;
+  min-height: 500px;
+  overflow: hidden;
+  background-color: #050505;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Base Sky Layer */
+.uiverse-midnight-sky .sky-canvas {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  inset: 0;
+  background: #050505;
+}
+
+/* Generic star layer style */
+.uiverse-midnight-sky .stars {
+  position: absolute;
+  inset: 0;
+  background-repeat: repeat;
+  pointer-events: none;
+}
+
+/* Layer 1: Small fast twinkling stars - High density */
+.uiverse-midnight-sky .stars-1 {
+  background-image: radial-gradient(1px 1px at 10% 10%, #fff, transparent),
+    radial-gradient(1px 1px at 30% 20%, #fff, transparent),
+    radial-gradient(1px 1px at 50% 50%, #fff, transparent),
+    radial-gradient(1px 1px at 70% 30%, #fff, transparent),
+    radial-gradient(1px 1px at 90% 10%, #fff, transparent);
+  background-size: 200px 200px;
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+/* Layer 2: Medium slower twinkling stars */
+.uiverse-midnight-sky .stars-2 {
+  background-image: radial-gradient(1.5px 1.5px at 20% 40%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 60% 85%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 85% 65%, #fff, transparent);
+  background-size: 300px 300px;
+  animation: twinkle 5s ease-in-out infinite 1s;
+}
+
+/* Layer 3: Larger, very slow twinkling stars */
+.uiverse-midnight-sky .stars-3 {
+  background-image: radial-gradient(2px 2px at 40% 70%, #fff, transparent),
+    radial-gradient(2px 2px at 10% 80%, #fff, transparent),
+    radial-gradient(2px 2px at 80% 40%, #fff, transparent);
+  background-size: 400px 400px;
+  animation: twinkle 7s ease-in-out infinite 2s;
+}
+
+/* Meteor / Shooting Star Layer */
+.uiverse-midnight-sky .meteor {
+  position: absolute;
+  width: 2px;
+  height: 2px;
+  background: #fff;
+  border-radius: 50%;
+  box-shadow: 0 0 10px 2px rgba(255, 255, 255, 0.5);
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Meteor Tail */
+.uiverse-midnight-sky .meteor::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 80px;
+  height: 1px;
+  background: linear-gradient(90deg, #fff, transparent);
+}
+
+/* Meteor Instances with staggered starts */
+.uiverse-midnight-sky .m1 {
+  top: 10%;
+  left: 110%;
+  animation: shoot 8s linear infinite;
+}
+.uiverse-midnight-sky .m2 {
+  top: 30%;
+  left: 110%;
+  animation: shoot 12s linear infinite 4s;
+}
+.uiverse-midnight-sky .m3 {
+  top: 50%;
+  left: 110%;
+  animation: shoot 10s linear infinite 2s;
+}
+
+/* The Moon */
+.uiverse-midnight-sky .moon {
+  position: absolute;
+  top: 15%;
+  right: 15%;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: 15px 15px 0 0 #fdfbd3;
+  filter: drop-shadow(0 0 15px rgba(253, 251, 211, 0.4));
+  z-index: 10;
+}
+
+/* Twinkle Animation */
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.2;
+  }
+}
+
+/* Shooting Star Animation - Using % instead of vw/vh */
+@keyframes shoot {
+  0% {
+    transform: translateX(0) translateY(0) rotate(-35deg);
+    opacity: 0;
+  }
+  5% {
+    opacity: 1;
+  }
+  15% {
+    transform: translateX(-1500px) translateY(1000px) rotate(-35deg);
+    opacity: 0;
+  }
+  100% {
+    transform: translateX(-1500px) translateY(1000px) rotate(-35deg);
+    opacity: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .uiverse-midnight-sky .stars-1,
+  .uiverse-midnight-sky .stars-2,
+  .uiverse-midnight-sky .stars-3,
+  .uiverse-midnight-sky .meteor {
+    animation: none;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Ambient aura                                                            */
+/* ---------------------------------------------------------------------- */
+/* Two static-position, slow-drifting blurred fields behind the mark. This
+ * is the ambient-glow takeaway from the blurred, blend-mode "loader balls"
+ * reference — the same idea of soft colored light bleeding through a dark
+ * surface — kept purely decorative and far too faint to compete with the
+ * mark or the star field.
+ */
+
+.stivium-boot-aura {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+  filter: blur(70px);
+  mix-blend-mode: screen;
+  will-change: transform;
+}
+
+.stivium-boot-aura-a {
+  width: 46vmax;
+  height: 46vmax;
+  left: 16%;
+  top: 18%;
+  background: radial-gradient(
+    circle,
+    var(--brand-glow) 0%,
+    rgba(195, 214, 142, 0) 70%
+  );
+  opacity: 0.22;
+  animation: sb-aura-drift-a 16s ease-in-out infinite alternate;
+}
+
+.stivium-boot-aura-b {
+  width: 38vmax;
+  height: 38vmax;
+  right: 12%;
+  bottom: 10%;
+  /* Linear's semantic blue (#4EA7FC), used at near-invisible strength just
+     to keep the palette from reading as monochrome-green. */
+  background: transparent;
+  opacity: 0.18;
+  animation: sb-aura-drift-b 20s ease-in-out infinite alternate;
+}
+
+@keyframes sb-aura-drift-a {
+  from {
+    transform: translate(-2%, -1%) scale(1);
+  }
+  to {
+    transform: translate(3%, 2%) scale(1.06);
+  }
+}
+
+@keyframes sb-aura-drift-b {
+  from {
+    transform: translate(1%, 2%) scale(1);
+  }
+  to {
+    transform: translate(-3%, -2%) scale(1.08);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Central composition                                                    */
+/* ---------------------------------------------------------------------- */
+/* Absolutely centered on the viewport (not just flex-centered inside a
+ * grid) so the mark stays pinned to true dead-center regardless of content
+ * height changes during assembly/exit — no drift, no lopsided placement. */
+
+.stivium-boot-composition {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(0.7rem, 1.6vh, 1.2rem);
+  width: min(90vw, 640px);
+  padding: 0 6vw;
+  text-align: center;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Logo                                                                    */
+/* ---------------------------------------------------------------------- */
+
+.stivium-boot-logo-wrap {
+  position: relative;
+  width: clamp(60px, 10vw, 100px);
+  height: clamp(60px, 10vw, 100px);
+  margin-bottom: clamp(0.4rem, 1.4vh, 0.9rem);
+  filter: drop-shadow(0 0 18px rgba(147, 172, 91, 0));
+  transition: filter 900ms ease;
+}
+
+.stivium-boot-logo-svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.sbl-facet {
+  transform-box: fill-box;
+  transform-origin: center;
+  opacity: 0;
+  transform: scale(0.4) translateY(6px);
+  animation: sbl-facet-in 520ms cubic-bezier(0.16, 0.9, 0.28, 1) forwards;
+  animation-delay: calc(150ms + var(--sbl-i, 0) * 60ms);
+}
+
+@keyframes sbl-facet-in {
+  0% {
+    opacity: 0;
+    transform: scale(0.4) translateY(6px);
+  }
+  70% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+/* Once assembled, the mark itself becomes the loading indicator — a
+ * continuous churn (borrowing the two-stage accelerate/decelerate feel of
+ * the classic CSS "hourglass" spinner) instead of a separate spinner glyph.
+ * The hex mark repeats visually every 60°, so any multiple-of-60° rotation
+ * loops with zero seam. Pausing (rather than removing) the animation on
+ * "ready" means it always freezes clean, mid-frame, with no snap-back. */
+.stivium-boot-root.phase-settled .stivium-boot-logo-svg {
+  animation:
+    sbl-spin 2.2s ease infinite,
+    sbl-settle-sheen 900ms ease 40ms 1;
+}
+
+.stivium-boot-root.phase-settled.is-ready .stivium-boot-logo-svg {
+  animation-play-state: paused, running;
+}
+
+@keyframes sbl-spin {
+  0% {
+    transform: rotate(0deg);
+    animation-timing-function: cubic-bezier(0.55, 0.055, 0.675, 0.19);
+  }
+  50% {
+    transform: rotate(360deg);
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1);
+  }
+  100% {
+    transform: rotate(720deg);
+  }
+}
+
+@keyframes sbl-settle-sheen {
+  0% {
+    filter: brightness(1);
+  }
+  45% {
+    filter: brightness(1.18);
+  }
+  100% {
+    filter: brightness(1);
+  }
+}
+
+/* Rare atmospheric highlight triggered when a comet passes near the mark. */
+.sbl-atmos-highlight {
+  animation: sbl-atmos-pulse 1400ms ease;
+}
+
+@keyframes sbl-atmos-pulse {
+  0% {
+    filter: drop-shadow(0 0 0 rgba(195, 214, 142, 0));
+  }
+  35% {
+    filter: drop-shadow(
+      0 0 14px
+        rgba(195, 214, 142, calc(0.28 * var(--sbl-highlight-strength, 0.6)))
+    );
+  }
+  100% {
+    filter: drop-shadow(0 0 0 rgba(195, 214, 142, 0));
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Typography                                                             */
+/* ---------------------------------------------------------------------- */
+/* STIVIUM is the only copy on screen — bold, wide, and left to speak for
+ * itself with no subtitle underneath it. */
+
+.stivium-boot-wordmark {
+  margin: 0;
+  font-family:
+    "Space Grotesk",
+    "Inter",
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+  font-weight: 700;
+  font-size: clamp(2rem, 4.6vw, 3.25rem);
+  letter-spacing: 0.05em;
+  color: var(--text-primary);
+  opacity: 0;
+  transform: translateY(6px);
+  animation: sb-text-in 620ms cubic-bezier(0.2, 0.85, 0.3, 1) forwards;
+  animation-delay: 780ms;
+}
+
+@keyframes sb-text-in {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Progress                                                                */
+/* ---------------------------------------------------------------------- */
+/* A quiet indeterminate bar rather than a text status line — reworked from
+ * the classic "grow, snap back, grow again" loader shape, recolored into
+ * the brand gradient and given a faint matching glow. */
+
+.stivium-boot-progress {
+  width: min(200px, 46vw);
+  height: 3px;
+  border-radius: 999px;
+  background: var(--border-default);
+  overflow: hidden;
+  margin-top: clamp(1rem, 2.6vh, 1.6rem);
+  opacity: 0;
+  animation: sb-text-in 480ms ease forwards;
+  animation-delay: 1080ms;
+}
+
+.stivium-boot-progress-fill {
+  height: 100%;
+  width: 0%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--brand-dark), var(--brand-light));
+  box-shadow: 0 0 8px var(--brand-glow);
+}
+
+.stivium-boot-progress-fill.is-indeterminate {
+  animation: sb-progress-loop 2.2s ease infinite;
+}
+
+@keyframes sb-progress-loop {
+  0% {
+    width: 0%;
+  }
+  10% {
+    width: 12%;
+  }
+  50% {
+    width: 44%;
+  }
+  62% {
+    width: 66%;
+  }
+  100% {
+    width: 100%;
+  }
+}
+
+.stivium-boot-progress-fill.is-complete {
+  width: 100%;
+  transition: width 320ms ease;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Credit                                                                  */
+/* ---------------------------------------------------------------------- */
+
+.stivium-boot-credit {
+  position: absolute;
+  left: 50%;
+  bottom: clamp(1.4rem, 4vh, 2.4rem);
+  transform: translateX(-50%);
+  z-index: 1;
+  margin: 0;
+  font-family:
+    "JetBrains Mono", "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo,
+    monospace;
+  font-size: 0.68rem;
+  letter-spacing: 0.03em;
+  color: var(--text-tertiary);
+  opacity: 0;
+  animation: sb-text-in 600ms ease forwards;
+  animation-delay: 1400ms;
+}
+
+/* ---------------------------------------------------------------------- */
+/* Reduced motion                                                          */
+/* ---------------------------------------------------------------------- */
+
+@media (prefers-reduced-motion: reduce) {
+  .stivium-boot-root.phase-exiting {
+    animation: none;
+    opacity: 0;
+    transition: opacity 200ms linear;
+  }
+
+  .stivium-boot-aura {
+    animation: none;
+  }
+
+  .sbl-facet {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .stivium-boot-root.phase-settled .stivium-boot-logo-svg,
+  .sbl-atmos-highlight {
+    animation: none;
+  }
+
+  .stivium-boot-wordmark,
+  .stivium-boot-progress,
+  .stivium-boot-credit {
+    animation: none;
+    opacity: 1;
+    transform: none;
+  }
+
+  .stivium-boot-progress-fill.is-indeterminate {
+    animation: none;
+    width: 45%;
+  }
+}
+
+/* ---------------------------------------------------------------------- */
+/* Small-window fallback (e.g. compact laptop panes)                       */
+/* ---------------------------------------------------------------------- */
+
+@media (max-height: 480px) {
+  .stivium-boot-logo-wrap {
+    width: 44px;
+    height: 44px;
+  }
+
+  .stivium-boot-credit {
+    display: none;
+  }
+}

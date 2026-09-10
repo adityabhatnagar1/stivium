@@ -43,11 +43,13 @@ import { useEditorTabs } from "./hooks/useEditorTabs";
 import { useWindowChrome } from "./hooks/useWindowChrome";
 import { useDisableBrowserBehaviors } from "./hooks/useDisableBrowserBehaviors";
 import type { Tab, TreeNode } from "./types";
+import BootScreen from "./stivium-boot/BootScreen";
 
 loader.config({ monaco });
 registerBuiltInLanguages();
 
 function App() {
+  const [booted, setBooted] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   useDisableBrowserBehaviors();
   const [tabs, setTabs] = useState<Tab[]>([]);
@@ -419,7 +421,9 @@ function App() {
     activeTab,
     onRun: () => setActiveTermId("output"),
   });
-
+  if (!booted) {
+    return <BootScreen onComplete={() => setBooted(true)} />;
+  }
   return (
     <div
       style={{

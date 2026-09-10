@@ -1,12 +1,12 @@
 import type { CSSProperties, MouseEvent } from "react";
 import { TitleBarStarfield } from "./TitleBarStarfield";
+import { CuteBotIcon } from "./CuteBotIcon";
 import {
   IconMenu,
   IconMinimize,
   IconMaximize,
   IconRestore,
   IconClose,
-  IconSparkle,
   IconPlay,
 } from "./Icons";
 
@@ -57,7 +57,7 @@ export function TitleBar({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          height: "36px",
+          height: "44px",
           background: "var(--color-titlebar)",
           borderBottom: "var(--border-hairline)",
           WebkitAppRegion: "drag",
@@ -181,25 +181,11 @@ export function TitleBar({
             {isRunning ? "Running" : "Run"}
           </span>
         </button>
-        <button
+        <CuteBotIcon
+          isRunning={isRunning}
+          isAiActive={isAiActive}
           onClick={onToggleAi}
-          title="AI assistant"
-          aria-label="AI assistant"
-          aria-pressed={isAiActive}
-          className="stv-wincontrol"
-          style={{
-            width: "40px",
-            border: "none",
-            background: "transparent",
-            color: isAiActive ? "var(--color-accent)" : "var(--color-text)",
-            cursor: "pointer",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <IconSparkle size={ICON_SIZE_DEFAULT} />
-        </button>
+        />
         <button
           onClick={onMinimize}
           title="Minimize"
