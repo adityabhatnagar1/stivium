@@ -357,8 +357,32 @@ fn run_vvp_with_timeout(
 /// its file name, so compiler diagnostics reference a familiar name).
 /// `source` is the *current Monaco buffer contents* - authoritative even if
 /// unsaved - which is what actually gets compiled.
+///
+/// This is the one place in the app that used to do real, multi-second
+/// blocking work (spawning `iverilog`/`vvp` and, on the vvp side, polling
+/// for up to 15s) directly inside a plain `#[tauri::command] fn`. Regular
+/// (non-`async`) commands are dispatched inline on Tauri's own command/event
+/// thread, so every "> Compiling..." / "> Running simulation..." progress
+/// emit queued up behind that same blocked call and only actually reached
+/// the webview once the whole run finished (or appeared to hang entirely
+/// for long/infinite-loop simulations) - this is what made "Run" look like
+/// it produced no output and left the toolbar's run indicator spinning
+/// indefinitely. Marking the command `async` and doing the actual work
+/// inside `spawn_blocking` moves it off that thread, so progress/output
+/// events stream to the UI live while the run is in flight, exactly like
+/// the terminal and AI streaming paths already do.
 #[tauri::command]
-pub fn run_rtl(app: AppHandle, file_path: String, source: String) -> Result<RunResult, String> {
+pub async fn run_rtl(
+    app: AppHandle,
+    file_path: String,
+    source: String,
+) -> Result<RunResult, String> {
+    tauri::async_runtime::spawn_blocking(move || run_rtl_blocking(app, file_path, source))
+        .await
+        .map_err(|e| format!("Run task panicked: {e}"))?
+}
+
+fn run_rtl_blocking(app: AppHandle, file_path: String, source: String) -> Result<RunResult, String> {
     let start = std::time::Instant::now();
     let toolchain = match icarus::resolve_toolchain() {
         Ok(toolchain) => toolchain,
