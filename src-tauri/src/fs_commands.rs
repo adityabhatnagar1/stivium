@@ -373,9 +373,24 @@ pub fn write_file(
     Ok(true)
 }
 
+// `build_dir_tree` recurses over the whole workspace, which for a
+// large/deep project can easily take long enough to notice. Regular
+// (non-`async`) Tauri commands run inline on the same dispatch thread
+// Tauri uses to deliver every other command and event, so a slow call
+// here used to stall the entire app - editor, terminal, everything -
+// until the walk finished. Hopping onto `spawn_blocking` keeps the walk
+// off that thread so the UI stays responsive while it runs.
 #[tauri::command]
-pub fn read_dir_tree(dir_path: String) -> DirTreeNode {
-    build_dir_tree(Path::new(&dir_path))
+pub async fn read_dir_tree(dir_path: String) -> DirTreeNode {
+    let fallback_path = dir_path.clone();
+    tauri::async_runtime::spawn_blocking(move || build_dir_tree(Path::new(&dir_path)))
+        .await
+        .unwrap_or_else(|_| DirTreeNode {
+            name: String::new(),
+            path: fallback_path,
+            is_directory: true,
+            children: Some(Vec::new()),
+        })
 }
 
 #[tauri::command]
@@ -524,11 +539,18 @@ pub fn paste_path(
     Ok(true)
 }
 
+// Same reasoning as `read_dir_tree` above: this walks + reads every file
+// under the workspace synchronously, so it's moved off Tauri's command
+// dispatch thread via `spawn_blocking` to avoid freezing the whole app
+// for the duration of the search on larger projects.
 #[tauri::command]
-pub fn find_in_files(
-    root_dir: String,
-    query: String,
-) -> Vec<FindResult> {
+pub async fn find_in_files(root_dir: String, query: String) -> Vec<FindResult> {
+    tauri::async_runtime::spawn_blocking(move || find_in_files_blocking(root_dir, query))
+        .await
+        .unwrap_or_default()
+}
+
+fn find_in_files_blocking(root_dir: String, query: String) -> Vec<FindResult> {
     if query.trim().is_empty() {
         return Vec::new();
     }
@@ -572,12 +594,17 @@ pub fn find_in_files(
     results
 }
 
+// Same reasoning as `read_dir_tree` above.
 #[tauri::command]
-pub fn replace_in_files(
-    root_dir: String,
-    query: String,
-    replacement: String,
-) -> usize {
+pub async fn replace_in_files(root_dir: String, query: String, replacement: String) -> usize {
+    tauri::async_runtime::spawn_blocking(move || {
+        replace_in_files_blocking(root_dir, query, replacement)
+    })
+    .await
+    .unwrap_or(0)
+}
+
+fn replace_in_files_blocking(root_dir: String, query: String, replacement: String) -> usize {
     if query.trim().is_empty() {
         return 0;
     }
