@@ -32,15 +32,21 @@ function FileTreeNodeImpl({
   const isSelected = selectedPath === node.path;
 
   const rowStyle: CSSProperties = {
-    padding: `6px 10px 6px ${paddingLeft + 2}px`,
+    padding: `var(--space-1) var(--space-2) var(--space-1) ${paddingLeft}px`,
+    margin: "0 var(--space-2)",
+    borderRadius: "6px",
     cursor: "pointer",
-    color: node.isDirectory ? "var(--color-text)" : "var(--color-text-muted)",
-    fontWeight: node.isDirectory ? 600 : 400,
     fontSize: "var(--text-body)",
     display: "flex",
     alignItems: "center",
   };
-  const rowClassName = `stv-tree-row${isSelected ? " stv-tree-row--selected" : ""}`;
+  const rowClassName = [
+    "stv-tree-row",
+    node.isDirectory ? "stv-tree-row--dir" : "",
+    isSelected ? "stv-tree-row--selected" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
   if (!node.isDirectory) {
     return (
@@ -73,7 +79,7 @@ function FileTreeNodeImpl({
           aria-hidden="true"
           style={{ marginRight: "var(--space-2)", flexShrink: 0 }}
         />
-        {node.name}
+        <span className="stv-tree-row__name">{node.name}</span>
       </div>
     );
   }
@@ -131,7 +137,7 @@ function FileTreeNodeImpl({
             style={{ marginRight: "var(--space-2)", flexShrink: 0 }}
           />
         )}
-        {node.name}
+        <span className="stv-tree-row__name">{node.name}</span>
       </div>
       {isOpen &&
         node.children?.map((child) => (

@@ -62,7 +62,7 @@ export function LeftPane({
         width: "100%",
         height: "100%",
         minHeight: 0,
-        background: "var(--color-surface-2)",
+        background: "var(--color-surface)",
         borderRight: "1px solid var(--color-border)",
         overflowY: "auto",
         paddingTop: "8px",
@@ -76,34 +76,14 @@ export function LeftPane({
         onOpenContextMenu(event, null, null);
       }}
     >
-      <div
-        style={{
-          display: "flex",
-          gap: "2px",
-          margin: "0 var(--space-2) var(--space-3) var(--space-2)",
-          padding: "2px",
-          background: "var(--color-surface)",
-          border: "1px solid var(--color-border)",
-          borderRadius: "var(--radius-md)",
-        }}
-      >
+      <div className="stv-lp-seg" role="tablist">
         <button
           onClick={() => onLeftPaneTabChange("workspace")}
-          className="stv-tab"
-          style={{
-            flex: 1,
-            background:
-              leftPaneTab === "workspace"
-                ? "var(--color-surface-elevated)"
-                : "transparent",
-            border: "none",
-            borderRadius: "var(--radius-sm)",
-            color: "var(--color-text)",
-            padding: "6px 8px",
-            cursor: "pointer",
-          }}
+          role="tab"
+          aria-selected={leftPaneTab === "workspace"}
+          className={`stv-lp-seg__btn${leftPaneTab === "workspace" ? " stv-lp-seg__btn--active" : ""}`}
         >
-          <IconFolderOpen size={14} style={{ marginRight: "6px" }} />
+          <IconFolderOpen size={14} />
           Workspace
         </button>
 
@@ -112,87 +92,43 @@ export function LeftPane({
             if (canUseSearch) onLeftPaneTabChange("search");
           }}
           disabled={!canUseSearch}
-          className="stv-tab"
-          style={{
-            flex: 1,
-            background:
-              leftPaneTab === "search"
-                ? "var(--color-surface-elevated)"
-                : "transparent",
-            border: "none",
-            borderRadius: "var(--radius-sm)",
-            color: canUseSearch
-              ? "var(--color-text)"
-              : "var(--color-text-muted)",
-            padding: "6px 8px",
-            cursor: canUseSearch ? "pointer" : "not-allowed",
-            opacity: canUseSearch ? 1 : 0.75,
-          }}
+          role="tab"
+          aria-selected={leftPaneTab === "search"}
+          className={`stv-lp-seg__btn${leftPaneTab === "search" ? " stv-lp-seg__btn--active" : ""}`}
         >
-          <IconSearch size={14} style={{ marginRight: "6px" }} />
+          <IconSearch size={14} />
           Search
         </button>
       </div>
 
       {leftPaneTab === "workspace" || !canUseSearch ? (
         <>
-          <div
-            style={{
-              padding: "0 var(--space-2) var(--space-2) var(--space-2)",
-              fontSize: "10px",
-              color: "var(--color-text-muted)",
-              textTransform: "uppercase",
-              letterSpacing: "0.06em",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              borderBottom: "1px solid var(--color-border)",
-              marginBottom: "var(--space-2)",
-            }}
-          >
+          <div className="stv-lp-section">
             <span
               title={fileTree?.name || "Workspace"}
-              style={{
-                overflow: "hidden",
-                textOverflow: "ellipsis",
-                whiteSpace: "nowrap",
-                maxWidth: "190px",
-                paddingLeft: "4px",
-              }}
+              className="stv-lp-section__title"
             >
               {fileTree?.name || "Workspace"}
             </span>
 
             {fileTree && (
-              <div style={{ display: "flex", gap: "6px" }}>
+              <div className="stv-lp-section__actions">
                 <button
                   onClick={onCreateFile}
                   title="New File"
-                  className="stv-icon-btn"
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    color: "var(--color-text)",
-                    cursor: "pointer",
-                    padding: "4px",
-                  }}
+                  aria-label="New File"
+                  className="stv-lp-iconbtn"
                 >
-                  <IconFile size={13} />
+                  <IconFile size={14} />
                 </button>
 
                 <button
                   onClick={onCreateFolder}
                   title="New Folder"
-                  className="stv-icon-btn"
-                  style={{
-                    border: "none",
-                    background: "transparent",
-                    color: "var(--color-text)",
-                    cursor: "pointer",
-                    padding: "4px",
-                  }}
+                  aria-label="New Folder"
+                  className="stv-lp-iconbtn"
                 >
-                  <IconFolder size={13} />
+                  <IconFolder size={14} />
                 </button>
               </div>
             )}
@@ -212,30 +148,15 @@ export function LeftPane({
               />
             ))
           ) : (
-            <div
-              style={{
-                padding: "20px",
-                color: "var(--color-text-muted)",
-                fontSize: "13px",
-                textAlign: "center",
-                display: "flex",
-                flexDirection: "column",
-                gap: "10px",
-                alignItems: "center",
-                justifyContent: "center",
-                flex: 1,
-              }}
-            >
-              <span>No workspace open</span>
+            <div className="stv-lp-empty">
+              <div className="stv-lp-empty__icon" aria-hidden="true">
+                <IconFolderOpen size={20} />
+              </div>
+              <span className="stv-lp-empty__title">No workspace open</span>
 
               <button
                 onClick={onOpenWorkspace}
-                className="stv-btn stv-btn--primary"
-                style={{
-                  padding: "6px 10px",
-                  borderRadius: "var(--radius-md)",
-                  cursor: "pointer",
-                }}
+                className="stv-btn stv-btn--primary stv-lp-cta"
               >
                 Open Workspace
               </button>
