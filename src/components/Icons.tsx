@@ -25,33 +25,33 @@ export function IconMenu({ size, ...rest }: IconProps): JSX.Element {
 
 export function IconMinimize({ size, ...rest }: IconProps): JSX.Element {
   return (
-    <svg {...base(size)} {...rest}>
-      <path d="M6 12h12" />
+    <svg {...base(size)} viewBox="0 0 512 512" fill="currentColor" stroke="none" {...rest}>
+      {/* Replaced embedded PNG with a clean vector rectangle that scales perfectly */}
+      <rect x="100" y="236" width="312" height="40" rx="10" />
     </svg>
   );
 }
 
 export function IconMaximize({ size, ...rest }: IconProps): JSX.Element {
   return (
-    <svg {...base(size)} {...rest}>
-      <rect x="5" y="5" width="14" height="14" rx="1.5" />
+    <svg {...base(size)} viewBox="0 0 512 512" fill="currentColor" stroke="none" {...rest}>
+      <path fillRule="evenodd" d="M 105,195 L 102,199 L 99,206 L 99,395 L 100,396 L 100,399 L 103,404 L 110,410 L 115,411 L 116,412 L 305,412 L 315,407 L 319,402 L 321,397 L 321,393 L 322,392 L 321,390 L 321,385 L 318,379 L 313,374 L 310,372 L 304,371 L 303,370 L 142,370 L 141,369 L 141,208 L 140,207 L 139,201 L 137,198 L 132,193 L 126,190 L 122,190 L 121,189 L 114,190 L 109,192 Z M 195,105 L 192,109 L 190,114 L 190,118 L 189,119 L 190,126 L 193,132 L 198,137 L 201,139 L 207,140 L 208,141 L 369,141 L 370,142 L 370,303 L 371,304 L 372,310 L 374,313 L 379,318 L 385,321 L 390,321 L 391,322 L 393,321 L 397,321 L 402,319 L 406,316 L 409,312 L 412,305 L 412,116 L 411,115 L 411,112 L 408,107 L 401,101 L 396,100 L 395,99 L 206,99 L 199,102 Z" />
     </svg>
   );
 }
 
 export function IconClose({ size, ...rest }: IconProps): JSX.Element {
   return (
-    <svg {...base(size)} {...rest}>
-      <path d="M18 6 6 18M6 6l12 12" />
+    <svg {...base(size)} viewBox="0 0 512 512" fill="currentColor" stroke="none" {...rest}>
+      <path fillRule="evenodd" d="M 109,104 L 104,109 L 101,115 L 101,119 L 100,120 L 101,127 L 105,135 L 225,255 L 225,256 L 105,376 L 102,381 L 101,388 L 100,389 L 101,396 L 104,402 L 109,407 L 115,410 L 119,410 L 120,411 L 127,410 L 135,406 L 255,286 L 256,286 L 376,406 L 381,409 L 388,410 L 389,411 L 396,410 L 402,407 L 407,402 L 410,396 L 410,392 L 411,391 L 410,384 L 406,376 L 286,256 L 286,255 L 406,135 L 409,130 L 410,123 L 411,122 L 410,115 L 407,109 L 402,104 L 396,101 L 392,101 L 391,100 L 384,101 L 376,105 L 256,225 L 255,225 L 135,105 L 130,102 L 123,100 L 115,101 Z" />
     </svg>
   );
 }
 
 export function IconRestore({ size, ...rest }: IconProps): JSX.Element {
   return (
-    <svg {...base(size)} {...rest}>
-      <rect x="7.5" y="4.5" width="11" height="11" rx="1.3" />
-      <path d="M5.5 8.5v9a1.3 1.3 0 0 0 1.3 1.3h9" />
+    <svg {...base(size)} viewBox="0 0 512 512" fill="currentColor" stroke="none" {...rest}>
+      <path fillRule="evenodd" d="M 93,281 L 87,288 L 85,301 L 88,310 L 94,316 L 102,319 L 191,319 L 192,320 L 192,409 L 195,417 L 201,423 L 206,425 L 215,426 L 226,422 L 230,418 L 234,407 L 234,296 L 230,285 L 226,281 L 215,277 L 104,277 L 96,279 Z M 285,89 L 279,96 L 277,104 L 277,215 L 281,226 L 285,230 L 296,234 L 407,234 L 418,230 L 422,226 L 425,220 L 426,211 L 423,201 L 417,195 L 409,192 L 320,192 L 319,191 L 319,102 L 316,94 L 310,88 L 305,86 L 296,85 L 288,87 Z" />
     </svg>
   );
 }
