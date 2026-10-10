@@ -19,34 +19,36 @@
      must pick a background from this list; never invent a new gray.
      Monochromatic by design: depth comes from luminance steps and
      hairline borders, not from color variation. */
-  --color-bg: #08090a; /* base canvas: editor, deepest layer */
-  --color-surface: #0c0d0f; /* level 1: sidebar/panel body */
-  --color-surface-2: #131417; /* level 2: tab strips, toolbar rows */
-  --color-surface-elevated: #17181c; /* level 3: dialogs, context menu, popovers */
-  --color-titlebar: #060607; /* recedes below base */
-  --color-border: #23262b;
-  --color-border-subtle: rgba(255, 255, 255, 0.06);
+  --color-bg: #08090a; /* level 0: base canvas, editor, titlebar */
+  --color-surface: #0f1011; /* level 1: sidebar/panel body */
+  --color-surface-2: #141516; /* level 2: elevated containers */
+  --color-surface-elevated: #28282c; /* menus, popovers, dialogs, modal shells */
+  --color-titlebar: #08090a; /* same as base canvas, separated by a hairline */
+  --color-border: #23252a;
+  --color-border-subtle: rgba(255, 255, 255, 0.08);
   --color-tab-inactive: var(
     --color-surface-2
   ); /* inactive editor-tab background */
   --color-text: #f7f8f8;
-  --color-text-muted: #8a8f98;
-  --color-text-faint: #55585e; /* disabled-state text, line-numbers-adjacent labels */
+  --color-text-muted: #8a8f98; /* tertiary: metadata, helper text */
+  --color-text-faint: #62666d; /* quaternary: muted labels, disabled */
 
-  /* Primary accent: Linear-style lavender-blue */
+  /* Primary accent: Linear indigo */
   --color-accent: #5e6ad2;
   --color-accent-rgb: 94, 106, 210;
-  --color-accent-strong: #4954bf;
-  /* Secondary accent: violet — sits next to the primary without competing */
-  --color-accent-2: #8b5cf6;
+  /* DESIGN.md defines no darker accent; collapsed onto the brand color */
+  --color-accent-strong: #5e6ad2;
+  /* Accent hover/focus (DESIGN.md --color-accent-hover) */
+  --color-accent-2: #828fff;
 
-  /* Semantic status — named, not one-off inline hex per usage site */
-  --color-success: #4cb782;
-  --color-info: var(--color-accent-2);
-  --color-warn: #f2c94c;
+  /* Semantic status — DESIGN.md utility colors */
+  --color-success: #27a644;
+  --color-info: #4ea7fc;
+  --color-warn: #f0bf00;
   --color-danger: #eb5757;
   --color-danger-rgb: 235, 87, 87;
-  --color-danger-strong: #c94343;
+  /* DESIGN.md defines no darker red; collapsed onto --color-danger */
+  --color-danger-strong: #eb5757;
   --color-error-surface: #3a1f22;
 
   /* ---- Shape scale — tight radius system ---- */
@@ -121,7 +123,6 @@ textarea,
   box-shadow: var(--focus-ring);
   border-radius: var(--radius-xs);
 }
-
 ::-webkit-scrollbar {
   width: 5px;
 }
@@ -131,11 +132,11 @@ textarea,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #303236;
+  background: #34343a;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--color-accent);
+  background: #3e3e44;
 }
 
 .sr-only {
