@@ -518,9 +518,8 @@ function App() {
           onMouseDown={startLeftPaneResize}
           className="stv-resize-handle stv-resize-handle--vertical"
           style={{
-            width: "6px",
+            width: "1px",
             cursor: "col-resize",
-            background: "var(--color-border)",
             flexShrink: 0,
           }}
         />
@@ -559,9 +558,8 @@ function App() {
             onMouseDown={startTerminalResize}
             className="stv-resize-handle stv-resize-handle--horizontal"
             style={{
-              height: "6px",
+              height: "1px",
               cursor: "row-resize",
-              background: "var(--color-border)",
               flexShrink: 0,
             }}
           />

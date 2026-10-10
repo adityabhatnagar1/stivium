@@ -32,17 +32,18 @@
   transition: background-color var(--dur-base) var(--ease-standard);
 }
 .stv-wincontrol:hover {
-  background-color: rgba(var(--color-accent-rgb), 0.14);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
 }
 .stv-wincontrol:active {
-  background-color: rgba(var(--color-accent-rgb), 0.22);
+  background-color: rgba(255, 255, 255, 0.07);
 }
 .stv-wincontrol--close:hover {
   background-color: var(--color-danger);
-  color: var(--color-bg);
+  color: #ffffff;
 }
 .stv-wincontrol--close:active {
-  background-color: var(--color-danger-strong);
+  background-color: var(--color-danger);
 }
 
 .stv-icon-btn,
@@ -84,42 +85,31 @@
 }
 
 .stv-run-btn {
-  width: 34px;
-  height: 34px;
-  border: none;
-  outline: none;
-  border-radius: 50%;
+  width: 24px;
+  height: 24px;
+  border: 1px solid transparent;
+  border-radius: 9999px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgb(40, 40, 46);
+  background-color: var(--color-accent);
+  box-shadow: 0px 4px 24px rgba(0, 0, 0, 0.2);
   cursor: pointer;
   transition:
-    background-color 0.3s,
-    box-shadow 0.3s;
-  box-shadow:
-    0 2px 10px rgba(0, 0, 0, 0.25),
-    0 0 0px rgba(var(--color-accent-rgb), 0);
+    background-color 150ms ease,
+    transform 100ms ease;
 }
 
 .stv-run-btn svg {
-  color: var(--color-accent);
-  transition: color 0.3s;
+  color: #ffffff;
 }
 
 .stv-run-btn:hover {
-  background-color: rgb(54, 54, 62);
-  box-shadow:
-    0 2px 12px rgba(0, 0, 0, 0.3),
-    0 0 18px rgba(var(--color-accent-rgb), 0.55);
-}
-
-.stv-run-btn:hover svg {
-  animation: runPulse 0.9s both;
+  background-color: var(--color-accent-hover);
 }
 
 .stv-run-btn:active {
-  transform: scale(0.85);
+  transform: scale(0.97);
 }
 
 .stv-run-btn:disabled {
@@ -128,8 +118,8 @@
   opacity: 0.45;
 }
 
-.stv-run-btn:disabled:hover svg {
-  animation: none;
+.stv-run-btn:disabled:hover {
+  background-color: var(--color-accent);
 }
 
 @keyframes runPulse {
@@ -361,34 +351,16 @@
   transition-delay: 120ms;
 }
 .stv-app-menu-item:hover {
-  background-color: rgba(var(--color-accent-rgb), 0.14);
-  color: var(--color-accent);
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--color-text);
 }
 
 /* ==================================================================
-   TITLEBAR STARFIELD — re-themed green, twinkle now smooth (60fps)
+   TITLEBAR — flat chrome, no ambient effects (DESIGN.md §6, §7)
    ================================================================== */
 .stv-titlebar {
   position: relative;
   overflow: hidden;
-}
-.stv-titlebar-fx {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-  overflow: hidden;
-  pointer-events: none;
-  background:
-    radial-gradient(
-      circle at 18% 30%,
-      rgba(var(--color-accent-rgb), 0.1),
-      transparent 35%
-    ),
-    radial-gradient(
-      circle at 82% 70%,
-      rgba(139, 92, 246, 0.07),
-      transparent 40%
-    );
 }
 
 .stv-titlebar-content {
@@ -430,8 +402,23 @@
   animation-play-state: paused;
 }
 
+/* 1px hairline with a 7px hit area. Pane borders already draw the
+   visible divider, so the handle only lights up on hover/drag. */
 .stv-resize-handle {
+  position: relative;
+  z-index: 2;
+  background-color: transparent;
   transition: background-color var(--dur-fast) var(--ease-standard);
+}
+.stv-resize-handle::before {
+  content: "";
+  position: absolute;
+}
+.stv-resize-handle--vertical::before {
+  inset: 0 -3px;
+}
+.stv-resize-handle--horizontal::before {
+  inset: -3px 0;
 }
 
 .stv-resize-handle:hover,

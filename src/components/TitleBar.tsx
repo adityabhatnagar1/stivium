@@ -61,9 +61,9 @@ export function TitleBar({
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          height: "44px",
-          background: "var(--color-titlebar)",
-          borderBottom: "var(--border-hairline)",
+          height: "40px",
+          background: "var(--color-bg)",
+          borderBottom: "1px solid #23252a",
           WebkitAppRegion: "drag",
         } as CSSProperties
       }
@@ -90,11 +90,11 @@ export function TitleBar({
             {
               background: "transparent",
               border: "none",
-              color: "var(--color-text)",
+              color: "var(--color-text-secondary)",
               fontSize: "var(--text-body)",
               cursor: "pointer",
-              width: "var(--control-size-default)",
-              height: "var(--control-size-default)",
+              width: "24px",
+              height: "24px",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
@@ -122,12 +122,13 @@ export function TitleBar({
                 {
                   background: "transparent",
                   border: "none",
-                  color: "var(--color-text)",
+                  color: "var(--color-text-secondary)",
                   fontSize: "var(--text-body)",
+                  fontWeight: 510,
                   cursor: "pointer",
-                  height: "var(--control-size-default)",
+                  height: "24px",
                   padding: "0 var(--space-2)",
-                  borderRadius: "var(--radius-xs)",
+                  borderRadius: "6px",
                   textTransform: "capitalize",
                   WebkitAppRegion: "no-drag",
                 } as CSSProperties
@@ -144,6 +145,7 @@ export function TitleBar({
           {
             display: "flex",
             alignItems: "stretch",
+            alignSelf: "stretch",
             WebkitAppRegion: "no-drag",
           } as CSSProperties
         }
@@ -164,7 +166,11 @@ export function TitleBar({
               : "Run with Icarus Verilog"
           }
           className="stv-run-btn"
-          style={{ opacity: isRunning ? 0.7 : 1 }}
+          style={{
+            opacity: isRunning ? 0.7 : 1,
+            alignSelf: "center",
+            marginRight: "var(--space-2)",
+          }}
         >
           <IconPlay
             size={ICON_SIZE_DEFAULT}
@@ -184,10 +190,10 @@ export function TitleBar({
           aria-label="Minimize"
           className="stv-wincontrol"
           style={{
-            width: "46px",
+            width: "40px",
             border: "none",
             background: "transparent",
-            color: "var(--color-text)",
+            color: "var(--color-text-secondary)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
