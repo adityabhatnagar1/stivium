@@ -19,37 +19,43 @@ export function EditorTabs({
     <div
       style={{
         display: "flex",
-        backgroundColor: "var(--color-surface-2)",
+        backgroundColor: "var(--color-surface)",
+        borderBottom: "var(--border-hairline)",
+        height: "36px",
+        boxSizing: "border-box",
         overflowX: "auto",
       }}
     >
-      {tabs.map((tab) => (
-        <div
-          key={tab.path}
-          onClick={() => onSelectTab(tab.path)}
-          className="stv-tab"
-          style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "var(--space-2)",
-            padding: "var(--space-2) var(--space-4)",
-            backgroundColor:
-              activeTabPath === tab.path
+      {tabs.map((tab) => {
+        const isActive = activeTabPath === tab.path;
+        return (
+          <div
+            key={tab.path}
+            onClick={() => onSelectTab(tab.path)}
+            className={`stv-tab${isActive ? " stv-tab--active" : ""}`}
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "var(--space-2)",
+              padding: "0 var(--space-3)",
+              height: "100%",
+              boxSizing: "border-box",
+              backgroundColor: isActive
                 ? "var(--color-bg)"
                 : "var(--color-tab-inactive)",
-            borderTop:
-              activeTabPath === tab.path
-                ? "1px solid var(--color-accent)"
-                : "1px solid transparent",
-            borderRight: "1px solid var(--color-bg)",
-            cursor: "pointer",
-            fontSize: "13px",
-            color:
-              activeTabPath === tab.path
+              borderTop: isActive
+                ? "2px solid var(--color-accent)"
+                : "2px solid transparent",
+              borderRight: "var(--border-hairline)",
+              cursor: "pointer",
+              fontSize: "var(--text-body)",
+              fontWeight: isActive ? 510 : 400,
+              letterSpacing: "var(--tracking-small)",
+              color: isActive
                 ? "var(--color-text)"
                 : "var(--color-text-muted)",
-          }}
-        >
+            }}
+          >
           {tab.content !== tab.savedContent && (
             <span
               aria-hidden="true"
@@ -79,7 +85,8 @@ export function EditorTabs({
             <IconClose size={11} />
           </div>
         </div>
-      ))}
-    </div>
-  );
+      );
+    })}
+  </div>
+);
 }
