@@ -37,35 +37,42 @@ function TerminalPanelImpl({
         minHeight: "120px",
         flexShrink: 0,
         backgroundColor: "var(--color-bg)",
-        borderTop: "1px solid var(--color-border)",
+        borderTop: "var(--border-hairline)",
         overflow: "hidden",
       }}
     >
       <div
         style={{
           display: "flex",
-          backgroundColor: "var(--color-surface-2)",
-          borderBottom: "1px solid var(--color-border)",
+          backgroundColor: "var(--color-surface)",
+          borderBottom: "var(--border-hairline)",
+          height: "36px",
+          boxSizing: "border-box",
         }}
       >
         {termTabs.map((tab) => (
           <div
             key={tab.id}
             onClick={() => onSelectTab(tab.id)}
-            className="stv-tab"
+            className={`stv-tab${activeTermId === tab.id ? " stv-tab--active" : ""}`}
             style={{
               display: "flex",
               alignItems: "center",
               gap: "8px",
-              padding: "6px 16px",
+              padding: "0 var(--space-3)",
+              height: "100%",
+              boxSizing: "border-box",
               backgroundColor:
                 activeTermId === tab.id ? "var(--color-bg)" : "transparent",
               borderTop:
                 activeTermId === tab.id
-                  ? "1px solid var(--color-accent)"
-                  : "1px solid transparent",
+                  ? "2px solid var(--color-accent)"
+                  : "2px solid transparent",
+              borderRight: "var(--border-hairline)",
               cursor: "pointer",
-              fontSize: "13px",
+              fontSize: "var(--text-body)",
+              fontWeight: activeTermId === tab.id ? 510 : 400,
+              letterSpacing: "var(--tracking-small)",
               color:
                 activeTermId === tab.id
                   ? "var(--color-text)"
