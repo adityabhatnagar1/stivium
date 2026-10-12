@@ -63,7 +63,7 @@ export function LeftPane({
         height: "100%",
         minHeight: 0,
         background: "var(--color-surface)",
-        borderRight: "1px solid var(--color-border)",
+        borderRight: "var(--border-hairline)",
         overflowY: "auto",
         paddingTop: "8px",
         display: "flex",

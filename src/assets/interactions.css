@@ -19,6 +19,7 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {
@@ -31,17 +32,21 @@
 .stv-wincontrol {
   transition: background-color var(--dur-base) var(--ease-standard);
 }
+
 .stv-wincontrol:hover {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text);
 }
+
 .stv-wincontrol:active {
   background-color: rgba(255, 255, 255, 0.07);
 }
+
 .stv-wincontrol--close:hover {
   background-color: var(--color-danger);
   color: #ffffff;
 }
+
 .stv-wincontrol--close:active {
   background-color: var(--color-danger);
 }
@@ -123,16 +128,20 @@
 }
 
 @keyframes runPulse {
+
   0%,
   100% {
     transform: scale(1);
   }
+
   30% {
     transform: scale(1.25);
   }
+
   50% {
     transform: scale(0.95);
   }
+
   70% {
     transform: scale(1.12);
   }
@@ -147,34 +156,41 @@
   color: #ffffff;
   font-weight: 590;
 }
+
 .stv-btn--secondary {
   background: rgba(255, 255, 255, 0.03);
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--color-text);
   font-weight: 590;
 }
+
 .stv-btn--secondary:hover {
   background: rgba(255, 255, 255, 0.07);
 }
+
 .stv-btn--danger {
   background: var(--color-danger);
   border: 1px solid var(--color-danger-strong);
   color: var(--color-text);
   font-weight: 600;
 }
+
 .stv-tab {
   transition:
     background-color var(--dur-base) var(--ease-standard),
     color var(--dur-base) var(--ease-standard);
 }
+
 .stv-tab-close {
   transition:
     background-color var(--dur-fast) var(--ease-standard),
     transform var(--dur-fast) var(--ease-spring);
 }
+
 .stv-tab-close:hover {
   background-color: rgba(255, 255, 255, 0.07);
 }
+
 .stv-tab-close:active {
   transform: scale(0.8);
 }
@@ -188,25 +204,30 @@
     background-color var(--dur-fast) var(--ease-standard),
     color var(--dur-fast) var(--ease-standard);
 }
+
 .stv-tree-row--dir {
   color: var(--color-text-secondary);
   font-weight: 510;
 }
+
 .stv-tree-row:hover {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text);
 }
+
 .stv-tree-row--selected,
 .stv-tree-row--selected:hover {
-  background-color: rgba(255, 255, 255, 0.07);
+  background-color: rgba(255, 255, 255, 0.08);
   color: var(--color-text);
 }
+
 .stv-tree-row__name {
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
 }
+
 .stv-tree-caret {
   color: var(--color-text-faint);
   transition: transform var(--dur-fast) var(--ease-standard);
@@ -224,9 +245,11 @@
     border-color var(--dur-fast) var(--ease-standard),
     box-shadow var(--dur-fast) var(--ease-standard);
 }
+
 .stv-input::placeholder {
   color: var(--color-text-muted);
 }
+
 .stv-input:focus {
   outline: none;
   border-color: var(--color-accent);
@@ -238,21 +261,25 @@
     opacity: 0;
     transform: scale(0.94) translateY(-4px);
   }
+
   to {
     opacity: 1;
     transform: scale(1) translateY(0);
   }
 }
+
 .stv-context-menu {
   animation: stv-context-menu-in var(--dur-base) var(--ease-out-expo);
   transform-origin: top left;
 }
+
 .stv-context-menu-item {
   margin: 0 4px;
   width: calc(100% - 8px);
   border-radius: var(--radius-xs);
   transition: background-color var(--dur-fast) var(--ease-standard);
 }
+
 .stv-context-menu-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
 }
@@ -277,11 +304,13 @@
     opacity: 0;
     transform: translateY(14px) scale(0.97);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
+
 .stv-toast {
   animation: stv-toast-in var(--dur-slow) var(--ease-out-expo);
 }
@@ -290,23 +319,28 @@
   from {
     opacity: 0;
   }
+
   to {
     opacity: 1;
   }
 }
+
 @keyframes stv-dialog-in {
   from {
     opacity: 0;
     transform: translateY(10px) scale(0.96);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
   }
 }
+
 .stv-dialog-backdrop {
   animation: stv-backdrop-in var(--dur-base) var(--ease-standard);
 }
+
 .stv-dialog-panel {
   animation: stv-dialog-in var(--dur-slow) var(--ease-out-expo);
 }
@@ -320,6 +354,7 @@
   display: inline-flex;
   transition: transform var(--dur-base) var(--ease-standard);
 }
+
 .stv-menu-icon--open {
   transform: rotate(90deg);
   color: var(--color-accent);
@@ -334,6 +369,7 @@
   pointer-events: none;
   transition: opacity var(--dur-fast) var(--ease-standard);
 }
+
 .stv-app-menu--open {
   width: auto;
   opacity: 1;
@@ -350,25 +386,32 @@
     transform var(--dur-base) var(--ease-standard),
     background-color var(--dur-fast) var(--ease-standard);
 }
+
 .stv-app-menu--open .stv-app-menu-item {
   opacity: 1;
   transform: translateY(0);
 }
+
 .stv-app-menu--open .stv-app-menu-item:nth-child(1) {
   transition-delay: 20ms;
 }
+
 .stv-app-menu--open .stv-app-menu-item:nth-child(2) {
   transition-delay: 45ms;
 }
+
 .stv-app-menu--open .stv-app-menu-item:nth-child(3) {
   transition-delay: 70ms;
 }
+
 .stv-app-menu--open .stv-app-menu-item:nth-child(4) {
   transition-delay: 95ms;
 }
+
 .stv-app-menu--open .stv-app-menu-item:nth-child(5) {
   transition-delay: 120ms;
 }
+
 .stv-app-menu-item:hover {
   background-color: rgba(255, 255, 255, 0.05);
   color: var(--color-text);
@@ -388,14 +431,17 @@
 }
 
 @keyframes stv-titlebar-glow-breathe {
+
   0%,
   100% {
     opacity: 0.6;
   }
+
   50% {
     opacity: 1;
   }
 }
+
 .stv-titlebar-fx {
   animation: stv-titlebar-glow-breathe 6s ease-in-out infinite;
 }
@@ -403,11 +449,9 @@
 .stv-titlebar-vignette {
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    to bottom,
-    rgba(6, 6, 7, 0.1),
-    rgba(6, 6, 7, 0.32)
-  );
+  background: linear-gradient(to bottom,
+      rgba(6, 6, 7, 0.1),
+      rgba(6, 6, 7, 0.32));
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -429,13 +473,16 @@
   background-color: transparent;
   transition: background-color var(--dur-fast) var(--ease-standard);
 }
+
 .stv-resize-handle::before {
   content: "";
   position: absolute;
 }
+
 .stv-resize-handle--vertical::before {
   inset: 0 -3px;
 }
+
 .stv-resize-handle--horizontal::before {
   inset: -3px 0;
 }
@@ -446,10 +493,12 @@
 }
 
 @keyframes stv-icon-pulse {
+
   0%,
   100% {
     opacity: 1;
   }
+
   50% {
     opacity: 0.45;
   }
@@ -471,6 +520,7 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: var(--radius-md);
 }
+
 .stv-lp-seg__btn {
   flex: 1;
   display: flex;
@@ -492,15 +542,18 @@
     background-color 150ms ease,
     color 150ms ease;
 }
+
 .stv-lp-seg__btn:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-text-secondary);
 }
+
 .stv-lp-seg__btn--active,
 .stv-lp-seg__btn--active:hover:not(:disabled) {
   background: rgba(255, 255, 255, 0.07);
   color: var(--color-text);
 }
+
 .stv-lp-seg__btn:disabled {
   color: var(--color-text-faint);
   cursor: not-allowed;
@@ -515,21 +568,26 @@
   margin: 0 var(--space-2) var(--space-1);
   padding-left: var(--space-2);
 }
+
 .stv-lp-section__title {
   flex: 1;
   min-width: 0;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  font-size: var(--text-caption);
+  font-size: var(--text-micro);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
   line-height: 1.4;
   font-weight: 510;
-  color: var(--color-text-faint);
+  color: var(--color-text-muted);
 }
+
 .stv-lp-section__actions {
   display: flex;
   gap: var(--space-1);
 }
+
 .stv-lp-iconbtn {
   width: 24px;
   height: 24px;
@@ -545,10 +603,12 @@
     background-color 150ms ease,
     color 150ms ease;
 }
+
 .stv-lp-iconbtn:hover {
   background: rgba(255, 255, 255, 0.05);
   color: var(--color-text);
 }
+
 .stv-lp-iconbtn:active {
   background: rgba(255, 255, 255, 0.07);
 }
@@ -563,6 +623,7 @@
   padding: var(--space-6);
   text-align: center;
 }
+
 .stv-lp-empty__icon {
   width: 40px;
   height: 40px;
@@ -574,11 +635,13 @@
   border: 1px solid rgba(255, 255, 255, 0.08);
   color: var(--color-text-muted);
 }
+
 .stv-lp-empty__title {
   font-size: var(--text-body);
   font-weight: 510;
   color: var(--color-text-secondary);
 }
+
 .stv-lp-cta {
   min-height: 40px;
   padding: 0 18px;
@@ -590,6 +653,7 @@
     background 150ms ease,
     transform 100ms ease;
 }
+
 .stv-lp-cta:active {
   transform: scale(0.97);
 }
