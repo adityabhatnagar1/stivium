@@ -19,19 +19,61 @@
      must pick a background from this list; never invent a new gray.
      Monochromatic by design: depth comes from luminance steps and
      hairline borders, not from color variation. */
-  --color-bg: #08090a; /* level 0: base canvas, editor, titlebar */
-  --color-surface: #0f1011; /* level 1: sidebar/panel body */
-  --color-surface-2: #141516; /* level 2: elevated containers */
-  --color-surface-elevated: #28282c; /* menus, popovers, dialogs, modal shells */
-  --color-titlebar: #08090a; /* same as base canvas, separated by a hairline */
+  /* ---- Dark Foundations (DESIGN.md §2) ---- */
+  --color-bg: #08090a;
+  /* level 0: base canvas, editor, titlebar */
+  --color-surface: #0f1011;
+  /* level 1: sidebar/panel body */
+  --color-surface-2: #141516;
+  /* level 2: elevated containers */
+  --color-surface-secondary: #1c1c1f;
+  /* level 3: secondary cards, embedded panels */
+  --color-surface-tertiary: #232326;
+  /* level 4: higher-elevation dark surface */
+  --color-surface-elevated: #28282c;
+  /* level 5: menus, popovers, dialogs, modal shells */
+  --color-titlebar: #08090a;
+  /* same as base canvas, separated by a hairline */
+
+  /* Surface overlays */
+  --color-bg-translucent: rgba(255, 255, 255, 0.05);
+  --color-bg-hover: rgba(255, 255, 255, 0.08);
+
+  /* ---- Borders (DESIGN.md §2) ---- */
   --color-border: #23252a;
+  /* primary divider and card border */
+  --color-border-secondary: #34343a;
+  /* stronger boundary */
+  --color-border-tertiary: #3e3e44;
+  /* high-emphasis outline */
   --color-border-subtle: rgba(255, 255, 255, 0.08);
-  --color-tab-inactive: var(
-    --color-surface-2
-  ); /* inactive editor-tab background */
+
+  --color-tab-inactive: var(--color-surface-2);
+
+  /* ---- Typography Colors (DESIGN.md §2) ---- */
   --color-text: #f7f8f8;
-  --color-text-muted: #8a8f98; /* tertiary: metadata, helper text */
-  --color-text-faint: #62666d; /* quaternary: muted labels, disabled */
+  /* primary: headings and active copy */
+  --color-text-secondary: #d0d6e0;
+  /* secondary: body, controls, labels */
+  --color-text-muted: #8a8f98;
+  /* tertiary: metadata, helper text */
+  --color-text-faint: #62666d;
+  /* quaternary: muted labels, disabled */
+
+  /* ---- Letter Spacing / Tracking (DESIGN.md §3) ---- */
+  --tracking-tight: -0.022em;
+  --tracking-body: -0.011em;
+  --tracking-small: -0.013em;
+
+  /* ---- Elevation Shadows (DESIGN.md §6) ---- */
+  --shadow-none: 0px 0px 0px transparent;
+  --shadow-tiny: 0px 1px 1px 0px rgba(0, 0, 0, 0.09);
+  --shadow-low: 0px 1px 4px -1px rgba(0, 0, 0, 0.09);
+  --shadow-medium: 0px 3px 12px rgba(0, 0, 0, 0.09);
+  --shadow-high: 0px 7px 32px rgba(0, 0, 0, 0.35);
+
+  /* ---- Pill Radius (DESIGN.md §4) ---- */
+  --radius-pill: 9999px;
 
   /* Primary accent: Linear indigo */
   --color-accent: #5e6ad2;
@@ -123,6 +165,7 @@ textarea,
   box-shadow: var(--focus-ring);
   border-radius: var(--radius-xs);
 }
+
 ::-webkit-scrollbar {
   width: 5px;
 }

@@ -63,7 +63,7 @@ export function TitleBar({
           justifyContent: "space-between",
           height: "40px",
           background: "var(--color-bg)",
-          borderBottom: "1px solid #23252a",
+          borderBottom: "var(--border-hairline)",
           WebkitAppRegion: "drag",
         } as CSSProperties
       }
@@ -129,6 +129,7 @@ export function TitleBar({
                   height: "24px",
                   padding: "0 var(--space-2)",
                   borderRadius: "6px",
+                  letterSpacing: "var(--tracking-small)",
                   textTransform: "capitalize",
                   WebkitAppRegion: "no-drag",
                 } as CSSProperties
@@ -208,10 +209,10 @@ export function TitleBar({
           aria-label={isWindowMaximized ? "Restore" : "Maximize"}
           className="stv-wincontrol"
           style={{
-            width: "46px",
+            width: "40px",
             border: "none",
             background: "transparent",
-            color: "var(--color-text)",
+            color: "var(--color-text-secondary)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",
@@ -230,10 +231,10 @@ export function TitleBar({
           aria-label="Close"
           className="stv-wincontrol stv-wincontrol--close"
           style={{
-            width: "46px",
+            width: "40px",
             border: "none",
             background: "transparent",
-            color: "var(--color-text)",
+            color: "var(--color-text-secondary)",
             cursor: "pointer",
             display: "flex",
             alignItems: "center",

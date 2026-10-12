@@ -34,9 +34,12 @@ function FileTreeNodeImpl({
   const rowStyle: CSSProperties = {
     padding: `var(--space-1) var(--space-2) var(--space-1) ${paddingLeft}px`,
     margin: "0 var(--space-2)",
-    borderRadius: "6px",
+    borderRadius: "var(--radius-sm)",
     cursor: "pointer",
     fontSize: "var(--text-body)",
+    letterSpacing: "var(--tracking-body)",
+    height: "26px",
+    boxSizing: "border-box",
     display: "flex",
     alignItems: "center",
   };
