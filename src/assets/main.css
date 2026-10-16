@@ -133,6 +133,14 @@
 
   /* ---- Border / separator — one weight, everywhere ---- */
   --border-hairline: 1px solid var(--color-border);
+
+  /* ---- Canonical Design System Aliases (Experiment 1.1 - Non-Breaking) ---- */
+  --color-canvas: var(--color-bg);
+  --color-surface-panel: var(--color-surface);
+  --color-surface-card: var(--color-surface-secondary);
+  --color-surface-container: var(--color-surface-tertiary);
+  --color-border-primary: var(--color-border);
+  --color-accent-hover: var(--color-accent-2);
 }
 
 body,
