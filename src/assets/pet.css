@@ -20,7 +20,7 @@
   justify-content: center;
   cursor: grab;
   touch-action: none;
-  z-index: 500;
+  z-index: var(--z-index-pet);
 }
 .stv-pet-hitbox--dragging {
   cursor: grabbing;

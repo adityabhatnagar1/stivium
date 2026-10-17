@@ -34,7 +34,7 @@ export function ContextMenu({
         border: "1px solid var(--color-border)",
         borderRadius: "var(--radius-sm)",
         boxShadow: "0 10px 20px rgba(0, 0, 0, 0.35)",
-        zIndex: 2000,
+        zIndex: "var(--z-index-context-menu)",
         minWidth: "170px",
         padding: "6px 0",
       }}

@@ -17,6 +17,7 @@ import { ContextMenu } from "./components/ContextMenu";
 import { NameDialog } from "./components/NameDialog";
 import { ConfirmDialog } from "./components/ConfirmDialog";
 import { ErrorToast } from "./components/ErrorToast";
+import { CommandMenu } from "./components/CommandMenu";
 import { CursorFooterBridge } from "./components/CursorFooterBridge";
 import { TitleBar } from "./components/TitleBar";
 import { EditorTabs } from "./components/EditorTabs";
@@ -68,6 +69,7 @@ function App() {
   const aiPanelWidthBeforeMaximizeRef = useRef(360);
   const [terminalHeight, setTerminalHeight] = useState(260);
   const [isPetVisible, setIsPetVisible] = useState(false);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [isChatOpen, setIsChatOpen] = useState(false);
   const [isSettingsOpen, setIsSettingsOpen] = useState(false);
   const [aiSettings, setAiSettings] = useState<AiSettings>({});
@@ -263,6 +265,7 @@ function App() {
     nameDialogOpen: nameDialog.isOpen,
     confirmDialogOpen: confirmDialog.isOpen,
     appendOutputLine,
+    onToggleCommandPalette: () => setIsCommandPaletteOpen((prev) => !prev),
   });
 
   const startLeftPaneResize = (event: MouseEvent<HTMLDivElement>) => {
@@ -700,6 +703,23 @@ function App() {
           setReviewContent(null);
           setAiState("ready");
         }}
+      />
+
+      <CommandMenu
+        isOpen={isCommandPaletteOpen}
+        onClose={() => setIsCommandPaletteOpen(false)}
+        fileTree={fileTree}
+        tabs={tabs}
+        onOpenFile={(path, name) => void handleFileClick(path, name)}
+        onSaveCurrent={handleSaveCurrent}
+        onSaveAll={handleSaveAll}
+        onRunCurrentFile={runCurrentFile}
+        onCreateFile={handleCreateFile}
+        onCreateFolder={handleCreateFolder}
+        onOpenWorkspace={() => void handleOpenWorkspace()}
+        onCreateTerminal={() => void handleCreateTerminal()}
+        onToggleAi={() => setIsPetVisible((prev) => !prev)}
+        onSwitchLeftPaneTab={setLeftPaneTab}
       />
 
       <CursorFooterBridge

@@ -141,6 +141,21 @@
   --color-surface-container: var(--color-surface-tertiary);
   --color-border-primary: var(--color-border);
   --color-accent-hover: var(--color-accent-2);
+
+  /* ---- Standardized Stacking Contexts (Experiment 1.2 - P0 Architecture) ---- */
+  --z-index-boot: 10000;
+  --z-index-toast: 3000;
+  --z-index-dialog: 2500;
+  --z-index-dialog-scrim: 2490;
+  --z-index-command-menu: 2200;
+  --z-index-command-scrim: 2190;
+  --z-index-context-menu: 2000;
+  --z-index-tooltip: 1800;
+  --z-index-popover: 1500;
+  --z-index-pet: 500;
+  --z-index-titlebar: 100;
+  --z-index-tabs: 90;
+  --z-index-statusbar: 50;
 }
 
 body,
@@ -162,6 +177,13 @@ textarea,
 .xterm,
 .xterm * {
   user-select: text;
+}
+
+/* Prevent typography tracking bleed into monospace code editor and terminal */
+.monaco-editor,
+.xterm,
+.xterm * {
+  letter-spacing: normal;
 }
 
 /* ---- Universal focus-visible ring (fixes: no keyboard-focus state
