@@ -23,7 +23,7 @@ export function ErrorToast({
         color: "var(--color-text)",
         padding: "10px 12px",
         borderRadius: "var(--radius-md)",
-        zIndex: 2200,
+        zIndex: "var(--z-index-toast)",
         display: "flex",
         alignItems: "center",
       }}

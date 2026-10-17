@@ -12,6 +12,7 @@ type UseAppShortcutsParams = {
   nameDialogOpen: boolean
   confirmDialogOpen: boolean
   appendOutputLine: (message: string) => void
+  onToggleCommandPalette?: () => void
 }
 
 export function useAppShortcuts({
@@ -22,7 +23,8 @@ export function useAppShortcuts({
   leftPaneTab,
   nameDialogOpen,
   confirmDialogOpen,
-  appendOutputLine
+  appendOutputLine,
+  onToggleCommandPalette
 }: UseAppShortcutsParams) {
   const hasEditorSelection = () => {
     const editor = monacoEditorRef.current
@@ -160,6 +162,15 @@ export function useAppShortcuts({
           return
         }
 
+        if (
+          (event.ctrlKey || event.metaKey) &&
+          (event.key.toLowerCase() === 'k' || event.key.toLowerCase() === 'p')
+        ) {
+          event.preventDefault()
+          onToggleCommandPalette?.()
+          return
+        }
+
         const target = event.target as HTMLElement | null
         if (
           target &&
@@ -203,6 +214,7 @@ export function useAppShortcuts({
     leftPaneTab,
     nameDialogOpen,
     confirmDialogOpen,
-    handleEditorShortcut
+    handleEditorShortcut,
+    onToggleCommandPalette
   ])
 }

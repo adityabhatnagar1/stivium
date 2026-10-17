@@ -26,7 +26,7 @@ export function PetReviewDialog({
         position: "fixed",
         inset: 0,
         background: "rgba(0,0,0,0.45)",
-        zIndex: 2100,
+        zIndex: "var(--z-index-dialog)",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
